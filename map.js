@@ -61,20 +61,37 @@ var Full_path_route = {
     ],
 };
 
+function initMap(containerId, opts) {
+  // 1) set token
+  mapboxgl.accessToken = opts.token;
+  // 2) create map
+  const m = new mapboxgl.Map({
+    container: containerId,
+    center: opts.center,
+    zoom: opts.zoom,
+    style: opts.style,
+  });
+  // 3) nav controls
+  m.addControl(new mapboxgl.NavigationControl(), opts.navPosition);
+  // 4) style tweak (guarded so we don’t blow up if layer is missing)
+  m.on("style.load", () => {
+    if (m.getLayer("3d-buildingbasemap")) {
+      m.setLayerZoomRange("3d-buildingbasemap", 0, 15.7);
+    }
+    document.querySelector(".mapboxgl-ctrl-logo").href =
+      "https://nearmotion.com/";
+  });
+  return m;
+}
 
-mapboxgl.accessToken = 'pk.eyJ1Ijoibm1hY2NvdW50cyIsImEiOiJja2xhazRobjgzbDkxMm9xb2d3YmQ3d2s2In0.wGFavxo8mpa7OI_lEhYUow';
-const map = new mapboxgl.Map({
-    container: 'map', // container ID
-    center: [-74.5, 40], // starting position [lng, lat]. Note that lat must be set between -90 and 90
-    zoom: 9 // starting zoom
-});
-
-map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
-
-map.on('style.load', function () {
-    map.style._mergedLayers["3d-buildingbasemap"].maxzoom = 15.7;
-    document.querySelector('.mapboxgl-ctrl-logo').href = 'https://nearmotion.com/';
-
+// Bring back the same global you were using:
+const map = initMap("map", {
+  token:
+    "pk.eyJ1Ijoibm1hY2NvdW50cyIsImEiOiJja2xhazRobjgzbDkxMm9xb2d3YmQ3d2s2In0.wGFavxo8mpa7OI_lEhYUow",
+  center: [-74.5, 40],
+  zoom: 9,
+  style: "mapbox://styles/mapbox/streets-v11",
+  navPosition: "bottom-right",
 });
 
 $(document).ready(function () {
