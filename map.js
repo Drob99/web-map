@@ -1,8 +1,8 @@
 //! Global Variables
 var Bearer_token,
   buildings_object,
-  cateogry_object,
-  cateogry_array = {},
+  category_object,
+  category_array = {},
   floors_objects = new Array(),
   Layers_objects = new Array(),
   floornametitle = [],
@@ -396,23 +396,23 @@ async function Loadmap(token_test, url) {
                       }
                     }
                   } catch (error) {
-                    console.error(error + " , Erorr putting layers");
+                    console.error(error + " , Error putting layers");
                   }
                 }
               } catch (error) {
-                console.error(error + " , Erorr Layers fetching");
+                console.error(error + " , Error Layers fetching");
               }
             }
           } catch (error) {
-            console.error(error + " , Erorr Floor fetching");
+            console.error(error + " , Error Floor fetching");
           }
         }
       } catch (error) {
-        console.error(error + " , Erorr Building fetching");
+        console.error(error + " , Error Building fetching");
       }
     }
   } catch (error) {
-    console.error(error + " , Erorr Categories fetching");
+    console.error(error + " , Error Categories fetching");
   }
 }
 
@@ -429,17 +429,17 @@ async function get_category(token) {
       if (this.readyState == 4) {
         if (this.status >= 200 && this.status < 300) {
           try {
-            cateogry_object = JSON.parse(this.responseText);
-            cateogry_object.building_poi_categories.push({
+            category_object = JSON.parse(this.responseText);
+            category_object.building_poi_categories.push({
               id: "o",
               name: "Others",
             });
 
             const category_length =
-              cateogry_object.building_poi_categories.length;
+              category_object.building_poi_categories.length;
             for (let a = 0; a < category_length; a++) {
-              cateogry_array[cateogry_object.building_poi_categories[a].id] =
-                cateogry_object.building_poi_categories[a].name;
+              category_array[category_object.building_poi_categories[a].id] =
+                category_object.building_poi_categories[a].name;
             }
             isDataFetched = true; // Set the flag
             resolve(isDataFetched); // Resolve the promise
@@ -1830,7 +1830,7 @@ function Load_dropdown_pois(poi) {
   var category_ar = buildings_object.buildings[0].name + " - ";
   level = floors_titles[level];
   if (poi.category_id != null) {
-    category_ar = cateogry_array[poi.category_id] + " - ";
+    category_ar = category_array[poi.category_id] + " - ";
   }
 
   var icon = poi.icon && poi.icon.url ? poi.icon.url : "./icontap.png"; // safe fallback
@@ -2606,8 +2606,8 @@ let isAnimating = false;
 let animationState = [];
 
 const arrowDataURL =
-    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAA7NJREFUeJzVm71uFUcYht9JgUVQHFpsKRI0MU64AcB3gJDTB/MjoEgRoSgYWjpL9EhICCMkikiJgsgVWIgbiHL4aSgQtpIujkiAhPihOD5g7D1n55v5ZtZ+yuPdmXdm3m+97+6s1BHAOeAP4HfgTFc6OgGYBt7wnv+Aqa51VQNYZCs3utZVBWASeN0wAa+Aidp6PqrdoaQLknY1/D4m6dvKWuoCjAN/Nqz+gFVgb01NtR3wjaRPR/x9XNL5SlrqAowBKyNWf8Ay0FQiRajpgDlJ+yKOm5D0dWEtdQEC8DBi9Qc8Brq4QJcB+Mow+AHHu9btBvAgYQLud63bBWAmYfADjnStPxvgl4wJuNu1/iyAKeD/jAlYA6ZLaix9pb2U2UeQ9J2TlqEdFAGYlPRUzff9Fl5LOhBCWMlXtZWSDhgWeqwUDUlFHACMS3qm0ff9Fv6S9FkIYdWpvXeUckBb6LFSLCS5OwAYU7/2vR9urEjaH0L417PREg44If/BS4VCkqsDgCCpJ+mgZ7sbeCJpOoSw5tWgtwNmVW7wkvS5pGMF28+DtNBjZXuGJPJCj5XDXro9S+CiY1ttzHs15HIRpP9Wp6d6j9iQ9GUI4WFuQ16Cc0OPFbeQlO0A/EKPFZeQ5LFqXqHHiktIynIA/qHHSnZIynWAd+ixkh2Skh1AudBjZVn9a0FSSMpxQKnQY2VSGSEpyQH0Q89vkoo+sDSQHJJSHTCr7TN4KSMkpU7A94nnlSTpVtw8AcCMJLcw4sjRlJCU4oCaoceKOSSZLoIdhB4r5pBkHch8wjk1MYekaAd0GHqsmEKSZTW7Cj1WTCEpygGFQs9L9Sf1laRrkvY4tu37Jgm47PxM7xFwaEP7U8Cvzn34/Leiv71t2VHYbWDLagO7geuO/TzHY7sdcNZJ0D9Aa3QF5oAXTn3mbcOnv72t5yDkA8tH9OtVEnnb7YBZBxGNlo/o26sk0rfbkfemJ8ryERpySyLtTRJ5b3pMlo/QklsS9vAG3EvsLMnyEXpySuJna2cp29tcLB+hLaUkbNvtgJvGDlwtH6EvpSTivkli+Dc9wyhi+Qid1pKI+yYJuBrZYBXLR+i1lMRCW2Nt3/QMqGr5NogviVVgeKAjLvR0Yvk2iC+J5pBEe+jZFpZvg/aSaA5JwOkRJ/UovGvbE+ALRmeYk00n/TDk4EXg4w7GkQWwB7g1ZEx3mk5Y2HTQi8aZ2mEAp4C/N43tStOBnwA/rQ98aSdZvo31klhaH9uPGx39Fpn2a5HgsYvXAAAAAElFTkSuQmCC";
-  
+  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAA7NJREFUeJzVm71uFUcYht9JgUVQHFpsKRI0MU64AcB3gJDTB/MjoEgRoSgYWjpL9EhICCMkikiJgsgVWIgbiHL4aSgQtpIujkiAhPihOD5g7D1n55v5ZtZ+yuPdmXdm3m+97+6s1BHAOeAP4HfgTFc6OgGYBt7wnv+Aqa51VQNYZCs3utZVBWASeN0wAa+Aidp6PqrdoaQLknY1/D4m6dvKWuoCjAN/Nqz+gFVgb01NtR3wjaRPR/x9XNL5SlrqAowBKyNWf8Ay0FQiRajpgDlJ+yKOm5D0dWEtdQEC8DBi9Qc8Brq4QJcB+Mow+AHHu9btBvAgYQLud63bBWAmYfADjnStPxvgl4wJuNu1/iyAKeD/jAlYA6ZLaix9pb2U2UeQ9J2TlqEdFAGYlPRUzff9Fl5LOhBCWMlXtZWSDhgWeqwUDUlFHACMS3qm0ff9Fv6S9FkIYdWpvXeUckBb6LFSLCS5OwAYU7/2vR9urEjaH0L417PREg44If/BS4VCkqsDgCCpJ+mgZ7sbeCJpOoSw5tWgtwNmVW7wkvS5pGMF28+DtNBjZXuGJPJCj5XDXro9S+CiY1ttzHs15HIRpP9Wp6d6j9iQ9GUI4WFuQ16Cc0OPFbeQlO0A/EKPFZeQ5LFqXqHHiktIynIA/qHHSnZIynWAd+ixkh2Skh1AudBjZVn9a0FSSMpxQKnQY2VSGSEpyQH0Q89vkoo+sDSQHJJSHTCr7TN4KSMkpU7A94nnlSTpVtw8AcCMJLcw4sjRlJCU4oCaoceKOSSZLoIdhB4r5pBkHch8wjk1MYekaAd0GHqsmEKSZTW7Cj1WTCEpygGFQs9L9Sf1laRrkvY4tu37Jgm47PxM7xFwaEP7U8Cvzn34/Leiv71t2VHYbWDLagO7geuO/TzHY7sdcNZJ0D9Aa3QF5oAXTn3mbcOnv72t5yDkA8tH9OtVEnnb7YBZBxGNlo/o26sk0rfbkfemJ8ryERpySyLtTRJ5b3pMlo/QklsS9vAG3EvsLMnyEXpySuJna2cp29tcLB+hLaUkbNvtgJvGDlwtH6EvpSTivkli+Dc9wyhi+Qid1pKI+yYJuBrZYBXLR+i1lMRCW2Nt3/QMqGr5NogviVVgeKAjLvR0Yvk2iC+J5pBEe+jZFpZvg/aSaA5JwOkRJ/UovGvbE+ALRmeYk00n/TDk4EXg4w7GkQWwB7g1ZEx3mk5Y2HTQi8aZ2mEAp4C/N43tStOBnwA/rQ98aSdZvo31klhaH9uPGx39Fpn2a5HgsYvXAAAAAElFTkSuQmCC";
+
 function setupArrowAnimation() {
   const workerBlobCode = `
   self.importScripts('https://unpkg.com/@turf/turf@6/turf.min.js');
@@ -2650,21 +2650,21 @@ function setupArrowAnimation() {
       self.postMessage({ animationState });
   };
   `;
-    
+
   window.worker = new Worker(
     URL.createObjectURL(
       new Blob([workerBlobCode], { type: "application/javascript" })
     )
   );
-    
-    worker.onmessage = (e) => {
-        window.animationState = e.data.animationState;
-        initializeArrowsSourceAndLayer();
-        if (window.animationFrameId) cancelAnimationFrame(window.animationFrameId);
-        animateArrows();
-    };
 
-    startAnimation();
+  worker.onmessage = (e) => {
+    window.animationState = e.data.animationState;
+    initializeArrowsSourceAndLayer();
+    if (window.animationFrameId) cancelAnimationFrame(window.animationFrameId);
+    animateArrows();
+  };
+
+  startAnimation();
 }
 function startAnimation() {
   if (isAnimating) return;
@@ -2940,82 +2940,81 @@ let to_poi_name = null,
   to_lt = null,
   to_lvl = null;
 
-
 function setupMapEventHandlers() {
-    map.on("click", "polygons", function (e) {
-      const clickedPolygon = e.features[0];
-      const clickedPolygonId = clickedPolygon.id;
-      const coords = turf.centroid(clickedPolygon).geometry.coordinates;
-      const props = clickedPolygon.properties;
+  map.on("click", "polygons", function (e) {
+    const clickedPolygon = e.features[0];
+    const clickedPolygonId = clickedPolygon.id;
+    const coords = turf.centroid(clickedPolygon).geometry.coordinates;
+    const props = clickedPolygon.properties;
 
-      if (!fromMarker) {
-        // Set A marker
-        fromPolygonId = clickedPolygonId;
-        const elA = document.createElement("div");
-        elA.innerHTML = `
+    if (!fromMarker) {
+      // Set A marker
+      fromPolygonId = clickedPolygonId;
+      const elA = document.createElement("div");
+      elA.innerHTML = `
                   <div style="background:#00BFFF;color:#fff;
                               border-radius:50%;width:30px;height:30px;
                               display:flex;align-items:center;justify-content:center;
                               font-weight:bold;box-shadow:0 0 6px rgba(0,0,0,0.3)">
                       A
                   </div>`;
-        fromMarker = new mapboxgl.Marker(elA).setLngLat(coords).addTo(map);
-        fly_to_A_point;
-        // Save from data
-        from_lg = coords[0];
-        from_lt = coords[1];
-        from_lvl = props.Level || 0;
-        from_poi_name = props.title || "Point A";
-        if (routeEnabled) {
-          ClearRoute();
-        }
-        fly_to_A_point(from_lg, from_lt);
-      } else if (!toMarker) {
-        // Validate A ≠ B
-        if (clickedPolygonId === fromPolygonId) {
-          //alert("Please select a different polygon for destination (B).");
-          return;
-        }
+      fromMarker = new mapboxgl.Marker(elA).setLngLat(coords).addTo(map);
+      fly_to_A_point;
+      // Save from data
+      from_lg = coords[0];
+      from_lt = coords[1];
+      from_lvl = props.Level || 0;
+      from_poi_name = props.title || "Point A";
+      if (routeEnabled) {
+        ClearRoute();
+      }
+      fly_to_A_point(from_lg, from_lt);
+    } else if (!toMarker) {
+      // Validate A ≠ B
+      if (clickedPolygonId === fromPolygonId) {
+        //alert("Please select a different polygon for destination (B).");
+        return;
+      }
 
-        // Set B marker
-        toPolygonId = clickedPolygonId;
-        const elB = document.createElement("div");
-        elB.innerHTML = `
+      // Set B marker
+      toPolygonId = clickedPolygonId;
+      const elB = document.createElement("div");
+      elB.innerHTML = `
                   <div style="background:#6A5ACD;color:#fff;
                               border-radius:50%;width:30px;height:30px;
                               display:flex;align-items:center;justify-content:center;
                               font-weight:bold;box-shadow:0 0 6px rgba(0,0,0,0.3)">
                       B
                   </div>`;
-        toMarker = new mapboxgl.Marker(elB).setLngLat(coords).addTo(map);
+      toMarker = new mapboxgl.Marker(elB).setLngLat(coords).addTo(map);
 
-        // Save to data
-        to_lg = coords[0];
-        to_lt = coords[1];
-        to_lvl = props.Level || 0;
-        to_poi_name = props.title || "Point B";
+      // Save to data
+      to_lg = coords[0];
+      to_lt = coords[1];
+      to_lvl = props.Level || 0;
+      to_poi_name = props.title || "Point B";
 
-        // Clear previous route if any
-        if (routeEnabled) {
-          ClearRoute();
-        }
-
-        // ✅ Call path drawing function now that all data is ready
-        draw_path_to_poi(
-          from_poi_name,
-          from_lg,
-          from_lt,
-          from_lvl,
-          to_poi_name,
-          to_lg,
-          to_lt,
-          to_lvl
-        );
-      } else {
-        // If both already selected, reset
-        resetMarkers();
+      // Clear previous route if any
+      if (routeEnabled) {
+        ClearRoute();
       }
-    });
+
+      // ✅ Call path drawing function now that all data is ready
+      draw_path_to_poi(
+        from_poi_name,
+        from_lg,
+        from_lt,
+        from_lvl,
+        to_poi_name,
+        to_lg,
+        to_lt,
+        to_lvl
+      );
+    } else {
+      // If both already selected, reset
+      resetMarkers();
+    }
+  });
 }
 
 // Reset function
@@ -3687,10 +3686,9 @@ function fly_to_A_point(lng, lat) {
 }
 
 function initializeApp() {
-    initUI();
-    setupMapEventHandlers();
-    setupArrowAnimation();
+  initUI();
+  setupMapEventHandlers();
+  setupArrowAnimation();
 }
 
 initializeApp();
-

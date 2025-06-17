@@ -742,66 +742,7 @@
         </div>
     </div>
 
-    <!-- Main Content -->
-    <div id="main-content" style="padding: 20px;">
-        <h1>Welcome to NEARMOTION</h1>
-        <p>Your content goes here...</p>
-    </div>
-
-    <script src="./map.js"></script>
-    <script>
-
-
-        document.addEventListener("DOMContentLoaded", function () {
-            screensaver();
-            get_Authentication("5hk9KDD86eYhhcgpsA_FepLpC8g2iB5ic5htMUqhFtk", "V0VJtEnRetTK_QOwy7V1M1JxRsnUbggE0ehvK8Pd210");
-
-            // Force responsive behavior
-            function forceResponsive() {
-                const windowWidth = window.innerWidth;
-                const cardElement = document.querySelector('.card');
-                const directionsPanel = document.querySelector('.directions-panel');
-
-                if (windowWidth <= 480) {
-                    // Mobile
-                    cardElement.style.width = '90%';
-                    cardElement.style.maxWidth = '90%';
-                    cardElement.style.left = '5%';
-
-                    if (directionsPanel) {
-                        directionsPanel.style.width = '90%';
-                        directionsPanel.style.left = '5%';
-                    }
-                } else if (windowWidth <= 768) {
-                    // Tablet
-                    cardElement.style.width = '90%';
-                    cardElement.style.maxWidth = '90%';
-                    cardElement.style.left = '5%';
-
-                    if (directionsPanel) {
-                        directionsPanel.style.width = '90%';
-                        directionsPanel.style.left = '5%';
-                    }
-                } else {
-                    // Desktop
-                    cardElement.style.width = '90%';
-                    cardElement.style.maxWidth = '400px';
-                    cardElement.style.left = '10px';
-
-                    if (directionsPanel) {
-                        directionsPanel.style.width = '401px';
-                        directionsPanel.style.left = '10px';
-                    }
-                }
-            }
-
-            // Run on load
-            forceResponsive();
-
-            // Run on resize
-            window.addEventListener('resize', forceResponsive);
-        });
-    </script>
+    <script type="module" src="./src/main.js"></script>
 </body>
 
 </html>
