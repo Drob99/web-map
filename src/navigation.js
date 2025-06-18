@@ -272,3 +272,5 @@ export function toggle_instruction_card() {
     : '<i class="fa fa-plus-square"></i> Show Instructions';
 }
 
+window.toggle_instruction_card = toggle_instruction_card;
+

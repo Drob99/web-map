@@ -1,5 +1,6 @@
 import { API_BASE, state} from "../config.js";
 import { calculateDistance, deg2rad } from "../utils.js";
+import { getDistanceFromLatLonInKm } from "../utils.js";
 
 export let graph;
 export let routeEnabled = false;
@@ -208,9 +209,9 @@ export function draw_path_to_poi(
         },
       },
     ],
-  };
-  Global_start_key = start_key;
-  Global_end_key = end_key;
+  }
+  state.Global_start_key = start_key;
+  state.Global_end_key = end_key;
 
   shortestPath(graph, start_key, end_key);
 
@@ -257,8 +258,8 @@ export function draw_path_to_poi(
   state.global_time = time;
   state.global_zlevel = to_lvl;
 
-  from_marker_location = extractLngLat(state.Routes_array[Global_start_key]);
-  to_marker_location = extractLngLat(state.Routes_array[Global_end_key]);
+  from_marker_location = extractLngLat(state.Routes_array[state.Global_start_key]);
+  to_marker_location = extractLngLat(state.Routes_array[state.Global_end_key]);
   from_marker_lvl = from_lvl;
   to_marker_lvl = to_lvl;
 

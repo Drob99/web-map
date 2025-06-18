@@ -5,7 +5,7 @@ import {
   stopAnimation,
 } from "./animation/arrowAnimation.js";
 import { state } from "./config.js";
-import { get_All_POI } from "./data/pois.js";
+import { get_All_POI, get_image } from "./data/pois.js";
 import { map } from "./mapInit.js";
 import { renderDirectionsPanel } from "./navigation.js";
 
@@ -397,9 +397,18 @@ export function toggleContent(id) {
  * FlyTo for navigation mode (angled).
  */
 export function enter_into_nvgation_mode(Route_geojson) {
-  if (Route_geojson.features[1]?.geometry.coordinates.length > 1) {
-    const [lng0, lat0] = Route_geojson.features[1].geometry.coordinates[0];
-    const [lng1, lat1] = Route_geojson.features[1].geometry.coordinates[1];
+    if (!Route_geojson) {
+        console.error("Route_geojson is undefined or null.");
+        return;
+    }
+    if (!Array.isArray(Route_geojson.features)) { 
+        console.error("enter_into_nvgation_mode: features missing or not an array", Route_geojson);
+        return;
+    }
+
+  if (Route_geojson.features[0]?.geometry.coordinates.length > 1) {
+    const [lng0, lat0] = Route_geojson.features[0].geometry.coordinates[0];
+    const [lng1, lat1] = Route_geojson.features[0].geometry.coordinates[1];
     const bearing = turf.bearing(
       turf.point([lng0, lat0]),
       turf.point([lng1, lat1])
@@ -604,4 +613,7 @@ export function poi_show_by_level() {
 export function switch_to_current_floor() {
     const floor = state.current_lvl || state.Level_route_poi || 1;
     switchFloorByNo(floor);
-  }
+}
+
+window.ClearRoute = ClearRoute;
+window.enter_into_nvgation_mode = enter_into_nvgation_mode;

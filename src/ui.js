@@ -1,5 +1,6 @@
 import { stringMatch } from "./utils.js";
-import { draw_path_to_poi, routeEnabled } from "./data/routes.js";
+import { draw_path_to_poi} from "./data/routeHelpers.js";
+import { routeEnabled } from "./data/routes.js";
 import {
   floors_titles,
   state,

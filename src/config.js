@@ -63,6 +63,8 @@ export const state = {
   elevatorsCount: 0,
 
   route_array: [],
+  Global_start_key: null,
+  Global_end_key: null,
   global_name: null,
   global_distance: null,
   global_time: null,

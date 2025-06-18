@@ -1,5 +1,4 @@
 import { BASE_TOKEN, MAPBOX_STYLE } from "./config.js";
-import { switch_to_current_floor } from "./mapController.js";
 
 export function initMap(containerId, opts = {}) {
   // 1) set token
@@ -29,11 +28,6 @@ export function initMap(containerId, opts = {}) {
     }
     document.querySelector(".mapboxgl-ctrl-logo").href =
       "https://nearmotion.com/";
-  });
-
-  // 5) once everything’s loaded, show the default floor
-  m.on("load", () => {
-    switch_to_current_floor();
   });
 
   return m;

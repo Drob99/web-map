@@ -163,7 +163,7 @@ export async function Loadmap() {
                     }
                   }
                   let fixed_layers = sortedInput;
-                  const isLayersLoaded = layers_level(sortedInput);
+                  const isLayersLoaded = await layers_level(sortedInput);
                   try {
                     if (isLayersLoaded) {
                       end_time = performance.now();

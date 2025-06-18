@@ -78,119 +78,128 @@ export function draw_path_to_poi(
   to_lat_,
   to_zlevel_
 ) {
-  // reset and flag
-  state.routeEnabled = true;
-  state.Full_path_route = {
-    type: "FeatureCollection",
-    features: [
-      {
-        type: "Feature",
-        geometry: { type: "LineString", coordinates: [] },
-      },
-    ],
-  };
 
-  // alias
-  const [from_lng, from_lat, from_lvl] = [from_lng_, from_lat_, from_zlevel_];
-  const [to_lng, to_lat, to_lvl] = [to_lng_, to_lat_, to_zlevel_];
+  try {
+    // reset and flag
+    state.routeEnabled = true;
+    state.Full_path_route = {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          geometry: { type: "LineString", coordinates: [] },
+        },
+      ],
+    };
+
+    state.route_array = [];
+    // alias
+    const [from_lng, from_lat, from_lvl] = [from_lng_, from_lat_, from_zlevel_];
+    const [to_lng, to_lat, to_lvl] = [to_lng_, to_lat_, to_zlevel_];
 
 
-  // find closest start_key & end_key
-  let min_flag = false;
-  let min_from = 0,
-    min_to = 0,
-    start_key = null,
-    end_key = null;
+    // find closest start_key & end_key
+    let min_flag = false;
+    let min_from = 0,
+      min_to = 0,
+      start_key = null,
+      end_key = null;
+    
+    for (const key in state.Routes_array) {
+      const [lng, lat, lvl] = state.Routes_array[key].split(",");
+      const dFrom = getDistanceFromLatLonInKm(lat, lng, from_lat, from_lng);
+      const dTo = getDistanceFromLatLonInKm(lat, lng, to_lat, to_lng);
 
-  for (const key in state.Routes_array) {
-    const [lng, lat, lvl] = state.Routes_array[key].split(",");
-    const dFrom = getDistanceFromLatLonInKm(lat, lng, from_lat, from_lng);
-    const dTo = getDistanceFromLatLonInKm(lat, lng, to_lat, to_lng);
-
-    if (!min_flag) {
-      min_flag = true;
-      min_from = dFrom;
-      min_to = dTo;
-      start_key = key;
-      end_key = key;
-    } else {
-      if (lvl == from_lvl && dFrom < min_from) {
+      if (!min_flag) {
+        min_flag = true;
         min_from = dFrom;
-        start_key = key;
-      }
-      if (lvl == to_lvl && dTo < min_to) {
         min_to = dTo;
+        start_key = key;
         end_key = key;
+      } else {
+        if (lvl == from_lvl && dFrom < min_from) {
+          min_from = dFrom;
+          start_key = key;
+        }
+        if (lvl == to_lvl && dTo < min_to) {
+          min_to = dTo;
+          end_key = key;
+        }
       }
     }
-  }
 
-  state.Global_start_key = start_key;
-  state.Global_end_key = end_key;
+    state.Global_start_key = start_key;
+    state.Global_end_key = end_key;
 
-  // run BFS to populate state.route_array
-  shortestPath(start_key, end_key);
+    // run BFS to populate state.route_array
+    const path = shortestPath(start_key, end_key);
+    state.route_array = path || [];
 
-  // build the full path & compute distance
-  let full_distance = 0;
-  let prev_lng, prev_lat;
+    // build the full path & compute distance
+    let full_distance = 0;
+    let prev_lng, prev_lat;
 
-  for (let i = 0; i < route_array.length; i++) {
-    const point = state.Routes_array[route_array[i]];
-    const [lng, lat, lvl] = point.split(",");
+    for (let i = 0; i < state.route_array.length; i++) {
+      const key = state.route_array[i];
+      const point = state.Routes_array[key];
+      const [lng, lat, lvl] = point.split(",");
 
-    if (i === 0) {
-      prev_lng = lng;
-      prev_lat = lat;
-    } else {
-      full_distance += getDistanceFromLatLonInKm(
-        prev_lat,
-        prev_lng,
-        lat,
-        lng
-      );
-      prev_lng = lng;
-      prev_lat = lat;
+      if (i === 0) {
+        prev_lng = lng;
+        prev_lat = lat;
+      } else {
+        full_distance += getDistanceFromLatLonInKm(
+          prev_lat,
+          prev_lng,
+          lat,
+          lng
+        );
+        prev_lng = lng;
+        prev_lat = lat;
+      }
+
+      // push every step into the master geojson
+      state.Full_path_route.features[0].geometry.coordinates.push([
+        parseFloat(lng),
+        parseFloat(lat),
+      ]);
     }
 
-    // push every step into the master geojson
-    state.Full_path_route.features[0].geometry.coordinates.push([
-      parseFloat(lng),
-      parseFloat(lat),
-    ]);
+    // store summary stats
+    state.full_distance_to_destination = full_distance;
+    const time = full_distance / 74; // t = d / 74
+    state.full_time_to_destination = time;
+    state.global_name = to_name;
+    state.global_distance = Math.floor(full_distance);
+    state.global_time = time;
+    state.global_zlevel = to_lvl;
+
+    // markers & elevator linking
+    state.from_marker_location = extractLngLat(
+      state.Routes_array[state.Global_start_key]
+    );
+    state.to_marker_location = extractLngLat(
+      state.Routes_array[state.Global_end_key]
+    );
+    state.from_marker_lvl = from_lvl;
+    state.to_marker_lvl = to_lvl;
+
+    elevator_guide(); // if you want the popup prompts
+    addFromToMarkers(
+      state.from_marker_location,
+      state.to_marker_location,
+      state.from_marker_lvl,
+      state.to_marker_lvl
+    );
+
+    // draw & fly/etc.
+    Route_level(); // redraw per-floor segment
+    enter_into_nvgation_mode(state.Full_path_route); // center & pitch
+
+    // finally kick off arrows
+    setupArrowAnimation();
   }
-
-  // store summary stats
-  state.full_distance_to_destination = full_distance;
-  const time = full_distance / 74; // t = d / 74
-  state.full_time_to_destination = time;
-  state.global_name = to_name;
-  state.global_distance = Math.floor(full_distance);
-  state.global_time = time;
-  state.global_zlevel = to_lvl;
-
-  // markers & elevator linking
-  state.from_marker_location = extractLngLat(
-    state.Routes_array[state.Global_start_key]
-  );
-  state.to_marker_location = extractLngLat(
-    state.Routes_array[state.Global_end_key]
-  );
-  state.from_marker_lvl = from_lvl;
-  state.to_marker_lvl = to_lvl;
-
-  elevator_guide(); // if you want the popup prompts
-  addFromToMarkers(
-    state.from_marker_location,
-    state.to_marker_location,
-    state.from_marker_lvl,
-    state.to_marker_lvl
-  );
-
-  // draw & fly/etc.
-  Route_level(); // redraw per-floor segment
-  enter_into_nvgation_mode(state.SmartRoute); // center & pitch
-
-  // finally kick off arrows
-  setupArrowAnimation();
+ catch (error) {
+    console.error("draw_path_to_poi error:", error);
+  }
 }

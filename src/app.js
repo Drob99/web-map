@@ -16,8 +16,6 @@ import { CLIENT_ID, CLIENT_SECRET } from "./config.js";
  */
 export async function initializeApp() {
   try {
-    screensaver();
-
     // 1) Auth & Data
     await get_Authentication(CLIENT_ID, CLIENT_SECRET);
     
@@ -28,7 +26,11 @@ export async function initializeApp() {
     // 3) Arrows
     setupArrowAnimation();
 
+    // 4) Show the right floor
     switch_to_current_floor();
+
+    // 5) Hide the splash screen
+    screensaver();
   } catch (err) {
     console.error("Error initializing app:", err);
   }
