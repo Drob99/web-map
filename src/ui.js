@@ -1,11 +1,7 @@
-import { stringMatch } from "./utils.js";
-import { draw_path_to_poi} from "./data/routeHelpers.js";
-import { routeEnabled } from "./data/routes.js";
-import {
-  floors_titles,
-  state,
-} from "./config.js";
+import { floors_titles, state } from "./config.js";
+import { draw_path_to_poi, routeEnabled } from "./data/routes.js";
 import { ClearRoute } from "./mapController.js";
+import { stringMatch } from "./utils.js";
 
 /**
  * Initialize the two Select2 dropdowns and swap button.
@@ -52,8 +48,7 @@ export function matchCustom(params, data) {
   if ($.trim(params.term) === "") return data;
   if (typeof data.text === "undefined") return null;
   if (stringMatch(params.term, data.text)) return data;
-  if (stringMatch(params.term, $(data.element).attr("data-foo")))
-    return data;
+  if (stringMatch(params.term, $(data.element).attr("data-foo"))) return data;
   return null;
 }
 
@@ -84,8 +79,7 @@ export function screensaver() {
     const splash = document.getElementById("splash-screen");
     splash.style.display = "none";
     splash.classList.add("fade-out");
-    document.getElementsByClassName("loader-wrapper")[0].style.display =
-      "none";
+    document.getElementsByClassName("loader-wrapper")[0].style.display = "none";
     setTimeout(() => splash.classList.add("hidden"), 500);
   }, 3000);
 }
@@ -95,14 +89,12 @@ export function screensaver() {
  */
 export function select_dropdown_list_item() {
   const toSel = document.getElementById("to_location");
-  const [to_lg, to_lt, to_floorId] =
-    toSel.value.split(",");
+  const [to_lg, to_lt, to_floorId] = toSel.value.split(",");
   const to_name = toSel.options[toSel.selectedIndex].text;
   const to_lvl = state.level_array[parseInt(to_floorId, 10)];
 
   const fromSel = document.getElementById("from_location");
-  const [from_lg, from_lt, from_floorId] =
-    fromSel.value.split(",");
+  const [from_lg, from_lt, from_floorId] = fromSel.value.split(",");
   const from_name = fromSel.options[fromSel.selectedIndex].text;
   const from_lvl = state.level_array[parseInt(from_floorId, 10)];
 
@@ -125,24 +117,18 @@ export function select_dropdown_list_item() {
 export function Load_dropdown_pois(poi) {
   let level = state.level_array[poi.building_floor_id];
   const levelName = floors_titles[level];
-  let category_ar =
-    state.buildings_object.buildings[0].name + " - ";
+  let category_ar = state.buildings_object.buildings[0].name + " - ";
   if (poi.category_id != null) {
     category_ar = state.category_array[poi.category_id] + " - ";
   }
-  const icon = poi.icon && poi.icon.url
-    ? poi.icon.url
-    : "./icontap.png";
+  const icon = poi.icon && poi.icon.url ? poi.icon.url : "./icontap.png";
 
   $("#from_location").append(
     $(
       `<option data-foo="${category_ar} ${levelName}" data-icon="${icon}">
          ${poi.title}
        </option>`
-    ).attr(
-      "value",
-      `${poi.longitude},${poi.latitude},${poi.building_floor_id}`
-    )
+    ).attr("value", `${poi.longitude},${poi.latitude},${poi.building_floor_id}`)
   );
 
   $("#to_location").append(
@@ -150,9 +136,6 @@ export function Load_dropdown_pois(poi) {
       `<option data-foo="${category_ar} ${levelName}" data-icon="${icon}">
          ${poi.title}
        </option>`
-    ).attr(
-      "value",
-      `${poi.longitude},${poi.latitude},${poi.building_floor_id}`
-    )
+    ).attr("value", `${poi.longitude},${poi.latitude},${poi.building_floor_id}`)
   );
 }

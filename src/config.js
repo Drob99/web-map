@@ -1,3 +1,4 @@
+
 // API & Mapbox settings
 export const API_BASE = "https://api.nearmotion.com/api/public/v1/";
 export const BASE_TOKEN =
@@ -98,4 +99,11 @@ export const state = {
       },
     ],
   },
+
+  // navigation marker state
+  from_marker_location: [],
+  to_marker_location: [],
+  from_marker_lvl: null,
+  to_marker_lvl: null,
 };
+

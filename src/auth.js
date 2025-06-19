@@ -1,15 +1,13 @@
 import { API_BASE, state } from "./config.js";
-import { getCurrentTime } from "./utils.js";
+import { get_buildings } from "./data/buildings.js";
 import { get_category } from "./data/categories.js";
-import { get_buildings }    from "./data/buildings.js";
-import { get_floor_json }   from "./data/floors.js";
-import { Load_Layer_data }  from "./data/layers.js";
-import { load_pois_floors } from "./mapController.js";
-import { load_routes, start_routes } from "./data/routes.js";
-import { fly_to_building } from "./navigation.js";
-import { link_elevators } from "./data/routeHelpers.js";
+import { get_floor_json } from "./data/floors.js";
+import { Load_Layer_data } from "./data/layers.js";
+import { link_elevators, load_routes, start_routes } from "./data/routes.js";
 import { layers_level } from "./layers/layerController.js";
-
+import { load_pois_floors } from "./mapController.js";
+import { fly_to_building } from "./navigation.js";
+import { getCurrentTime } from "./utils.js";
 
 let start_time;
 
@@ -24,7 +22,6 @@ export function get_Authentication(Visitor_ID, Visitor_Secret) {
   return new Promise((resolve, reject) => {
     localStorage.clear();
     sessionStorage.clear();
-
 
     if (!localStorage.getItem("access_token") || isAccessTokenExpired()) {
       const settings = {
@@ -46,24 +43,25 @@ export function get_Authentication(Visitor_ID, Visitor_Secret) {
         }),
       };
 
-      $.ajax(settings).done(function (response) {
-        state.Bearer_token = response.access_token;
-        localStorage.setItem("access_token", response.access_token);
-        localStorage.setItem("refresh_token", response.refresh_token);
-        localStorage.setItem("created_at", getCurrentTime());
-        localStorage.setItem("expires_in", response.expires_in);
-      
-        Loadmap()
-          .then(() => resolve(state.Bearer_token))
-          .catch((err) => reject(err));
-      })
+      $.ajax(settings)
+        .done(function (response) {
+          state.Bearer_token = response.access_token;
+          localStorage.setItem("access_token", response.access_token);
+          localStorage.setItem("refresh_token", response.refresh_token);
+          localStorage.setItem("created_at", getCurrentTime());
+          localStorage.setItem("expires_in", response.expires_in);
+
+          Loadmap()
+            .then(() => resolve(state.Bearer_token))
+            .catch((err) => reject(err));
+        })
         .fail(function (jqXHR, textStatus, errorThrown) {
           reject(
             new Error(
               `Failed to authenticate (status ${jqXHR.status}): ${errorThrown}`
             )
           );
-        })
+        });
     } else {
       console.log("Access Token is still valid");
       state.Bearer_token = localStorage.getItem("access_token");

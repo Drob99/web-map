@@ -1,6 +1,6 @@
-import { map } from "./mapInit.js";
 import { draw_path_to_poi, routeEnabled } from "./data/routes.js";
 import { ClearRoute } from "./mapController.js";
+import { map } from "./mapInit.js";
 
 let fromMarker = null,
   toMarker = null;
@@ -27,13 +27,11 @@ export function setupMapEventHandlers() {
       from_lt = coords[1];
       from_lvl = level;
       from_poi_name = title;
-      fromMarker = new mapboxgl
-        .Marker(createMarkerEl("A", "#00BFFF"))
+      fromMarker = new mapboxgl.Marker(createMarkerEl("A", "#00BFFF"))
         .setLngLat(coords)
         .addTo(map);
       if (routeEnabled) ClearRoute();
       fly_to_A_point(from_lg, from_lt);
-
     } else if (!toMarker) {
       // ensure B ≠ A
       if (id === fromPolygonId) return;
@@ -42,8 +40,7 @@ export function setupMapEventHandlers() {
       to_lt = coords[1];
       to_lvl = level;
       to_poi_name = title;
-      toMarker = new mapboxgl
-        .Marker(createMarkerEl("B", "#6A5ACD"))
+      toMarker = new mapboxgl.Marker(createMarkerEl("B", "#6A5ACD"))
         .setLngLat(coords)
         .addTo(map);
       if (routeEnabled) ClearRoute();

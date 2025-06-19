@@ -135,18 +135,26 @@ export function toggleLayer(ids, name) {
     e.preventDefault();
     e.stopPropagation();
 
+      // update current floor for POI filtering
+      const floorNum = name === "G" ? 0 : parseInt(name, 10);
+      state.Level_route_poi = floorNum;
+
     // toggle on this floor, off all others
-    ids.forEach((floorId) => {
-      state.Layersnames.forEach((lname) => {
-        const layerId = floorId + "/" + lname;
-        if (map.getLayer(layerId)) {
-          map.setLayoutProperty(
-            layerId,
-            "visibility",
-            lname === String(name) ? "visible" : "none"
-          );
-        }
-      });
+    state.toggleableLayerIds.forEach((floorId) => {
+        // floorId format: "<buildingId>/<floorNum>"
+        const [, layerFloorStr] = floorId.split("/");
+        const layerFloor = parseInt(layerFloorStr, 10);
+
+    state.Layersnames.forEach((lname) => {
+        const layerId = `${floorId}/${lname}`;
+        if (!map.getLayer(layerId)) return;
+        // make visible only if this layer’s floor matches the clicked floor
+        map.setLayoutProperty(
+        layerId,
+        "visibility",
+        layerFloor === floorNum ? "visible" : "none"
+        );
+    });
     });
 
     // highlight the active link

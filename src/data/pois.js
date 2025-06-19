@@ -86,7 +86,7 @@ export function POI_properties(POI_object) {
   var tit_ = isNaN(POI_object.title) ? POI_object.title : "";
   var color = isNaN(POI_object.title) ? POI_object.color : "#CDD0CB";
 
-  state.All_POI_object.features[state.POI_counter] = {
+  state.All_POI_object.features.push({
     id: POI_object.id,
     type: "Feature",
     properties: {
@@ -103,7 +103,7 @@ export function POI_properties(POI_object) {
       coordinates: [POI_coordinates],
       type: "Polygon",
     },
-  };
+  });
 
   Load_dropdown_pois(POI_object);
 }

@@ -11,10 +11,6 @@ import { renderDirectionsPanel } from "./navigation.js";
 
 export let routeEnabled = false;
 
-export let from_marker_location = [];
-export let to_marker_location = [];
-export let from_marker_lvl;
-export let to_marker_lvl;
 
 let prev_ele_lvl;
 let journey_Elevator = [];
@@ -30,7 +26,7 @@ let evecounter = 0;
 
 export let popups_global = [];
 
-let remove_extra_route_flag = false;
+export let remove_extra_route_flag = false;
 let get_instructions_flag = false;
 let route_counter_inc = 0;
 let int_r_lng;
@@ -317,10 +313,10 @@ export function ClearRoute() {
   if (markerA) markerA.remove();
   if (markerB) markerB.remove();
 
-  from_marker_location = [];
-  to_marker_location = [];
-  from_marker_lvl = null;
-  to_marker_lvl = null;
+  state.from_marker_location = [];
+  state.to_marker_location = [];
+  state.from_marker_lvl = null;
+  state.to_marker_lvl = null;
 
   popups_global.forEach((p) => p.remove());
   popups_global = [];
@@ -433,7 +429,7 @@ export function switch_to_A_floor() {
   for (let i = 0; i < menubtn.childElementCount; i++) {
     let floor = menubtn.children[i].innerText;
     floor = floor === "G" ? 0 : parseInt(floor, 10);
-    if (floor === from_marker_lvl) {
+    if (floor === state.from_marker_lvl) {
       menubtn.children[i].click();
       break;
     }
