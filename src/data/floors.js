@@ -1,88 +1,87 @@
-import { API_BASE, state } from "../config.js";
+/**
+ * @module floors
+ * @description Fetches floor data for all buildings via Web Workers and updates app state.
+ */
+import { API_CONFIG, state } from '../config.js';
 
 /**
- * Fetches floor data for all buildings.
- * Returns a Promise<boolean> that resolves to true if *all* floors are fetched.
+ * Fetches floor data for every building in state.
+ * @returns {Promise<{ data: Array<Object>, isFetched: boolean }>}
  */
-export async function get_floor_json() {
+export async function getFloors() {
   if (
-    !state.buildings_object ||
-    !Array.isArray(state.buildings_object.buildings) ||
-    state.buildings_object.buildings.length === 0
+    !state.buildingsObject ||
+    !Array.isArray(state.buildingsObject.buildings) ||
+    state.buildingsObject.buildings.length === 0
   ) {
-    console.error("No buildings to fetch floors for");
-    return false;
+    console.error('No buildings available for floor fetching');
+    return { data: [], isFetched: false };
   }
 
-  // Kick off one fetch per building
-  const promises = state.buildings_object.buildings.map((b) =>
-    get_floor(state.Bearer_token, b.id)
+  const promises = state.buildingsObject.buildings.map(b =>
+    fetchBuildingFloors(state.bearerToken, b.id)
   );
-
-  // Await them all
   const results = await Promise.all(promises);
+  const ok = results.every(r => r === true);
 
-  // Only succeed if every fetch returned true
-  return results.every((ok) => ok === true);
+  return { data: state.floorsObjects, isFetched: ok };
 }
 
 /**
- * Fetches floor data for a single building via a Web Worker.
- * On success, pushes parsed JSON into the shared `state.floors_objects` array.
- * @param {string} token – OAuth Bearer token
- * @param {string|number} building_id – ID of the building
- * @returns {Promise<boolean>}
+ * Fetches floor list for a single building via a dedicated Web Worker.
+ * On success, appends parsed floor data into state.floorsObjects.
+ * @param {string} token - OAuth bearer token.
+ * @param {string|number} buildingId - ID of the building.
+ * @returns {Promise<boolean>} Resolves true if fetch succeeds.
  */
-export async function get_floor(token = state.Bearer_token, building_id) {
+export async function fetchBuildingFloors(token, buildingId) {
   const workerCode = `
-    self.onmessage = function (event) {
-      const { token, building_id, API_BASE } = event.data;
+    self.onmessage = function(e) {
+      const { token, buildingId, baseUrl } = e.data;
       const xhr = new XMLHttpRequest();
-      xhr.open("GET", \`\${API_BASE}buildings/\${building_id}/floors\`, true);
-      xhr.setRequestHeader("Authorization", \`Bearer \${token}\`);
-      xhr.setRequestHeader("accept", "application/json");
-      xhr.setRequestHeader("Content-Encoding", "gzip,deflate, br");
-      xhr.onload = function () {
+      xhr.open('GET', baseUrl + 'buildings/' + buildingId + '/floors', true);
+      xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.setRequestHeader('Content-Encoding', 'gzip,deflate,br');
+      xhr.onload = function() {
         if (xhr.status >= 200 && xhr.status < 300) {
           try {
-            const floorData = JSON.parse(xhr.responseText);
-            self.postMessage({ success: true, floorData });
+            const floors = JSON.parse(xhr.responseText);
+            self.postMessage({ success: true, floors });
           } catch (err) {
             self.postMessage({ success: false, error: err.message });
           }
         } else {
-          self.postMessage({
-            success: false,
-            error: \`Failed to fetch floor. Status: \${xhr.status}\`
-          });
+          self.postMessage({ success: false, error: 'Status ' + xhr.status });
         }
       };
-      xhr.onerror = function () {
-        self.postMessage({
-          success: false,
-          error: "Network error while fetching floors"
-        });
+      xhr.onerror = function() {
+        self.postMessage({ success: false, error: 'Network error' });
       };
       xhr.send();
     };
   `;
-  const blob = new Blob([workerCode], { type: "application/javascript" });
+
+  const blob = new Blob([workerCode], { type: 'application/javascript' });
   const worker = new Worker(URL.createObjectURL(blob));
 
-  return new Promise((resolve) => {
-    worker.postMessage({ token, building_id, API_BASE });
-    worker.onmessage = (e) => {
-      if (e.data.success) {
-        state.floors_objects.push(e.data.floorData);
+  return new Promise(resolve => {
+    worker.postMessage({ token, buildingId, baseUrl: API_CONFIG.BASE_URL });
+    worker.onmessage = e => {
+      const { success, floors, error } = e.data;
+      if (success) {
+        state.floorsObjects.push(floors);
         resolve(true);
       } else {
-        console.error("get_floor worker error:", e.data.error);
+        console.error('fetchBuildingFloors error:', error);
         resolve(false);
       }
+      worker.terminate();
     };
-    worker.onerror = (err) => {
-      console.error("Worker error:", err.message);
+    worker.onerror = err => {
+      console.error('Worker failure:', err.message);
       resolve(false);
+      worker.terminate();
     };
   });
 }

@@ -1,141 +1,143 @@
+/**
+ * @module mapController
+ * @description Manages map layers, routing logic, and POI interactions.
+ */
 import {
   initializeArrowsSourceAndLayer,
-  setupAnimation,
+  setupArrowAnimation,
   startAnimation,
   stopAnimation,
 } from "./animation/arrowAnimation.js";
 import { state } from "./config.js";
-import { get_All_POI, get_image } from "./data/pois.js";
+import { getAllPoi, loadPoiImage } from "./data/pois.js";
 import { map } from "./mapInit.js";
 import { renderDirectionsPanel } from "./navigation.js";
 
+// Routing state
 export let routeEnabled = false;
 
+// Global interaction variables
+let prevEleLvl;
+let journeyElevator = [];
+let journeyElevatorOccurrence = {};
+let journeyOneElevator = [];
+let elevatorIds = [];
+let elevatorLngs = [];
+let elevatorLats = [];
+let elevatorLvls = [];
+let nextElevatorLvls = [];
 
-let prev_ele_lvl;
-let journey_Elevator = [];
-let journey_Elevator_occurrence = [];
-let journey_one_elevator = [];
-let evelID = [];
-let evelgt = [];
-let evelat = [];
-let evelvl = [];
-let evenext = [];
-let evevisited = [];
-let evecounter = 0;
-
-export let popups_global = [];
-
-export let remove_extra_route_flag = false;
-let get_instructions_flag = false;
-let route_counter_inc = 0;
-let int_r_lng;
-let int_r_lat;
-let SmartRoute_counter = 0;
+export let popupsGlobal = [];
+export let removeExtraRouteFlag = false;
+let getInstructionsFlag = false;
+let routeCounterInc = 0;
+let smartRouteCounter = 0;
+let intRLng;
+let intRLat;
 
 let markerA = null;
 let markerB = null;
 
 /**
- * Fetch & process POIs for every floor in sortedlayer.
+ * Fetches and processes POIs for each floor in the given sorted layers.
+ * @param {Array<Object>} sortedLayer - Array of layer objects sorted by floor.
+ * @returns {Promise<boolean>} Resolves true when all POIs are loaded.
  */
-export async function load_pois_floors(sortedlayer) {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const layer_length = sortedlayer.length;
-      const promises = [];
-      for (let i = 0; i < layer_length; i++) {
-        promises.push(
-          get_All_POI(
-            sortedlayer[i].building_floor.id,
-            sortedlayer[i].building_floor.name,
-            state.Bearer_token,
-            sortedlayer[i].building_floor.building_id
-          )
-        );
-      }
-      await Promise.all(promises);
-      resolve(true);
-    } catch (error) {
-      reject("Error loading POIs: " + error.message);
+export async function loadPoisFloors(sortedLayer) {
+  try {
+    const promises = sortedLayer.map((layer) =>
+      getAllPoi(
+        layer.building_floor.building_id,
+        layer.building_floor.id,
+        state.bearerToken,
+      )
+    );
+    const allFeatures = [];
+    const poiResponses = await Promise.all(promises);
+    poiResponses.forEach(({ features = [] }) => {
+      allFeatures.push(...features);
+    });
+    state.allPoiGeojson = {
+      type: "FeatureCollection",
+      features: allFeatures,
+    };
+    return true;
+  } catch (error) {
+    console.error("Error loading POIs:", error);
+    throw error;
+  }
+}
+
+/**
+ * Updates journey info labels for time and distance in the UI.
+ * @param {string} poiName - Name of the destination POI.
+ * @param {number} distance - Distance in meters.
+ * @param {number} time - Time in minutes (can be fraction).
+ */
+export function updateJourneyInfo(poiName, distance, time) {
+  // Format time
+  const timeLabel =
+    time < 1 ? `${Math.floor(time * 60)} sec` : `${Math.floor(time)} min`;
+  document.getElementById("time_lbl").textContent = timeLabel;
+
+  // Format distance
+  const distLabel =
+    distance > 1000
+      ? `${(distance / 1000).toFixed(1)} Km`
+      : `${distance} meter`;
+  document.getElementById("distance_lbl").textContent = distLabel;
+}
+
+/**
+ * Examines state.routeArray for level transitions and shows elevator guide popups.
+ */
+export function elevatorGuide() {
+  // Reset arrays
+  elevatorIds = [];
+  elevatorLngs = [];
+  elevatorLats = [];
+  elevatorLvls = [];
+  nextElevatorLvls = [];
+  journeyElevator = [];
+  journeyElevatorOccurrence = {};
+  journeyOneElevator = [];
+
+  // Build list of levels in route
+  state.routeArray.forEach((idx, i) => {
+    const [lng, lat, lvl] = state.routesArray[idx].split(",");
+    journeyElevator[i] = lvl;
+  });
+  journeyElevatorOccurrence = _.countBy(journeyElevator);
+  journeyElevator = _.uniq(journeyElevator);
+
+  // Floors that occur only once (single elevator stops)
+  journeyElevator.forEach((lvl) => {
+    if (journeyElevatorOccurrence[lvl] === 1) {
+      journeyOneElevator.push(lvl);
     }
   });
-}
 
-/**
- * Updates the “time_lbl” and “distance_lbl” DOM nodes.
- */
-export function journey_info(poi_name, distance, time) {
-  // time
-  let t;
-  if (time < 1) {
-    t = Math.floor(time * 60) + " sec";
-  } else {
-    t = Math.floor(time) + " min";
-  }
-  document.getElementById("time_lbl").innerHTML = t;
-
-  // distance
-  let d;
-  if (distance > 1000) {
-    d = (distance / 1000).toFixed(1) + " Km";
-  } else {
-    d = distance + " meter";
-  }
-  document.getElementById("distance_lbl").innerHTML = d;
-}
-
-/**
- * Examine state.route_array, find floor transitions, and pop up “Go to floor X” buttons.
- */
-export function elevator_guide() {
-  // reset arrays
-  evelID = [];
-  evelgt = [];
-  evelat = [];
-  evelvl = [];
-  evenext = [];
-  journey_Elevator = [];
-  journey_Elevator_occurrence = [];
-  journey_one_elevator = [];
-  evecounter = 0;
-
-  // build a list of levels
-  for (let i = 0; i < state.route_array.length; i++) {
-    const [lng, lat, lvl] = state.Routes_array[state.route_array[i]].split(",");
-    journey_Elevator[i] = lvl;
-  }
-  journey_Elevator_occurrence = _.countBy(journey_Elevator);
-  journey_Elevator = _.uniq(journey_Elevator);
-
-  // pick floors that only occur once
-  for (let x = 0; x < journey_Elevator.length; x++) {
-    if (journey_Elevator_occurrence[journey_Elevator[x]] === 1) {
-      journey_one_elevator.push(journey_Elevator[x]);
+  // Detect transitions
+  state.routeArray.forEach((idx, i) => {
+    const [lng, lat, lvl] = state.routesArray[idx].split(",");
+    if (i === 0) {
+      prevEleLvl = lvl;
+    } else if (prevEleLvl !== lvl && !journeyOneElevator.includes(lvl)) {
+      const [plng, plat, plvl] =
+        state.routesArray[state.routeArray[i - 2]].split(",");
+      elevatorLngs.push(plng);
+      elevatorLats.push(plat);
+      elevatorLvls.push(plvl);
+      nextElevatorLvls.push(lvl);
+      prevEleLvl = lvl;
     }
-  }
+  });
 
-  // detect transitions
-  for (let o = 0; o < state.route_array.length; o++) {
-    const [lg, lt, lvl] = state.Routes_array[state.route_array[o]].split(",");
-    if (o === 0) {
-      prev_ele_lvl = lvl;
-    } else if (prev_ele_lvl !== lvl && !journey_one_elevator.includes(lvl)) {
-      const [plg, plt, plvl] = state.Routes_array[state.route_array[o - 2]].split(",");
-      evelgt.push(plg);
-      evelat.push(plt);
-      evelvl.push(plvl);
-      evenext.push(lvl);
-      prev_ele_lvl = lvl;
-    }
-  }
-
-  // pop up one button at a time
-  if (routeEnabled && evelgt.length > 0) {
-    for (let x = 0; x < evelvl.length; x++) {
-      if (state.Level_route_poi === parseInt(evelvl[x], 10)) {
-        // choose label/icon based on state.language & direction
-        const up = parseInt(evenext[x], 10) > parseInt(evelvl[x], 10);
+  // Show one popup at a time for elevator transitions
+  if (routeEnabled && elevatorLngs.length > 0) {
+    elevatorLvls.forEach((lvl, i) => {
+      if (state.levelRoutePoi === parseInt(lvl, 10)) {
+        const up = parseInt(nextElevatorLvls[i], 10) > parseInt(lvl, 10);
         const arrow = up ? "fa-circle-up" : "fa-circle-down";
         let label;
         switch (state.language) {
@@ -148,144 +150,108 @@ export function elevator_guide() {
           default:
             label = "Go to floor ";
         }
-
         const popup = new mapboxgl.Popup({ closeOnClick: false })
-          .setLngLat([parseFloat(evelgt[x]), parseFloat(evelat[x])])
+          .setLngLat([parseFloat(elevatorLngs[i]), parseFloat(elevatorLats[i])])
           .setHTML(
             `<div style="text-align:center;margin-top:6px;">
                <button
-                 onclick="switchFloorByNo(${evenext[x]},${evelgt[x]},${evelat[x]})"
-                 style="
-                   border:2px solid white;
-                   background-color:#0090bf;
-                   color:white;
-                   padding:10px 20px;
-                   font-size:1.3em;
-                   border-radius:5px;
-                   cursor:pointer;
-                 "
+                 onclick="switchFloorByNo(${nextElevatorLvls[i]})"
+                 style="border:2px solid white;background-color:#0090bf;color:white;padding:10px 20px;font-size:1.3em;border-radius:5px;cursor:pointer;"
                >
-                 ${label}${evenext[x]} <i class="fa-solid ${arrow}"></i>
+                 ${label}${nextElevatorLvls[i]} <i class="fa-solid ${arrow}"></i>
                </button>
              </div>`
           )
           .addTo(map);
-        popups_global.push(popup);
-        break;
+        popupsGlobal.push(popup);
       } else {
-        popups_global.forEach((p) => p.remove());
-        popups_global = [];
+        popupsGlobal.forEach((p) => p.remove());
+        popupsGlobal = [];
       }
-    }
+    });
   }
 }
 
 /**
- * Build a multi-feature GeoJSON by level, render panel, then draw on map.
+ * Builds and renders a multi-level GeoJSON route, then draws it on the map.
  */
-export async function Route_level() {
-  SmartRoute_counter = 0;
-  route_counter_inc = 0;
+export async function routeLevel() {
+  smartRouteCounter = 0;
+  routeCounterInc = 0;
 
-  // initialize SmartRoute with one empty feature
-  let SmartRoute = {
+  // Initialize SmartRoute feature collection
+  const smartRoute = {
     type: "FeatureCollection",
     features: [
       {
         type: "Feature",
         properties: { level: null },
-        geometry: {
-          type: "LineString",
-          coordinates: [],
-          properties: { color: "#73c4f0" },
-        },
+        geometry: { type: "LineString", coordinates: [] },
       },
     ],
   };
 
-  // populate SmartRoute.features[*].geometry.coordinates
-  if (state.route_array.length > 0) {
-    let pre_lvl = null;
-    for (let p = 0; p < state.route_array.length; p++) {
-      const [r, i, g] = state.Routes_array[state.route_array[p]].split(",");
-      if (g === pre_lvl) {
-        SmartRoute.features[SmartRoute_counter].properties.level = pre_lvl;
-        SmartRoute.features[SmartRoute_counter].geometry.coordinates.push([
-          r,
-          i,
-        ]);
-      } else {
-        pre_lvl = g;
-        SmartRoute_counter++;
-        SmartRoute.features[SmartRoute_counter] = {
-          type: "Feature",
-          properties: { level: pre_lvl },
-          geometry: {
-            type: "LineString",
-            coordinates: [[r, i]],
-          },
-        };
-      }
+  // Populate features by level
+  let prevLvl = null;
+  state.routeArray.forEach((idx) => {
+    const [lng, lat, lvl] = state.routesArray[idx].split(",");
+    if (lvl === prevLvl) {
+      smartRoute.features[smartRouteCounter].properties.level = prevLvl;
+      smartRoute.features[smartRouteCounter].geometry.coordinates.push([
+        lng,
+        lat,
+      ]);
+    } else {
+      prevLvl = lvl;
+      smartRouteCounter++;
+      smartRoute.features[smartRouteCounter] = {
+        type: "Feature",
+        properties: { level: prevLvl },
+        geometry: { type: "LineString", coordinates: [[lng, lat]] },
+      };
     }
-  }
+  });
 
-  // render text panel
-  renderDirectionsPanel(SmartRoute, "directions-panel");
+  // Render panel and show
+  renderDirectionsPanel(smartRoute, "directions-panel");
   document.getElementById("directions-panel").style.display = "block";
 
-  // clear old and draw new
-  remove_route_layer();
-  map.addSource("route", { type: "geojson", data: SmartRoute });
-  map.addLayer({
-    id: "route",
-    type: "line",
-    source: "route",
-    filter: ["==", "level", state.Level_route_poi.toString()],
-    layout: { "line-join": "round", "line-cap": "round" },
-    paint: { "line-color": "#0099EA", "line-width": 15 },
-  });
-  map.addSource("route_outline", { type: "geojson", data: SmartRoute });
-  map.addLayer({
-    id: "route_outline",
-    type: "line",
-    source: "route_outline",
-    filter: ["==", "level", state.Level_route_poi.toString()],
-    layout: { "line-join": "round", "line-cap": "round" },
-    paint: { "line-color": "#40B3EF", "line-width": 9 },
-  });
-  map.addSource("route_another", { type: "geojson", data: SmartRoute });
-  map.addLayer({
-    id: "route_another",
-    type: "line",
-    source: "route_another",
-    filter: ["!=", "level", state.Level_route_poi.toString()],
-    layout: { "line-join": "round", "line-cap": "round" },
-    paint: { "line-color": "#BBBBBB", "line-width": 9, "line-opacity": 0.4 },
-  });
-  map.addSource("route_another_outline", { type: "geojson", data: SmartRoute });
-  map.addLayer({
-    id: "route_another_outline",
-    type: "line",
-    source: "route_another_outline",
-    filter: ["!=", "level", state.Level_route_poi.toString()],
-    layout: { "line-join": "round", "line-cap": "round" },
-    paint: {
-      "line-color": "#A5A4A4",
-      "line-width": 15,
-      "line-opacity": 0.4,
-    },
-  });
+  // Draw route layers
+  removeRouteLayer();
+  ["route", "route_outline", "route_another", "route_another_outline"].forEach(
+    (id) => {
+      map.addSource(id, { type: "geojson", data: smartRoute });
+      const paint =
+        id === "route"
+          ? { "line-color": "#0099EA", "line-width": 15 }
+          : id === "route_outline"
+          ? { "line-color": "#40B3EF", "line-width": 9 }
+          : id === "route_another"
+          ? { "line-color": "#BBBBBB", "line-width": 9, "line-opacity": 0.4 }
+          : { "line-color": "#A5A4A4", "line-width": 15, "line-opacity": 0.4 };
+      map.addLayer({
+        id,
+        type: "line",
+        source: id,
+        filter: id.includes("another")
+          ? ["!=", "level", state.levelRoutePoi]
+          : ["==", "level", state.levelRoutePoi],
+        layout: { "line-join": "round", "line-cap": "round" },
+        paint,
+      });
+    }
+  );
 
-  // now arrows
-  initializeArrowsSourceAndLayer();
-  setupAnimation();
+  // Start arrow animation
+  initializeArrowsSourceAndLayer(map);
+  setupArrowAnimation();
   startAnimation();
 }
 
 /**
- * Remove all “route” layers & sources if present.
+ * Removes all route-related layers and sources from the map.
  */
-export function remove_route_layer() {
+export function removeRouteLayer() {
   ["route", "route_outline", "route_another", "route_another_outline"].forEach(
     (id) => {
       if (map.getLayer(id)) map.removeLayer(id);
@@ -295,91 +261,122 @@ export function remove_route_layer() {
 }
 
 /**
- * Stop animation, hide UI, clear state & markers.
+ * Clears current route, stops animation, and resets state and UI.
  */
-export function ClearRoute() {
-  remove_route_layer();
+export function clearRoute() {
+  removeRouteLayer();
   stopAnimation();
-  exit_into_nvgation_mode();
+  exitNavigationMode();
 
-  state.route_array.length = 0;
-  state.full_distance_to_destination = 0;
-  state.global_time = 0;
+  state.routeArray = [];
+  state.fullDistanceToDestination = 0;
+  state.globalTime = 0;
   routeEnabled = false;
 
-  document.getElementsByClassName("directions-panel")[0].style.display = "none";
+  document.querySelector(".directions-panel").style.display = "none";
   document.getElementById("menu").style.display = "block";
 
   if (markerA) markerA.remove();
   if (markerB) markerB.remove();
 
-  state.from_marker_location = [];
-  state.to_marker_location = [];
-  state.from_marker_lvl = null;
-  state.to_marker_lvl = null;
+  state.fromMarkerLocation = [];
+  state.toMarkerLocation = [];
+  state.fromMarkerLevel = null;
+  state.toMarkerLevel = null;
 
-  popups_global.forEach((p) => p.remove());
-  popups_global = [];
+  popupsGlobal.forEach((p) => p.remove());
+  popupsGlobal = [];
 }
 
 /**
- * Place big “A”/“B” pins on map.
+ * Places "A" and "B" markers on the map at given coordinates.
+ * @param {[number,number]} from - [lng, lat] for start marker.
+ * @param {[number,number]} to - [lng, lat] for end marker.
+ * @param {number} levelA - Floor level for start.
+ * @param {number} levelB - Floor level for end.
  */
 export function addFromToMarkers(from, to, levelA, levelB) {
-  // ...exact same as in your original map.js...
-  // (omitted here for brevity but should be pasted verbatim)
+    // Remove any existing “A” or “B” markers
+    if (markerA) markerA.remove();
+    if (markerB) markerB.remove();
+  
+    // Create and add marker A
+    const elA = document.createElement("div");
+    elA.innerHTML = levelA === state.levelRoutePoi
+      ? `<div style="background:#00BFFF;color:#fff;border-radius:50%;width:30px;height:30px;border:2px solid;display:flex;align-items:center;justify-content:center;font-weight:bold;box-shadow:0 0 6px rgba(0,0,0,0.3)">A</div>`
+      : `<div style="background:#b6b6b6;color:#fff;border-radius:50%;width:30px;height:30px;border:2px solid;display:flex;align-items:center;justify-content:center;font-weight:bold;box-shadow:0 0 6px rgba(0,0,0,0.3)">A</div>`;
+    markerA = new mapboxgl.Marker(elA)
+      .setLngLat(from)
+      .addTo(map);
+  
+    // Create and add marker B
+    const elB = document.createElement("div");
+    elB.innerHTML = levelB === state.levelRoutePoi
+      ? `<div style="background:#6A5ACD;color:#fff;border-radius:50%;width:30px;height:30px;border:2px solid;display:flex;align-items:center;justify-content:center;font-weight:bold;box-shadow:0 0 6px rgba(0,0,0,0.3)">B</div>`
+      : `<div style="background:#b6b6b6;color:#fff;border-radius:50%;width:30px;height:30px;border:2px solid;display:flex;align-items:center;justify-content:center;font-weight:bold;box-shadow:0 0 6px rgba(0,0,0,0.3)">B</div>`;
+    markerB = new mapboxgl.Marker(elB)
+      .setLngLat(to)
+      .addTo(map);
 }
 
 /**
- * Click the floor button in #menu matching floor_name.
+ * Clicks the floor button in #menu matching the given floor name.
+ * @param {string|number} floorName - Floor label or number.
  */
-export function switchFloorByNo(floor_name) {
-  if (floor_name == "0") floor_name = "G";
-  const menubtn = document.getElementById("menu");
-  for (let i = 0; i < menubtn.childElementCount; i++) {
-    if (menubtn.children[i].innerText == floor_name) {
-      menubtn.children[i].click();
-      break;
-    }
-  }
+export function switchFloorByNo(floorName) {
+  const num = floorName != null ? floorName : 0;
+  state.currentLevel = num;
+  showPoisByLevel();
+  const label = num === "0" ? "G" : `${num}`;
+  const menu = document.getElementById("menu");
+  Array.from(menu.children).forEach((btn) => {
+    if (btn.innerText === label) btn.click();
+  });
 }
 
 /**
- * Extract [lng,lat] from a “lng,lat,level,kind” string.
+ * Extracts [lng, lat] from a "lng,lat,level" string.
+ * @param {string} routeStr - Comma-separated route string.
+ * @returns {[number,number]} Coordinates or empty array.
  */
-export function extractLngLat(routeString) {
-  if (!routeString) return [];
-  const parts = routeString.split(",");
-  return parts.length >= 2 ? [parseFloat(parts[0]), parseFloat(parts[1])] : [];
+export function extractLngLat(routeStr) {
+  if (!routeStr) return [];
+  const [lng, lat] = routeStr.split(",").map(Number);
+  return [lng, lat];
 }
 
 /**
- * Format meters to feet/miles (imperial) or back to meters/km.
+ * Formats distance in meters to metric units.
+ * @param {number} meters
+ * @returns {{value:number,unit:string}}
  */
 export function formatDistanceImperial(meters) {
-  if (!meters) return { value: "", unit: "" };
-  if (meters < 1000) return { value: Math.round(meters), unit: "meters" };
-  const km = meters / 1000;
-  return { value: km.toFixed(2), unit: "km" };
+  if (!meters) return { value: 0, unit: "" };
+  return meters < 1000
+    ? { value: Math.round(meters), unit: "meters" }
+    : { value: +(meters / 1000).toFixed(2), unit: "km" };
 }
 
 /**
- * Sum distances & estimate walking time.
+ * Sums distances and estimates walking time (~80.4672 m/min).
+ * @param {Array<Object>} instructions
+ * @returns {{distance:number,time:number}}
  */
 export function calculateTotals(instructions) {
-  let totalDistance = 0;
-  instructions.forEach((ins) => {
-    if (ins.distance) totalDistance += ins.distance;
-  });
-  const minutes = Math.round(totalDistance / 80.4672);
-  return { distance: totalDistance, time: minutes };
+  const distance = instructions.reduce(
+    (sum, ins) => sum + (ins.distance || 0),
+    0
+  );
+  const time = Math.round(distance / 80.4672);
+  return { distance, time };
 }
 
 /**
- * Show/hide any .expandcollapse content.
+ * Toggles visibility of content sections and updates button label.
+ * @param {string} classId - Class name of content to toggle.
  */
-export function toggleContent(id) {
-  const el = document.getElementsByClassName(id)[0];
+export function toggleContent(classId) {
+  const el = document.getElementsByClassName(classId)[0];
   const btn = document.getElementsByClassName("expandcollapse")[0];
   if (!el) return;
   const showing = el.style.display === "block";
@@ -390,58 +387,46 @@ export function toggleContent(id) {
 }
 
 /**
- * FlyTo for navigation mode (angled).
+ * Enters navigation mode by flying to the route angle and floor.
+ * @param {Object} routeGeojson - GeoJSON feature collection.
  */
-export function enter_into_nvgation_mode(Route_geojson) {
-    if (!Route_geojson) {
-        console.error("Route_geojson is undefined or null.");
-        return;
-    }
-    if (!Array.isArray(Route_geojson.features)) { 
-        console.error("enter_into_nvgation_mode: features missing or not an array", Route_geojson);
-        return;
-    }
-
-  if (Route_geojson.features[0]?.geometry.coordinates.length > 1) {
-    const [lng0, lat0] = Route_geojson.features[0].geometry.coordinates[0];
-    const [lng1, lat1] = Route_geojson.features[0].geometry.coordinates[1];
-    const bearing = turf.bearing(
-      turf.point([lng0, lat0]),
-      turf.point([lng1, lat1])
-    );
-    map.flyTo({
-      center: [lng0, lat0],
-      bearing,
-      pitch: 56.5,
-      zoom: 20.23,
-      duration: 4000,
-      essential: true,
-    });
-    switch_to_A_floor();
-  }
-}
-
-/**
- * Switch map back to “A” floor.
- */
-export function switch_to_A_floor() {
-  const menubtn = document.getElementById("menu");
-  for (let i = 0; i < menubtn.childElementCount; i++) {
-    let floor = menubtn.children[i].innerText;
-    floor = floor === "G" ? 0 : parseInt(floor, 10);
-    if (floor === state.from_marker_lvl) {
-      menubtn.children[i].click();
-      break;
-    }
-  }
-}
-
-/**
- * FlyTo to exit navigation mode (reset angle).
- */
-export function exit_into_nvgation_mode() {
+export function enterNavigationMode(routeGeojson) {
+  if (!routeGeojson?.features) return;
+  const coords = routeGeojson.features[0].geometry.coordinates;
+  if (coords.length < 2) return;
+  const [[lng0, lat0], [lng1, lat1]] = coords;
+  const bearing = turf.bearing(
+    turf.point([lng0, lat0]),
+    turf.point([lng1, lat1])
+  );
   map.flyTo({
-    center: [map.getCenter().lng, map.getCenter().lat],
+    center: [lng0, lat0],
+    bearing,
+    pitch: 56.5,
+    zoom: 20.23,
+    duration: 4000,
+    essential: true,
+  });
+  switchToAFloor();
+}
+
+/**
+ * Switches map back to the original 'A' floor after navigation.
+ */
+export function switchToAFloor() {
+  const menu = document.getElementById("menu");
+  Array.from(menu.children).forEach((btn) => {
+    const floor = btn.innerText === "G" ? 0 : Number(btn.innerText);
+    if (floor === state.fromMarkerLevel) btn.click();
+  });
+}
+
+/**
+ * Exits navigation mode by resetting camera pitch and zoom.
+ */
+export function exitNavigationMode() {
+  map.flyTo({
+    center: map.getCenter(),
     bearing: map.getBearing(),
     pitch: 0,
     zoom: 19.34,
@@ -450,60 +435,41 @@ export function exit_into_nvgation_mode() {
   });
 }
 
-export function poi_show_by_level() {
-    let counter = 0;
-    let counter_building = 0;
-
-    if (state.Level_route_poi == null) {
-      state.Level_route_poi = 1;
-    }
-
-  state.Poly_geojson_level = {
+/**
+ * Shows POIs by the current level, adding polygon layers to the map.
+ */
+export function showPoisByLevel() {
+  if (state.levelRoutePoi == null) state.levelRoutePoi = 1;
+  state.polyGeojsonLevel = { type: "FeatureCollection", features: [] };
+  state.polyGeojsonLevelOutsideBuilding = {
     type: "FeatureCollection",
     features: [],
   };
-  state.Poly_geojson_level_outsidebuilding = {
-    type: "FeatureCollection",
-    features: [],
-  };
-    
-  const all = state.All_POI_object.features;
-  const lvl = state.Level_route_poi;
-  const imageload = state.imageload_flag;
 
-  all.forEach((feat, i) => {
+  state.allPoiGeojson.features.forEach((feat) => {
     const props = feat.properties;
-    // lazy‐load icons once
-    if (props.icon && imageload && props.icon_url) {
-      get_image(props.icon_url, props.icon);
-    }
-    // only keep those on the current floor
-    if (props.Level === lvl) {
-      // tweak title
+    if (props.icon && state.imageLoadFlag && props.iconUrl)
+      loadPoiImage(props.iconUrl, props.icon);
+    if (props.level === state.levelRoutePoi) {
       if (props.title === "room") props.title = "";
-      const color = props.Color;
       const base = {
         id: feat.id,
         type: "Feature",
         geometry: feat.geometry,
         properties: { ...props },
       };
-      state.Poly_geojson_level.features.push(base);
-      counter++;
-
-      // also capture entrances
+      state.polyGeojsonLevel.features.push(base);
       if (
-        props.title === "Admin Building Entrance" ||
-        props.title === "Burjeel Darak Entrance"
+        ["Admin Building Entrance", "Burjeel Darak Entrance"].includes(
+          props.title
+        )
       ) {
-        state.Poly_geojson_level_outsidebuilding.features.push(base);
-        counter_building++;
+        state.polyGeojsonLevelOutsideBuilding.features.push(base);
       }
     }
   });
-  state.imageload_flag = false;
+  state.imageLoadFlag = false;
 
-  // clear old
   if (map.getSource("municipalities")) {
     ["polygons", "polygons_outline", "municipality-name"].forEach((id) => {
       if (map.getLayer(id)) map.removeLayer(id);
@@ -511,30 +477,19 @@ export function poi_show_by_level() {
     map.removeSource("municipalities");
   }
 
-  // add new
   map.addSource("municipalities", {
     type: "geojson",
-    data: state.Poly_geojson_level,
+    data: state.polyGeojsonLevel,
   });
-
   map.addLayer({
     id: "polygons",
     type: "fill",
     source: "municipalities",
     paint: {
-      "fill-color": ["get", "Color"],
-      "fill-opacity": [
-        "interpolate",
-        ["exponential", 0.1],
-        ["zoom"],
-        16.4,
-        0,
-        20.32,
-        0.8,
-      ],
+      "fill-color": ["get", "color"],
+      "fill-opacity": 0,
     },
   });
-
   map.addLayer({
     id: "polygons_outline",
     type: "line",
@@ -561,7 +516,6 @@ export function poi_show_by_level() {
       ],
     },
   });
-
   map.addLayer({
     id: "municipality-name",
     type: "symbol",
@@ -604,12 +558,13 @@ export function poi_show_by_level() {
 }
 
 /**
- * Clicks the #menu button for whatever the current floor is.
+ * Switches to the current floor based on state.levelRoutePoi or state.currentLevel.
  */
-export function switch_to_current_floor() {
-    const floor = state.current_lvl || state.Level_route_poi || 1;
-    switchFloorByNo(floor);
+export function switchToCurrentFloor() {
+  const floor = state.currentLevel || state.levelRoutePoi || 1;
+  switchFloorByNo(floor);
 }
 
-window.ClearRoute = ClearRoute;
-window.enter_into_nvgation_mode = enter_into_nvgation_mode;
+// Expose globally
+window.clearRoute = clearRoute;
+window.enterNavigationMode = enterNavigationMode;

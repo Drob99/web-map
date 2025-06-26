@@ -1,222 +1,166 @@
-import { API_BASE, state } from "./config.js";
-import { get_buildings } from "./data/buildings.js";
-import { get_category } from "./data/categories.js";
-import { get_floor_json } from "./data/floors.js";
-import { Load_Layer_data } from "./data/layers.js";
-import { link_elevators, load_routes, start_routes } from "./data/routes.js";
-import { layers_level } from "./layers/layerController.js";
-import { load_pois_floors } from "./mapController.js";
-import { fly_to_building } from "./navigation.js";
+/**
+ * @module auth
+ * @description Handles authentication and initial loading of map data.
+ */
+import { API_CONFIG, state } from "./config.js";
+import { getCategories } from "./data/categories.js";
+import { getBuildings } from "./data/buildings.js";
+import { getFloors } from "./data/floors.js";
+import { loadLayerData } from "./data/layers.js";
+import { linkElevators, loadRoutes, startRoutes } from "./data/routes.js";
+import { layersLevel } from "./layers/layerController.js";
+import { loadPoisFloors, showPoisByLevel, switchToCurrentFloor } from "./mapController.js";
+import { flyToBuilding } from "./navigation.js";
 import { getCurrentTime } from "./utils.js";
 
-let start_time;
-
+/** Checks if the stored access token is expired. */
 export function isAccessTokenExpired() {
-  const createdAt = localStorage.getItem("created_at"); // Time when the token was created
-  const expiresIn = localStorage.getItem("expires_in"); // Expiry time in seconds
-  const currentTime = getCurrentTime();
-  return currentTime >= parseInt(createdAt) + parseInt(expiresIn);
+  const createdAt = Number(localStorage.getItem("created_at"));
+  const expiresIn = Number(localStorage.getItem("expires_in"));
+  return getCurrentTime() >= createdAt + expiresIn;
 }
 
-export function get_Authentication(Visitor_ID, Visitor_Secret) {
-  return new Promise((resolve, reject) => {
+/**
+ * Authenticates and then loads all map data.
+ * @param {string} clientId
+ * @param {string} clientSecret
+ * @returns {Promise<string>}
+ */
+export async function authenticate(clientId, clientSecret) {
+  let token = localStorage.getItem("access_token");
+  if (!token || isAccessTokenExpired()) {
     localStorage.clear();
     sessionStorage.clear();
 
-    if (!localStorage.getItem("access_token") || isAccessTokenExpired()) {
-      const settings = {
-        url: `${API_BASE}saas_companies/KKIA/oauth/token`,
-        method: "POST",
-        timeout: 0,
-        headers: {
-          "Content-Type": "application/json",
-          accept: "application/json",
-        },
-        data: JSON.stringify({
-          client_id: Visitor_ID,
-          client_secret: Visitor_Secret,
-          grant_type: "password",
-          user_id: "zuhdi@nearmotion.com",
-          os: "ios",
-          environment: "sandbox",
-          push_token: "string",
-        }),
-      };
+    const url = `${API_CONFIG.BASE_URL}saas_companies/KKIA/oauth/token`;
+    const payload = {
+      client_id: clientId,
+      client_secret: clientSecret,
+      grant_type: "password",
+      user_id: "zuhdi@nearmotion.com",
+      os: "ios",
+      environment: "sandbox",
+      push_token: "string",
+    };
 
-      $.ajax(settings)
-        .done(function (response) {
-          state.Bearer_token = response.access_token;
-          localStorage.setItem("access_token", response.access_token);
-          localStorage.setItem("refresh_token", response.refresh_token);
-          localStorage.setItem("created_at", getCurrentTime());
-          localStorage.setItem("expires_in", response.expires_in);
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error(`Authentication failed: ${res.statusText}`);
 
-          Loadmap()
-            .then(() => resolve(state.Bearer_token))
-            .catch((err) => reject(err));
-        })
-        .fail(function (jqXHR, textStatus, errorThrown) {
-          reject(
-            new Error(
-              `Failed to authenticate (status ${jqXHR.status}): ${errorThrown}`
-            )
-          );
-        });
-    } else {
-      console.log("Access Token is still valid");
-      state.Bearer_token = localStorage.getItem("access_token");
-      Loadmap()
-        .then(() => resolve(state.Bearer_token))
-        .catch((err) => reject(err));
-    }
-  });
+    const { access_token, refresh_token, expires_in } = await res.json();
+    const now = getCurrentTime();
+
+    localStorage.setItem("access_token", access_token);
+    localStorage.setItem("refresh_token", refresh_token);
+    localStorage.setItem("created_at", String(now));
+    localStorage.setItem("expires_in", String(expires_in));
+
+    token = access_token;
+  } else {
+    console.log("Access token is still valid.");
+  }
+
+  // Make sure state.bearerToken is set before any workers run
+  state.bearerToken = token;
+  await loadInitialData(token);
+  return token;
 }
 
-export async function Loadmap() {
-  try {
-    start_time = performance.now();
-    const isFetched = await get_category(state.Bearer_token);
-    if (isFetched) {
-      var end_time = performance.now();
-      var executionTime = end_time - start_time; // Store execution time in a variable
-      //console.log("1 - Categories fetched successfully! : "+executionTime);
-      try {
-        var data, isDataFetched;
-        if (!sessionStorage.getItem("state.buildings_object")) {
-          //console.log("1 - Get new Building");
-          var { data, isDataFetched } = await get_buildings(state.Bearer_token);
-          state.buildings_object = JSON.parse(data);
-          fly_to_building();
-        } else {
-          //console.log("1 - Used cached Building");
-          state.buildings_object = JSON.parse(
-            sessionStorage.getItem("state.buildings_object")
-          );
-          isDataFetched = true;
-          fly_to_building();
-        }
-        if (isDataFetched) {
-          end_time = performance.now();
-          executionTime = end_time - start_time;
-          //console.log("2 - Buildings fetched successfully! : "+executionTime);
-          try {
-            var isFloorsFetched;
-            if (!sessionStorage.getItem("state.floors_objects")) {
-              //console.log("Get New Floor");
-              isFloorsFetched = await get_floor_json();
-              sessionStorage.setItem(
-                "state.floors_objects",
-                JSON.stringify(state.floors_objects)
-              );
-            } else {
-              //console.log("Used Cached Floor");
-              state.floors_objects = JSON.parse(
-                sessionStorage.getItem("state.floors_objects")
-              );
-              isFloorsFetched = true;
-            }
-            if (isFloorsFetched) {
-              end_time = performance.now();
-              executionTime = end_time - start_time;
-              //console.log("3 - Floors fetched successfully! : "+executionTime);
-              try {
-                var isLayersFetched;
+/** Orchestrates fetching categories, buildings, floors, layers, POIs, and routes. */
+async function loadInitialData(token) {
+  const startTime = performance.now();
 
-                if (!sessionStorage.getItem("state.Layers_objects")) {
-                  //console.log("Get new layers");
-                  isLayersFetched = await Load_Layer_data();
-                  sessionStorage.setItem(
-                    "state.Layers_objects",
-                    JSON.stringify(state.Layers_objects)
-                  );
-                } else {
-                  //console.log("Used Cached Floor");
-                  isLayersFetched = true;
-                  state.Layers_objects = JSON.parse(
-                    sessionStorage.getItem("state.Layers_objects")
-                  );
-                }
-                if (isLayersFetched) {
-                  end_time = performance.now();
-                  executionTime = end_time - start_time;
-                  //console.log("4 - Layers fetched successfully! : "+executionTime);
-                  let sortedInput = state.Layers_objects;
+  await getCategories(token);
+  logDuration("Categories fetched", startTime);
 
-                  for (var a = 0; a < sortedInput.length; a++) {
-                    if (sortedInput[a].building_floor.name == "G") {
-                      sortedInput[a].building_floor.name = "0";
-                    }
-                  }
-                  sortedInput = sortedInput
-                    .slice()
-                    .sort(
-                      (a, b) =>
-                        parseInt(b.building_floor.name) -
-                        parseInt(a.building_floor.name)
-                    );
-
-                  for (var a = 0; a < sortedInput.length; a++) {
-                    if (sortedInput[a].building_floor.name == "0") {
-                      sortedInput[a].building_floor.name = "G";
-                    }
-                  }
-                  let fixed_layers = sortedInput;
-                  const isLayersLoaded = await layers_level(sortedInput);
-                  try {
-                    if (isLayersLoaded) {
-                      end_time = performance.now();
-                      executionTime = end_time - start_time;
-                      try {
-                        const isFetched = await load_pois_floors(sortedInput);
-
-                        if (isFetched) {
-                          end_time = performance.now();
-                          executionTime = end_time - start_time;
-                          try {
-                            const isFetched_route = await load_routes();
-                            if (isFetched_route) {
-                              end_time = performance.now();
-                              executionTime = end_time - start_time;
-                              //console.log("7 - Routes loaded successfully! : "+executionTime);
-                              // Call the next function here
-                              try {
-                                const is_route_proccessed =
-                                  await start_routes();
-                                if (is_route_proccessed) {
-                                  end_time = performance.now();
-                                  executionTime = end_time - start_time;
-                                  //console.log("8 - Routes proccessed successfully! : " + executionTime);
-                                  link_elevators();
-                                }
-                              } catch (error) {
-                                console.error(error);
-                              }
-                            }
-                          } catch (error) {
-                            console.error(error);
-                          }
-                        }
-                      } catch (error) {
-                        console.error(error + " , Erro Loading POIs!");
-                      }
-                    }
-                  } catch (error) {
-                    console.error(error + " , Error putting layers");
-                  }
-                }
-              } catch (error) {
-                console.error(error + " , Error Layers fetching");
-              }
-            }
-          } catch (error) {
-            console.error(error + " , Error Floor fetching");
-          }
-        }
-      } catch (error) {
-        console.error(error + " , Error Building fetching");
-      }
+  // Buildings
+  await fetchAndCache(
+    "state.buildings",
+    () => getBuildings(token),
+    data => {
+      state.buildingsObject = data;
+      flyToBuilding();
     }
-  } catch (error) {
-    console.error(error + " , Error Categories fetching");
+  );
+  logDuration("Buildings fetched", startTime);
+
+  // Floors
+  await fetchAndCache(
+    "state.floors",
+    () => getFloors(),
+    data => {
+      state.floorsObjects = data;
+    }
+  );
+  logDuration("Floors fetched", startTime);
+
+  // Layers
+  await fetchAndCache(
+    "state.layers",
+    () => loadLayerData(),
+    async data => {
+      state.layersObjects = data;
+      const sorted = data
+        .slice()
+        .sort((a, b) =>
+          parseInt(b.building_floor.name) - parseInt(a.building_floor.name)
+        );
+      await layersLevel(sorted);
+      switchToCurrentFloor();
+    }
+  );
+  logDuration("Layers fetched", startTime);
+
+  // POIs & Routes
+  await loadPoisAndRoutes(startTime);
+}
+
+/**
+ * Loads POIs, routes, then links elevators.
+ * @param {number} startTime
+ */
+async function loadPoisAndRoutes(startTime) {
+  // POIs (uses state.layersObjects populated above)
+  await loadPoisFloors(state.layersObjects);
+  logDuration("POIs fetched", startTime);
+  showPoisByLevel();
+
+  await loadRoutes();
+  logDuration("Routes fetched", startTime);
+
+  await startRoutes();
+  logDuration("Routes processed", startTime);
+
+  linkElevators();
+  logDuration("Elevators linked", startTime);
+}
+
+/**
+ * Generic cache helper: expects fetchFn → { data, isFetched }.
+ * @param {string} key
+ * @param {Function} fetchFn
+ * @param {Function|null} postFetch
+ */
+async function fetchAndCache(key, fetchFn, postFetch) {
+  if (!sessionStorage.getItem(key)) {
+    const { data, isFetched } = await fetchFn();
+    if (isFetched) {
+      sessionStorage.setItem(key, JSON.stringify(data));
+      if (postFetch) await postFetch(data);
+    }
+  } else if (postFetch) {
+    const data = JSON.parse(sessionStorage.getItem(key));
+    await postFetch(data);
   }
+}
+
+/** Logs elapsed time. */
+function logDuration(message, startTime) {
+  console.log(`${message}: ${Math.round(performance.now() - startTime)}ms`);
 }

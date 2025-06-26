@@ -1,176 +1,147 @@
-import { map } from "../mapInit.js";
-import {
-    state,
-} from "../config.js";
-
-// bring in each individual layer‐drawing function
-import { walls_layer } from "./walls.js";
-import { street_layer } from "./street.js";
-import { rooms_layer } from "./rooms.js";
-import { sidewalk_layer } from "./sidewalk.js";
-import { parking_layer } from "./parking.js";
-import { outlayer_layer } from "./outlayer.js";
-import { otherlayer } from "./other.js";
-import { arrows_layer } from "./arrows.js";
-import { doors_layer } from "./doors.js";
-import { corridors_layer } from "./corridors.js";
-import { be_layer } from "./be.js";
-import { garden_layer } from "./garden.js";
-import { poi_show_by_level, routeEnabled } from "../mapController.js";
+/**
+ * @module layerController
+ * @description Processes and toggles map layers per floor, integrating individual layer modules.
+ */
+import { map } from '../mapInit.js';
+import { state } from '../config.js';
+import { wallsLayer } from './walls.js';
+import { streetLayer } from './street.js';
+import { roomsLayer } from './rooms.js';
+import { sidewalkLayer } from './sidewalk.js';
+import { parkingLayer } from './parking.js';
+import { outlayerLayer } from './outlayer.js';
+import { otherLayer } from './other.js';
+import { arrowsLayer } from './arrows.js';
+import { doorsLayer } from './doors.js';
+import { corridorsLayer } from './corridors.js';
+import { beLayer } from './be.js';
+import { gardenLayer } from './garden.js';
+import { showPoisByLevel, routeEnabled } from '../mapController.js';
+import { setupArrowAnimation } from '../animation/arrowAnimation.js';
+import { removeRouteLayer } from '../mapController.js';
 
 /**
- * Process & add layers on each floor.
- * @param {Array} sortedInput
- * @returns {boolean}
+ * Adds layers for each floor in sorted order and builds UI toggles.
+ * @param {Array<Object>} sortedLayers - Array of layer groups sorted by floor.
+ * @returns {boolean} True if all layers processed successfully.
  */
-export async function layers_level(sortedInput) {
-  let isLayersProcessed = true;
+export async function layersLevel(sortedLayers) {
+  let success = true;
+
   try {
-    if (sortedInput.length && sortedInput[0].building_floor.layers.length > 0) {
-      for (let c = 0; c < sortedInput.length; c++) {
-        let floor_title = sortedInput[c].building_floor.name;
-        floor_title = floor_title === "G" ? 0 : parseInt(floor_title, 10);
-        const build_id = sortedInput[c].building_floor.building_id;
-        const floor_id = sortedInput[c].building_floor.id;
-        state.level_array[floor_id] = floor_title;
+    // Iterate floors
+    for (const group of sortedLayers) {
+      const floorStr = group.building_floor.name;
+      const floorNum = floorStr === 'G' ? 0 : parseInt(floorStr, 10);
+      const buildingId = group.building_floor.building_id;
+      const floorId = group.building_floor.id;
 
-        for (let m = 0; m < sortedInput[c].building_floor.layers.length; m++) {
-          const layer = sortedInput[c].building_floor.layers[m];
-          const kind = layer.kind;
-          const url = layer.file.url;
+      // Track level lookup
+      state.levelArray[floorId] = floorNum;
 
-          // collect unique layer names
-          if (!state.Layersnames.includes(kind)) {
-            state.Layersnames.push(kind === "other" ? layer.file.filename : kind);
-          }
+      // Add each layer on this floor
+      for (const layer of group.building_floor.layers) {
+        const { kind, file: { url, filename } } = layer;
+        const layerKey = `${buildingId}/${floorNum}/${kind === 'other' ? filename : kind}`;
 
-          try {
-            switch (kind) {
-              case "walls":
-                walls_layer(`${build_id}/${floor_title}/${kind}`, url);
-                break;
-              case "street":
-                street_layer(`${build_id}/${floor_title}/${kind}`, url);
-                break;
-              case "rooms":
-                rooms_layer(`${build_id}/${floor_title}/${kind}`, url);
-                break;
-              case "sidewalk":
-                sidewalk_layer(`${build_id}/${floor_title}/${kind}`, url);
-                break;
-              case "parking":
-                parking_layer(`${build_id}/${floor_title}/${kind}`, url);
-                break;
-              case "outlayer":
-                outlayer_layer(`${build_id}/${floor_title}/${kind}`, url);
-                break;
-              case "doors":
-                doors_layer(`${build_id}/${floor_title}/${kind}`, url);
-                break;
-              case "corridors":
-                corridors_layer(`${build_id}/${floor_title}/${kind}`, url);
-                break;
-              case "arrows":
-                arrows_layer(`${build_id}/${floor_title}/${kind}`, url);
-                break;
-              case "garden":
-                garden_layer(`${build_id}/${floor_title}/${kind}`, url);
-                break;
-              case "be":
-                be_layer(`${build_id}/${floor_title}/${kind}`, url);
-                break;
-              case "other":
-                otherlayer(
-                  `${build_id}/${floor_title}/${layer.file.filename}`,
-                  url
-                );
-                break;
-              default:
-                console.warn(`Unhandled layer kind: ${kind}`);
-            }
-          } catch (err) {
-            console.error(`Error processing layer '${kind}':`, err.message);
-            isLayersProcessed = false;
-          }
+        // Track unique layer names
+        const name = kind === 'other' ? filename : kind;
+        if (!state.layerNames.includes(name)) {
+          state.layerNames.push(name);
         }
 
-        // build the floor‐toggle UI
-        if (!state.toggleableLayerIds.includes(floor_title)) {
-          state.toggleableLayerIds.push(build_id + "/" + floor_title);
-          if (!state.floornametitle.includes(floor_title)) {
-            toggleLayer(
-              [build_id + "/" + floor_title],
-              floor_title === 0 ? "G" : floor_title
-            );
-            state.floornametitle.push(floor_title);
+        try {
+          switch (kind) {
+            case 'walls': wallsLayer(layerKey, url); break;
+            case 'street': streetLayer(layerKey, url); break;
+            case 'rooms': roomsLayer(layerKey, url); break;
+            case 'sidewalk': sidewalkLayer(layerKey, url); break;
+            case 'parking': parkingLayer(layerKey, url); break;
+            case 'outlayer': outlayerLayer(layerKey, url); break;
+            case 'doors': doorsLayer(layerKey, url); break;
+            case 'corridors': corridorsLayer(layerKey, url); break;
+            case 'arrows': arrowsLayer(layerKey, url); break;
+            case 'garden': gardenLayer(layerKey, url); break;
+            case 'be': beLayer(layerKey, url); break;
+            case 'other': otherLayer(layerKey, url); break;
+            default:
+              console.warn(`Unhandled layer kind: ${kind}`);
           }
+        } catch (err) {
+          console.error(`Error processing layer ${kind}:`, err);
+          success = false;
         }
       }
+
+      // Add floor toggle if not present
+      const toggleId = `${buildingId}/${floorNum}`;
+      if (!state.toggleableLayerIds.includes(toggleId)) {
+        state.toggleableLayerIds.push(toggleId);
+        const label = floorNum === 0 ? 'G' : floorNum;
+        toggleLayer([toggleId], label);
+        state.floorNameTitle.push(label);
+      }
     }
-  } catch (error) {
-    console.error("Error processing layers:", error.message);
-    isLayersProcessed = false;
+  } catch (err) {
+    console.error('layersLevel error:', err);
+    success = false;
   }
-  return isLayersProcessed;
+
+  return success;
 }
 
 /**
- * Create a little link in `#menu` that toggles one floor’s layers.
- * @param {string[]} ids
- * @param {string|number} name
+ * Adds a toggle link to #menu that shows/hides layers for a given floor.
+ * @param {string[]} ids - Array containing single floor ID string.
+ * @param {string|number} name - Display name for the floor toggle.
  */
 export function toggleLayer(ids, name) {
-  const link = document.createElement("a");
-  link.href = "#";
+  const link = document.createElement('a');
+  link.href = '#';
   link.textContent = name;
 
-  // detect current visibility of the first sub‐layer
-  let active =
-    map.getLayer(ids[0] + "/" + name) &&
-    map.getLayoutProperty(ids[0] + "/" + name, "visibility");
+  // Determine current visibility
+  const firstId = `${ids[0]}/${name}`;
+  const visible = map.getLayer(firstId)
+    && map.getLayoutProperty(firstId, 'visibility') === 'visible';
+  if (visible) link.className = 'active';
 
-  if (active === "visible") link.className = "active";
-
-  link.onclick = function (e) {
+  link.onclick = function(e) {
     e.preventDefault();
     e.stopPropagation();
 
-      // update current floor for POI filtering
-      const floorNum = name === "G" ? 0 : parseInt(name, 10);
-      state.Level_route_poi = floorNum;
+    const floorNum = name === 'G' ? 0 : parseInt(name, 10);
+    state.levelRoutePoi = floorNum;
 
-    // toggle on this floor, off all others
-    state.toggleableLayerIds.forEach((floorId) => {
-        // floorId format: "<buildingId>/<floorNum>"
-        const [, layerFloorStr] = floorId.split("/");
-        const layerFloor = parseInt(layerFloorStr, 10);
+    // Toggle this floor on, others off
+    for (const toggleId of state.toggleableLayerIds) {
+      const [, lvlStr] = toggleId.split('/');
+      const lvl = parseInt(lvlStr, 10);
 
-    state.Layersnames.forEach((lname) => {
-        const layerId = `${floorId}/${lname}`;
-        if (!map.getLayer(layerId)) return;
-        // make visible only if this layer’s floor matches the clicked floor
-        map.setLayoutProperty(
-        layerId,
-        "visibility",
-        layerFloor === floorNum ? "visible" : "none"
-        );
-    });
-    });
+      for (const layerName of state.layerNames) {
+        const layerId = `${toggleId}/${layerName}`;
+        if (!map.getLayer(layerId)) continue;
+        const visibility = (lvl === floorNum) ? 'visible' : 'none';
+        map.setLayoutProperty(layerId, 'visibility', visibility);
+      }
+    }
 
-    // highlight the active link
-    Array.from(document.getElementById("menu").children).forEach((el) => {
-      el.className = el === link ? "active" : "";
+    // Update active link class
+    const menu = document.getElementById('menu');
+    Array.from(menu.children).forEach(el => {
+      el.className = (el === link) ? 'active' : '';
     });
 
-    // trigger POI & route refresh
-    poi_show_by_level();
+    // Refresh POIs
+    showPoisByLevel();
+
+    // If a route is active, redraw it and arrows
     if (routeEnabled) {
-      remove_route_layer();
+      removeRouteLayer();
       setupArrowAnimation();
-      map.moveLayer("arrow-layer");
+      map.moveLayer('arrow-layer');
     }
   };
 
-  document.getElementById("menu").appendChild(link);
+  document.getElementById('menu').appendChild(link);
 }
-

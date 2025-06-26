@@ -4,24 +4,30 @@
 <head>
     <meta charset="utf-8">
     <title>Preview map</title>
-    <link rel="icon" href="./icontap.png">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="icon"
+        href="./icontap.png">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <link href="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.css" rel="stylesheet">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.css"
+        rel="stylesheet">
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.js"></script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+    <link href='https://fonts.googleapis.com/css?family=Poppins'
+        rel='stylesheet'>
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css"
+        rel="stylesheet" />
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.7/underscore-min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@turf/turf@7/turf.min.js"></script>
     <!-- <link rel="stylesheet" href="./font-awesome.min.css"> -->
-    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet"
+        href="./styles.css">
 
 </head>
 
@@ -33,10 +39,14 @@
         <div class="location-input start">
             <span class="label">A</span>
             <select id="from_location">
-                <option data-foo="" value="" disabled selected>Choose starting point</option>
+                <option data-foo=""
+                    value=""
+                    disabled
+                    selected>Choose starting point</option>
                 <!-- Add actual options here if needed -->
             </select>
-            <button type="button" class="clear-btn">&times;</button>
+            <button type="button"
+                class="clear-btn">&times;</button>
         </div>
 
         <!-- Swap button -->
@@ -46,25 +56,33 @@
         <div class="location-input end">
             <span class="label">B</span>
             <select id="to_location">
-                <option data-foo="" value="" disabled selected>Choose destination point</option>
+                <option data-foo=""
+                    value=""
+                    disabled
+                    selected>Choose destination point</option>
                 <!-- Add actual options here if needed -->
             </select>
-            <button type="button" class="clear-btn">&times;</button>
+            <button type="button"
+                class="clear-btn">&times;</button>
         </div>
     </div>
 
-    <div id="directions-panel" class="directions-panel">
+    <div id="directions-panel"
+        class="directions-panel">
         <!-- Directions will be inserted here by JavaScript -->
     </div>
 
     <div id="splash-screen">
         <div class="loader-wrapper">
             <div class="loader-ring"></div>
-            <img src="logo.png" alt="NEARMOTION Logo" class="loader-logo">
+            <img src="logo.png"
+                alt="NEARMOTION Logo"
+                class="loader-logo">
         </div>
     </div>
 
-    <script type="module" src="./src/main.js"></script>
+    <script type="module"
+        src="./src/main.js"></script>
 </body>
 
 </html>
