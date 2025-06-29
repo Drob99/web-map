@@ -1,141 +1,164 @@
-import { floors_titles, state } from "./config.js";
-import { draw_path_to_poi, routeEnabled } from "./data/routes.js";
-import { ClearRoute } from "./mapController.js";
+/**
+ * @module ui
+ * @description Initializes UI components and handles user interactions.
+ */
+// Note: jQuery and Select2 are loaded globally via index.html
+import { FLOOR_TITLES, state } from "./config.js";
+import { drawPathToPoi } from "./data/routes.js";
+import { clearRoute, routeEnabled } from "./mapController.js";
 import { stringMatch } from "./utils.js";
 
 /**
- * Initialize the two Select2 dropdowns and swap button.
+ * Initialize UI: dropdowns and swap button.
  */
 export function initUI() {
-  $("#from_location").select2({
-    matcher: matchCustom,
-    templateResult: formatCustom,
-  });
+  initDropdown("#from_location");
+  initDropdown("#to_location");
+  bindSwapButton(".swap-btn");
+}
 
-  $("#to_location").select2({
-    matcher: matchCustom,
-    templateResult: formatCustom,
-  });
-
-  $("#from_location, #to_location").on("select2:select", function () {
-    const fromValue = $("#from_location").val();
-    const toValue = $("#to_location").val();
-    if (fromValue && toValue) select_dropdown_list_item();
-  });
-
-  $(".swap-btn").on("click", function () {
+/**
+ * Sets up a Select2 dropdown with custom matcher and template.
+ * @param {string} selector - CSS selector for the dropdown.
+ */
+function initDropdown(selector) {
+  const $elem = $(selector);
+  $elem.select2({ matcher, templateResult: formatOption });
+  $elem.on("select2:select", () => {
     const fromVal = $("#from_location").val();
     const toVal = $("#to_location").val();
-    // swap values
-    $("#from_location").val(toVal).trigger("change");
-    $("#to_location").val(fromVal).trigger("change");
-    // re-trigger select2:select handlers
-    $("#from_location").trigger({
-      type: "select2:select",
-      params: { data: $("#from_location").select2("data")[0] },
-    });
-    $("#to_location").trigger({
-      type: "select2:select",
-      params: { data: $("#to_location").select2("data")[0] },
-    });
+    if (fromVal && toVal) handleSelection();
   });
 }
 
 /**
- * Case-insensitive match for Select2.
+ * Binds click on swap button to exchange dropdown values.
+ * @param {string} selector - CSS selector for the swap button.
  */
-export function matchCustom(params, data) {
-  if ($.trim(params.term) === "") return data;
-  if (typeof data.text === "undefined") return null;
-  if (stringMatch(params.term, data.text)) return data;
-  if (stringMatch(params.term, $(data.element).attr("data-foo"))) return data;
-  return null;
+function bindSwapButton(selector) {
+  $(selector).on("click", () => {
+    const $from = $("#from_location");
+    const $to = $("#to_location");
+    const fromVal = $from.val();
+    const toVal = $to.val();
+    $from.val(toVal).trigger("change");
+    $to.val(fromVal).trigger("change");
+    // Retrigger selection handlers
+    [$from, $to].forEach(($el) =>
+      $el.trigger({
+        type: "select2:select",
+        params: { data: $el.select2("data")[0] },
+      })
+    );
+  });
 }
 
 /**
- * Render each Select2 option with icon + subtitle.
+ * Custom matcher for Select2 options.
+ * @param {Object} params - Search parameters.
+ * @param {Object} data - Option data.
+ * @returns {Object|null}
  */
-export function formatCustom(state) {
+function matcher(params, data) {
+  if (!params.term || !data.text) return data;
+  const term = params.term.trim();
+  if (!term) return data;
+  const subtitle = $(data.element).attr("data-foo");
+  return stringMatch(term, data.text) || stringMatch(term, subtitle)
+    ? data
+    : null;
+}
+
+/**
+ * Template formatter for Select2 options with icon and subtitle.
+ * @param {Object} state - Option state.
+ * @returns {jQuery|String}
+ */
+function formatOption(state) {
   if (!state.id) return state.text;
-  const iconUrl = $(state.element).attr("data-icon");
+  const $el = $(state.element);
+  const iconUrl = $el.attr("data-icon");
+  const subtitle = $el.attr("data-foo");
   return $(
     `<div style="display:flex;align-items:center;">
-      <img src="${iconUrl}" style="width:35px;height:35px;margin-right:15px;"/>
-      <div>
-        <div>${state.text}</div>
-        <div class="foo" style="font-size:0.8em;color:gray;">
-          ${$(state.element).attr("data-foo")}
-        </div>
-      </div>
-    </div>`
+       <img src="${iconUrl}" style="width:35px;height:35px;margin-right:15px;"/>
+       <div>
+         <div>${state.text}</div>
+         <div style="font-size:0.8em;color:gray;">${subtitle}</div>
+       </div>
+     </div>`
   );
 }
 
 /**
- * Hide the splash screen after 3s.
+ * Handles selection of both dropdowns to draw a route.
+ */
+function handleSelection() {
+  if (routeEnabled) clearRoute();
+  const from = parseSelection("#from_location");
+  const to = parseSelection("#to_location");
+  drawPathToPoi(
+    from.name,
+    from.lng,
+    from.lat,
+    from.level,
+    to.name,
+    to.lng,
+    to.lat,
+    to.level
+  );
+}
+
+/**
+ * Parses a dropdown value into its components.
+ * @param {string} selector - CSS selector for the dropdown.
+ * @returns {Object} Parsed { name, lng, lat, level }.
+ */
+function parseSelection(selector) {
+  const sel = document.querySelector(selector);
+  const [lng, lat, floorId] = sel.value.split(",");
+  const name = sel.options[sel.selectedIndex].text;
+  const level = state.levelArray[parseInt(floorId, 10)];
+  return { name, lng, lat, level };
+}
+
+/**
+ * Add a POI option into both dropdowns.
+ * @param {Object} poi - POI data.
+ */
+export function loadDropdownPoi(poi) {
+  const level = state.levelArray[poi.building_floor_id];
+  const levelName = FLOOR_TITLES[level];
+  const category =
+    poi.category_id != null
+      ? `${state.categoryArray[poi.category_id]} - `
+      : `${state.buildingsObject.buildings[0].name} - `;
+  const iconUrl = poi.icon?.url || "./icontap.png";
+  const optionHtml = `<option data-foo="${category}${levelName}" data-icon="${iconUrl}" value="${[
+    poi.longitude,
+    poi.latitude,
+    poi.building_floor_id,
+  ].join(",")}">${poi.title}</option>`;
+  ["#from_location", "#to_location"].forEach((selector) =>
+    $(selector).append($(optionHtml))
+  );
+}
+
+/**
+ * Hides the splash screen after 3 seconds.
+ */
+/**
+ * Hides the splash screen and loader after a 3-second delay.
+ * Uses jQuery's delay and fadeOut for smooth transitions.
  */
 export function screensaver() {
-  setTimeout(() => {
-    const splash = document.getElementById("splash-screen");
-    splash.style.display = "none";
-    splash.classList.add("fade-out");
-    document.getElementsByClassName("loader-wrapper")[0].style.display = "none";
-    setTimeout(() => splash.classList.add("hidden"), 500);
-  }, 3000);
-}
+  // Fade out loader wrapper after 3 seconds
+  $(".loader-wrapper").delay(3000).fadeOut(500);
 
-/**
- * When both dropdowns are selected, draw the path.
- */
-export function select_dropdown_list_item() {
-  const toSel = document.getElementById("to_location");
-  const [to_lg, to_lt, to_floorId] = toSel.value.split(",");
-  const to_name = toSel.options[toSel.selectedIndex].text;
-  const to_lvl = state.level_array[parseInt(to_floorId, 10)];
-
-  const fromSel = document.getElementById("from_location");
-  const [from_lg, from_lt, from_floorId] = fromSel.value.split(",");
-  const from_name = fromSel.options[fromSel.selectedIndex].text;
-  const from_lvl = state.level_array[parseInt(from_floorId, 10)];
-
-  if (routeEnabled) ClearRoute();
-  draw_path_to_poi(
-    from_name,
-    from_lg,
-    from_lt,
-    from_lvl,
-    to_name,
-    to_lg,
-    to_lt,
-    to_lvl
-  );
-}
-
-/**
- * Add one POI option into both dropdowns.
- */
-export function Load_dropdown_pois(poi) {
-  let level = state.level_array[poi.building_floor_id];
-  const levelName = floors_titles[level];
-  let category_ar = state.buildings_object.buildings[0].name + " - ";
-  if (poi.category_id != null) {
-    category_ar = state.category_array[poi.category_id] + " - ";
-  }
-  const icon = poi.icon && poi.icon.url ? poi.icon.url : "./icontap.png";
-
-  $("#from_location").append(
-    $(
-      `<option data-foo="${category_ar} ${levelName}" data-icon="${icon}">
-         ${poi.title}
-       </option>`
-    ).attr("value", `${poi.longitude},${poi.latitude},${poi.building_floor_id}`)
-  );
-
-  $("#to_location").append(
-    $(
-      `<option data-foo="${category_ar} ${levelName}" data-icon="${icon}">
-         ${poi.title}
-       </option>`
-    ).attr("value", `${poi.longitude},${poi.latitude},${poi.building_floor_id}`)
-  );
+  // Fade out splash screen and add 'hidden' class after fade completes
+  $("#splash-screen")
+    .delay(3000)
+    .fadeOut(500, function () {
+      $(this).addClass("hidden");
+    });
 }

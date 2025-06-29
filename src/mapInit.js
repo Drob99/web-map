@@ -1,36 +1,55 @@
-import { BASE_TOKEN, MAPBOX_STYLE } from "./config.js";
+/**
+ * @module mapInit
+ * @description Creates and configures a Mapbox GL JS map instance.
+ */
+import { API_CONFIG } from "./config.js";
 
-export function initMap(containerId, opts = {}) {
-  // 1) set token
-  mapboxgl.accessToken = opts.token || BASE_TOKEN;
+/**
+ * Initializes and returns a Mapbox map.
+ * @param {string} containerId - ID of the map container element.
+ * @param {Object} [options] - Configuration options.
+ * @param {string} [options.accessToken=API_CONFIG.ACCESS_TOKEN] - Mapbox access token.
+ * @param {string} [options.style=API_CONFIG.MAPBOX_STYLE] - Mapbox style URL.
+ * @param {[number, number]} [options.center=[-74.5, 40]] - Initial map center [lng, lat].
+ * @param {number} [options.zoom=9] - Initial zoom level.
+ * @param {string} [options.navPosition='bottom-right'] - Navigation control position.
+ * @returns {mapboxgl.Map} The initialized Mapbox map instance.
+ */
+export function initMap(
+  containerId,
+  {
+    accessToken = API_CONFIG.ACCESS_TOKEN,
+    style = API_CONFIG.MAPBOX_STYLE,
+    center = [-74.5, 40],
+    zoom = 9,
+    navPosition = "bottom-right",
+  } = {}
+) {
+  mapboxgl.accessToken = accessToken;
 
-  // 2) create map
-  const style = opts.style || MAPBOX_STYLE;
-  const center = opts.center || [-74.5, 40];
-  const zoom = opts.zoom || 9;
-  const navPosition = opts.navPosition || "bottom-right";
-  const m = new mapboxgl.Map({
+  const map = new mapboxgl.Map({
     container: containerId,
+    style,
     center,
     zoom,
-    style,
   });
 
-  // 3) nav controls
-  m.addControl(new mapboxgl.NavigationControl(), navPosition);
+  // Add navigation controls
+  map.addControl(new mapboxgl.NavigationControl(), navPosition);
 
-  // 4) style tweak (guard against missing layer)
-  m.on("style.load", () => {
-    // corrected layer ID (no hidden char)
+  // Adjust 3D buildings layer range on style load
+  map.on("style.load", () => {
     const layerId = "3d-buildings";
-    if (m.getLayer(layerId)) {
-      m.setLayerZoomRange(layerId, 0, 15.7);
+    if (map.getLayer(layerId)) {
+      map.setLayerZoomRange(layerId, 0, 15.7);
     }
+    // Update Mapbox attribution link
     document.querySelector(".mapboxgl-ctrl-logo").href =
       "https://nearmotion.com/";
   });
 
-  return m;
+  return map;
 }
 
+// Initialize default map instance (for legacy usage)
 export const map = initMap("map");

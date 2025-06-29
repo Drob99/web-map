@@ -1,37 +1,93 @@
-// src/app.js
-
+/**
+ * @module app
+ * @description Bootstraps and starts the application, wiring together authentication,
+ * UI, map handlers, animations, and floor display.
+ */
 import { initUI, screensaver } from "./ui.js";
-import { get_Authentication } from "./auth.js";
+import { authenticate } from "./auth.js";
 import { setupArrowAnimation } from "./animation/arrowAnimation.js";
 import { setupMapEventHandlers } from "./markers.js";
-import { switch_to_current_floor } from "./mapController.js";
-import { CLIENT_ID, CLIENT_SECRET } from "./config.js";
+import { switchFloorByNo } from "./mapController.js";
+import { API_CONFIG } from "./config.js";
+import { map } from "./mapInit.js";
 
 /**
- * Bootstraps the entire app:
- * 1. Authenticate
- * 2. Fetch all data (categories → buildings → floors → layers → POIs → routes)
- * 3. Initialize UI & map interactions
- * 4. Start arrow animation
+ * Main application class following Dependency Injection (DI) and Single Responsibility.
  */
-export async function initializeApp() {
-  try {
-    // 1) Auth & Data
-    await get_Authentication(CLIENT_ID, CLIENT_SECRET);
-    
-    // 2) UI & map handlers
-    initUI();
-    setupMapEventHandlers();
+export default class App {
+  /**
+   * @param {Object} services - The external services this app depends on.
+   * @param {Function} services.authenticate - Function to authenticate (credentials injection).
+   * @param {Function} services.initUI - Function to initialize UI.
+   * @param {Function} services.initMapHandlers - Function to set up map event handlers.
+   * @param {Function} services.initArrowAnimation - Function to start arrow animations.
+   * @param {Function} services.displayFloor - Function to display the current floor.
+   * @param {Function} services.hideSplash - Function to hide the splash screen.
+   * @param {Object} config - Configuration constants.
+   */
+  constructor(
+    {
+      authenticate,
+      initUI,
+      initMapHandlers,
+      initArrowAnimation,
+      displayFloor,
+      hideSplash,
+    },
+    config
+  ) {
+    this.authenticate = authenticate;
+    this.initUI = initUI;
+    this.initMapHandlers = initMapHandlers;
+    this.initArrowAnimation = initArrowAnimation;
+    this.displayFloor = displayFloor;
+    this.hideSplash = hideSplash;
+    this.config = config;
+  }
 
-    // 3) Arrows
-    setupArrowAnimation();
+  /**
+   * Bootstraps the app in defined steps, handling errors gracefully.
+   */
+  async start() {
+    try {
+      // 1) Authenticate with provided credentials
+      const { CLIENT_ID, CLIENT_SECRET } = this.config;
+      await this.authenticate(CLIENT_ID, CLIENT_SECRET);
+    }
+    catch (authError) {
+      console.error("Authentication error failed:", authError);
+    }
 
-    // 4) Show the right floor
-    switch_to_current_floor();
+    map.on("load", () => {
+      // 2) Initialize UI and map interactions
+      this.initUI();
+      this.initMapHandlers();
 
-    // 5) Hide the splash screen
-    screensaver();
-  } catch (err) {
-    console.error("Error initializing app:", err);
+      // 3) Start animations
+      this.initArrowAnimation();
+
+      // 4) Display the current floor
+      this.displayFloor();
+
+      // 5) Hide splash screen
+      this.hideSplash();
+    });
   }
 }
+
+/**
+ * Instantiate and launch the application.
+ */
+const app = new App(
+  {
+    authenticate: authenticate,
+    initUI,
+    initMapHandlers: setupMapEventHandlers,
+    initArrowAnimation: setupArrowAnimation,
+    displayFloor: switchFloorByNo,
+    hideSplash: screensaver,
+  },
+  API_CONFIG
+);
+
+app.start();

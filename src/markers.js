@@ -1,79 +1,113 @@
-import { draw_path_to_poi, routeEnabled } from "./data/routes.js";
-import { ClearRoute } from "./mapController.js";
-import { map } from "./mapInit.js";
+/**
+ * @module markers
+ * @description Handles map click events to place A/B markers and initiate routing.
+ */
+import { drawPathToPoi } from './data/routes.js';
+import { clearRoute, routeEnabled } from './mapController.js';
+import { map } from './mapInit.js';
 
-let fromMarker = null,
-  toMarker = null;
-let fromPolygonId = null,
-  toPolygonId = null;
-let from_lg, from_lt, from_lvl, from_poi_name;
-let to_lg, to_lt, to_lvl, to_poi_name;
+// Marker state
+let fromMarker = null;
+let toMarker = null;
+let fromPolygonId = null;
+let toPolygonId = null;
+let fromLng, fromLat, fromLevel, fromPoiName;
+let toLng, toLat, toLevel, toPoiName;
 
 /**
- * Wire up click‐on‐polygon to place A/B markers and draw route.
+ * Sets up click handler on the 'polygons' layer.
  */
 export function setupMapEventHandlers() {
-  map.on("click", "polygons", function (e) {
-    const clicked = e.features[0];
-    const coords = turf.centroid(clicked).geometry.coordinates;
-    const id = clicked.id;
-    const level = clicked.properties.Level || 0;
-    const title = clicked.properties.title || "";
-
-    if (!fromMarker) {
-      // place A
-      fromPolygonId = id;
-      from_lg = coords[0];
-      from_lt = coords[1];
-      from_lvl = level;
-      from_poi_name = title;
-      fromMarker = new mapboxgl.Marker(createMarkerEl("A", "#00BFFF"))
-        .setLngLat(coords)
-        .addTo(map);
-      if (routeEnabled) ClearRoute();
-      fly_to_A_point(from_lg, from_lt);
-    } else if (!toMarker) {
-      // ensure B ≠ A
-      if (id === fromPolygonId) return;
-      toPolygonId = id;
-      to_lg = coords[0];
-      to_lt = coords[1];
-      to_lvl = level;
-      to_poi_name = title;
-      toMarker = new mapboxgl.Marker(createMarkerEl("B", "#6A5ACD"))
-        .setLngLat(coords)
-        .addTo(map);
-      if (routeEnabled) ClearRoute();
-      draw_path_to_poi(
-        from_poi_name,
-        from_lg,
-        from_lt,
-        from_lvl,
-        to_poi_name,
-        to_lg,
-        to_lt,
-        to_lvl
-      );
-    } else {
-      // both exist → reset
-      resetMarkers();
-    }
-  });
+  map.on('click', 'polygons', handleMapClick);
 }
 
-/** Remove both A & B markers and reset state. */
+/**
+ * Handles map click to place or reset markers and start routing.
+ * @param {Object} e - Mapbox event.
+ */
+function handleMapClick(e) {
+  const feature = e.features[0];
+  const coords = e.lngLat.toArray();
+  const id = feature.id;
+  const level = feature.properties.level || 0;
+  const title = feature.properties.title || '';
+
+  if (!fromMarker) {
+    placeFromMarker(id, coords, level, title);
+  } else if (!toMarker) {
+    placeToMarker(id, coords, level, title);
+  } else {
+    resetMarkers();
+  }
+}
+
+/**
+ * Places the "A" marker at the clicked location.
+ */
+function placeFromMarker(id, [lng, lat], level, title) {
+  fromPolygonId = id;
+  fromLng = lng;
+  fromLat = lat;
+  fromLevel = level;
+  fromPoiName = title;
+
+  fromMarker = new mapboxgl.Marker(createMarkerEl("A", "#3BB3D0"))
+    .setLngLat([lng, lat])
+    .addTo(map);
+
+  if (routeEnabled) clearRoute();
+  flyToPointA(lng, lat);
+}
+
+/**
+ * Places the "B" marker at the clicked location and draws the route.
+ */
+function placeToMarker(id, [lng, lat], level, title) {
+  if (id === fromPolygonId) return;
+  toPolygonId = id;
+  toLng = lng;
+  toLat = lat;
+  toLevel = level;
+  toPoiName = title;
+
+  toMarker = new mapboxgl.Marker(createMarkerEl("B", "#8B8ACC"))
+    .setLngLat([lng, lat])
+    .addTo(map);
+
+  if (routeEnabled) clearRoute();
+  drawPathToPoi(
+    fromPoiName,
+    fromLng,
+    fromLat,
+    fromLevel,
+    toPoiName,
+    toLng,
+    toLat,
+    toLevel
+  );
+}
+
+/**
+ * Removes both A and B markers and resets marker state.
+ */
 export function resetMarkers() {
   if (fromMarker) fromMarker.remove();
   if (toMarker) toMarker.remove();
-  fromMarker = toMarker = null;
-  fromPolygonId = toPolygonId = null;
-  from_poi_name = to_poi_name = "";
-  from_lg = from_lt = from_lvl = null;
-  to_lg = to_lt = to_lvl = null;
+  fromMarker = null;
+  toMarker = null;
+  fromPolygonId = null;
+  toPolygonId = null;
+  fromPoiName = toPoiName = '';
+  fromLng = fromLat = fromLevel = undefined;
+  toLng = toLat = toLevel = undefined;
 }
 
-/** Fly‐to helper for point A. */
-function fly_to_A_point(lng, lat) {
+/**
+ * Flies camera to the "A" point.
+ * @param {number} lng - Longitude.
+ * @param {number} lat - Latitude.
+ */
+function flyToPointA(lng, lat) {
   map.flyTo({
     center: [lng, lat],
     bearing: map.getBearing(),
@@ -84,10 +118,16 @@ function fly_to_A_point(lng, lat) {
   });
 }
 
-/** Build a little DIV for a marker labelled “A” or “B”. */
+/**
+ * Creates a styled DOM element for a marker label.
+ * @param {string} letter - Marker label ("A" or "B").
+ * @param {string} bgColor - Background color.
+ * @returns {HTMLElement}
+ */
 function createMarkerEl(letter, bgColor) {
-  const el = document.createElement("div");
-  el.innerHTML = `<div style="
+  const el = document.createElement('div');
+  el.innerHTML = `
+    <div style="
       background:${bgColor};
       color:#fff;
       border-radius:50%;
@@ -98,6 +138,7 @@ function createMarkerEl(letter, bgColor) {
       justify-content:center;
       font-weight:bold;
       box-shadow:0 0 6px rgba(0,0,0,0.3);
-    ">${letter}</div>`;
-  return el;
+    ">${letter}</div>
+  `;
+  return el.firstElementChild;
 }
