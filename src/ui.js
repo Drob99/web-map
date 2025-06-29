@@ -152,12 +152,9 @@ export function loadDropdownPoi(poi) {
  * Uses jQuery's delay and fadeOut for smooth transitions.
  */
 export function screensaver() {
-  // Fade out loader wrapper after 3 seconds
-  $(".loader-wrapper").delay(3000).fadeOut(500);
-
-  // Fade out splash screen and add 'hidden' class after fade completes
+  // Fade out loader wrapper and splash screen
+  $(".loader-wrapper").fadeOut(500);
   $("#splash-screen")
-    .delay(3000)
     .fadeOut(500, function () {
       $(this).addClass("hidden");
     });

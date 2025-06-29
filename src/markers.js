@@ -37,6 +37,7 @@ function handleMapClick(e) {
   } else if (!toMarker) {
     placeToMarker(id, coords, level, title);
   } else {
+    clearRoute();
     resetMarkers();
   }
 }

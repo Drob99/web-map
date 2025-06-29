@@ -12,6 +12,7 @@ import { state } from "./config.js";
 import { getAllPoi, loadPoiImage } from "./data/pois.js";
 import { map } from "./mapInit.js";
 import { renderDirectionsPanel } from "./navigation.js";
+import { resetMarkers } from "./markers.js";
 
 // Routing state
 export let routeEnabled = false;
@@ -218,7 +219,7 @@ export async function routeLevel() {
 
   // Draw route layers
   removeRouteLayer();
-  ["route", "route_outline", "route_another", "route_another_outline"].forEach(
+  ["route_another", "route_another_outline", "route", "route_outline"].forEach(
     (id) => {
       map.addSource(id, { type: "geojson", data: smartRoute });
       const paint =
@@ -234,8 +235,8 @@ export async function routeLevel() {
         type: "line",
         source: id,
         filter: id.includes("another")
-          ? ["!=", "level", state.levelRoutePoi]
-          : ["==", "level", state.levelRoutePoi],
+          ? ["!=", "level", state.levelRoutePoi.toString()]
+          : ["==", "level", state.levelRoutePoi.toString()],
         layout: { "line-join": "round", "line-cap": "round" },
         paint,
       });
@@ -278,6 +279,7 @@ export function clearRoute() {
 
   if (markerA) markerA.remove();
   if (markerB) markerB.remove();
+  resetMarkers();
 
   state.fromMarkerLocation = [];
   state.toMarkerLocation = [];
@@ -286,6 +288,9 @@ export function clearRoute() {
 
   popupsGlobal.forEach((p) => p.remove());
   popupsGlobal = [];
+
+  $("#from_location").val("").trigger("change");
+  $("#to_location").val("").trigger("change");
 }
 
 /**
