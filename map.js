@@ -2469,7 +2469,7 @@ async function Route_level() {
   }
 
   renderDirectionsPanel(SmartRoute, "directions-panel");
-  document.getElementById("directions-panel").style.display = "block";
+  document.getElementById("directions-panel").style.display = "none";
 
   if (remove_extra_route_flag) {
     remove_extra_route_flag = !1;

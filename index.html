@@ -4,30 +4,23 @@
 <head>
     <meta charset="utf-8">
     <title>Preview map</title>
-    <link rel="icon"
-        href="./icontap.png">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="icon" href="./Logo.svg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <link href="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.css"
-        rel="stylesheet">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.css" rel="stylesheet">
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.js"></script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <link href='https://fonts.googleapis.com/css?family=Poppins'
-        rel='stylesheet'>
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css"
-        rel="stylesheet" />
+    <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.7/underscore-min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@turf/turf@7/turf.min.js"></script>
     <!-- <link rel="stylesheet" href="./font-awesome.min.css"> -->
-    <link rel="stylesheet"
-        href="./styles.css">
+    <link rel="stylesheet" href="./styles.css">
 
 </head>
 
@@ -39,14 +32,10 @@
         <div class="location-input start">
             <span class="label">A</span>
             <select id="from_location">
-                <option data-foo=""
-                    value=""
-                    disabled
-                    selected>Choose starting point</option>
+                <option data-foo="" value="" disabled selected>Choose starting point</option>
                 <!-- Add actual options here if needed -->
             </select>
-            <button type="button"
-                class="clear-btn">&times;</button>
+            <button type="button" class="clear-btn">&times;</button>
         </div>
 
         <!-- Swap button -->
@@ -56,33 +45,512 @@
         <div class="location-input end">
             <span class="label">B</span>
             <select id="to_location">
-                <option data-foo=""
-                    value=""
-                    disabled
-                    selected>Choose destination point</option>
+                <option data-foo="" value="" disabled selected>Choose destination point</option>
                 <!-- Add actual options here if needed -->
             </select>
-            <button type="button"
-                class="clear-btn">&times;</button>
+            <button type="button" class="clear-btn">&times;</button>
         </div>
     </div>
 
-    <div id="directions-panel"
-        class="directions-panel">
+    <div id="directions-panel" class="directions-panel">
         <!-- Directions will be inserted here by JavaScript -->
     </div>
 
     <div id="splash-screen">
         <div class="loader-wrapper">
             <div class="loader-ring"></div>
-            <img src="logo.png"
-                alt="NEARMOTION Logo"
-                class="loader-logo">
+            <img src="logo.png" alt="NEARMOTION Logo" class="loader-logo">
         </div>
     </div>
 
-    <script type="module"
-        src="./src/main.js"></script>
+    <div id="legendToggle">Legend</div>
+    <div id="legendPanel">
+        <div class="legend-item"><span class="icon short"></span> ParkSHORT</div>
+        <div class="legend-item"><span class="icon intl"></span> ParkINTERNATIONAL</div>
+        <div class="legend-item"><span class="icon long"></span> ParkLONG</div>
+        <div class="legend-item"><span class="icon valet"></span> ParkVALET</div>
+    </div>
+
+    <div class="dropdown-container">
+
+        <div class="dropdown" onclick="toggleDropdown()">
+            <div class="dropdown-content">
+                <div class="dropdown-title">KKIA</div>
+                <div class="dropdown-subtitle">Terminals</div>
+            </div>
+            <div class="dropdown-arrow">&#9662;</div>
+        </div>
+        <div class="dropdown-arrow" style="margin-left: 10px;border-radius: 12px"><img style="width: 25px;"
+                src="./src/images/disabled.png"></div>
+        <div class="dropdown-list" id="dropdownList">
+            <div class="dropdown-option">All</div>
+            <div class="dropdown-option">Terminal 1</div>
+            <div class="dropdown-option">Terminal 2</div>
+            <div class="dropdown-option">Terminal 3</div>
+            <div class="dropdown-option">Terminal 4</div>
+            <div class="dropdown-option">Terminal 5</div>
+        </div>
+    </div>
+
+    <div class="mapboxgl-ctrl-bottom-right">
+        <div class="mapboxgl-ctrl mapboxgl-ctrl-group" style="background-color: transparent;margin-bottom: 270%;">
+            <div id="currentlocation">
+                <button id="cur_btn"
+                    style="color:#04615c ; background-color: white;border-radius: 5px;font-family: 'Poppins';font-weight: 700;"
+                    onclick="current_location()">3D</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Airport Menu Component -->
+    <div class="menu-container" id="menuContainer">
+        <!-- Search Section -->
+        <div class="search-section">
+            <input type="text" class="search-input" placeholder="Search" id="searchInput">
+            <button style="vertical-align: middle; width: 45px; height: 45px; border-radius: 50px;    border: 1px solid #ddd;
+    background: rgb(242, 242, 242);"><img style="width: 25px;" src="./src/images/language.png"></button>
+            <button style="vertical-align: middle; width: 45px; height: 45px; border-radius: 50px;    border: 1px solid #ddd;
+    background: rgb(242, 242, 242)"><img style="width: 25px;" src="./src/images/map.png"></button>
+        </div>
+
+        <!-- Categories Section -->
+        <div class="categories-section" id="categoriesSection">
+            <h3 class="section-title">Categories</h3>
+
+            <div class="categories-grid">
+                <!-- Row 1 -->
+                <div class="menu-item">
+                    <div class="menu-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z">
+                            </path>
+                        </svg>
+                    </div>
+                    <span class="menu-label">Shops</span>
+                </div>
+
+                <div class="menu-item">
+                    <div class="menu-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M3 21h18"></path>
+                            <path d="M5 21V7l8-4v18"></path>
+                            <path d="M19 21V11l-6-4"></path>
+                        </svg>
+                    </div>
+                    <span class="menu-label">Checkin</span>
+                </div>
+
+                <div class="menu-item">
+                    <div class="menu-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z">
+                            </path>
+                        </svg>
+                    </div>
+                    <span class="menu-label">Parking & Transportation</span>
+                </div>
+
+                <div class="menu-item">
+                    <div class="menu-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+                            <path d="M7 2v20"></path>
+                            <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+                        </svg>
+                    </div>
+                    <span class="menu-label">Self Services</span>
+                </div>
+
+                <!-- Row 2 -->
+                <div class="menu-item row-2">
+                    <div class="menu-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
+                            <circle cx="12" cy="5" r="2"></circle>
+                            <path d="M12 7v4"></path>
+                        </svg>
+                    </div>
+                    <span class="menu-label">BANKS - ATM - Exchange</span>
+                </div>
+
+                <div class="menu-item row-2">
+                    <div class="menu-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
+                            <path d="M3 6h18"></path>
+                            <path d="M10 9v6"></path>
+                            <path d="M14 9v6"></path>
+                        </svg>
+                    </div>
+                    <span class="menu-label">Boarding Gates</span>
+                </div>
+
+                <div class="menu-item row-2">
+                    <div class="menu-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"></path>
+                            <path d="M15 18H9"></path>
+                            <path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14">
+                            </path>
+                            <circle cx="17" cy="18" r="2"></circle>
+                            <circle cx="7" cy="18" r="2"></circle>
+                        </svg>
+                    </div>
+                    <span class="menu-label">Baggage</span>
+                </div>
+
+                <div class="menu-item row-2">
+                    <div class="menu-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                        </svg>
+                    </div>
+                    <span class="menu-label">Services</span>
+                </div>
+
+                <!-- Row 3 -->
+                <div class="menu-item row-3">
+                    <div class="menu-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                        </svg>
+                    </div>
+                    <span class="menu-label">Lounges</span>
+                </div>
+
+                <div class="menu-item row-3">
+                    <div class="menu-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M9 12l2 2 4-4"></path>
+                            <path d="M21 12c-1 0-3-1-3-3s2-3 3-3 3 1 3 3-2 3-3 3"></path>
+                            <path d="M3 12c1 0 3-1 3-3s-2-3-3-3-3 1-3 3 2 3 3 3"></path>
+                            <path d="M12 3c0 1-1 3-3 3s-3-2-3-3 1-3 3-3 3 2 3 3"></path>
+                            <path d="M12 21c0-1 1-3 3-3s3 2 3 3-1 3-3 3-3-2-3-3"></path>
+                        </svg>
+                    </div>
+                    <span class="menu-label">Assistance</span>
+                </div>
+
+                <div class="menu-item row-3">
+                    <div class="menu-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M8 2v4"></path>
+                            <path d="M16 2v4"></path>
+                            <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                            <path d="M3 10h18"></path>
+                        </svg>
+                    </div>
+                    <span class="menu-label">Ask me Counters</span>
+                </div>
+
+                <div class="menu-item row-3">
+                    <div class="menu-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M12 6v6l4 2"></path>
+                        </svg>
+                    </div>
+                    <span class="menu-label">Mother Services</span>
+                </div>
+
+                <!-- Row 4 -->
+                <div class="menu-item row-4">
+                    <div class="menu-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16,17 21,12 16,7"></polyline>
+                            <line x1="21" x2="9" y1="12" y2="12"></line>
+                        </svg>
+                    </div>
+                    <span class="menu-label">Medical Services</span>
+                </div>
+
+                <div class="menu-item row-4">
+                    <div class="menu-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                            <polyline points="8,7 3,12 8,17"></polyline>
+                            <line x1="3" x2="15" y1="12" y2="12"></line>
+                        </svg>
+                    </div>
+                    <span class="menu-label">Security & Customs</span>
+                </div>
+
+                <div class="menu-item row-4">
+                    <div class="menu-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                        </svg>
+                    </div>
+                    <span class="menu-label">Airlines</span>
+                </div>
+
+                <div class="menu-item row-4">
+                    <div class="menu-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                            <path d="M12 17h.01"></path>
+                        </svg>
+                    </div>
+                    <span class="menu-label">Toilets</span>
+                </div>
+            </div>
+
+            <!-- Menu Arrow -->
+            <div class="menu-arrow" id="menuArrow">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 9l6 6 6-6"></path>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Subcategories View -->
+        <div class="subcategories-view" id="subcategoriesView">
+            <div class="view-header">
+                <button class="back-button" id="subcategoriesBackBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5"></path>
+                        <path d="M12 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <h3 class="view-title" id="subcategoriesTitle">Subcategories</h3>
+            </div>
+            <div class="subcategories-list" id="subcategoriesList">
+                <!-- Subcategories will be populated dynamically -->
+            </div>
+        </div>
+
+        <!-- Locations View -->
+        <div class="locations-view" id="locationsView">
+            <div class="view-header">
+                <button class="back-button" id="locationsBackBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5"></path>
+                        <path d="M12 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <h3 class="view-title" id="locationsTitle">Locations</h3>
+            </div>
+            <div class="locations-list" id="locationsList">
+                <!-- Locations will be populated dynamically -->
+            </div>
+        </div>
+
+        <!-- Location Details View -->
+        <div class="location-details-view" id="locationDetailsView">
+            <div class="view-header">
+                <button class="back-button" id="locationDetailsBackBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5"></path>
+                        <path d="M12 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <h3 class="view-title" id="locationDetailsTitle">Location Details</h3>
+            </div>
+            <div class="location-info" id="locationInfo">
+                <!-- Location details will be populated dynamically -->
+            </div>
+        </div>
+
+        <!-- Directions View -->
+        <div class="directions-view" id="directionsView">
+            <div class="directions-header">
+                <button class="back-button" id="directionsBackBtn" style="display: block;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5"></path>
+                        <path d="M12 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <h3 class="view-title">Directions</h3>
+                <div class="header-options" style="display: none;">
+                    <span class="accessible-label">Accessible</span>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="accessibleToggle">
+                        <label for="accessibleToggle"></label>
+                    </div>
+                    <button class="more-options">⋯</button>
+                </div>
+            </div>
+
+            <div class="departure-input-container">
+                <input type="text" class="departure-input" id="departureInput" placeholder="Choose Departure">
+                <div class="departure-results" id="departureResults" style="display: none;"></div>
+            </div>
+
+            <div class="destination-container">
+                <div class="destination-text" id="destinationText">Starbucks</div>
+                <button class="swap-locations-btn" id="swapLocationsBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 8l4 4-4 4"></path>
+                        <path d="M3 12h18"></path>
+                        <path d="M7 16l-4-4 4-4"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="route-summary" id="routeSummary" style="display: none;">
+                <div class="add-destination">
+                    <div class="add-icon">⊕</div>
+                    <span>Add destination</span>
+                </div>
+
+                <div class="time-estimate">
+                    <div class="time-label">Time to destination</div>
+                    <div class="time-value">15 minutes</div>
+                </div>
+
+                <button class="steps-button" id="endRoutebtn" style="background-color: #AF3E3E !important;">
+                    End Route
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18"></path>
+                        <path d="M6 6l12 12"></path>
+                    </svg>
+                </button>
+
+                <button class="steps-button" id="stepsButton" style="background-color: #4DA8DA !important;">
+                    Show Steps
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18l6-6-6-6"></path>
+                    </svg>
+                </button>
+
+                <div class="journey-breakdown">
+                    <div class="journey-step">
+                        <span class="step-icon"><img style="width: 22px;" src="./src/images/time.png"></span>
+                        <span class="step-time">8 min</span>
+                    </div>
+                    <div class="journey-step">
+                        <span class="step-icon"><img style="width: 22px;" src="./src/images/distance.png"></span>
+                        <span class="step-time">575 meters</span>
+                    </div>
+                    <div class="journey-step">
+                        <span class="step-icon"><img style="width: 22px;" src="./src/images/terminal.png"></span>
+                        <span class="step-time">Termianl 5</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Popular Locations View -->
+        <div class="popular-locations-view" id="popularLocationsView">
+            <div class="view-header">
+                <button class="back-button" id="popularLocationsBackBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5"></path>
+                        <path d="M12 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <h3 class="view-title">Directions</h3>
+            </div>
+
+            <div class="departure-input-container">
+                <!-- <div class="departure-search-icon">🔍</div> -->
+                <input type="text" class="departure-input" id="departureInputPopular" placeholder="Choose Departure">
+            </div>
+
+            <div class="destination-container">
+                <!-- <div class="destination-icon">📍</div> -->
+                <div class="destination-text" id="destinationTextPopular">Starbucks</div>
+                <button class="swap-locations-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 8l4 4-4 4"></path>
+                        <path d="M3 12h18"></path>
+                        <path d="M7 16l-4-4 4-4"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="popular-section-title">
+                Most Popular
+                <div class="refresh-icon">🔄</div>
+            </div>
+
+            <div class="popular-locations-list hide-scrollbar" id="popularLocationsList">
+                <!-- Popular locations will be populated dynamically -->
+            </div>
+        </div>
+
+        <!-- Navigation View -->
+        <div class="navigation-view" id="navigationView">
+            <div class="navigation-header">
+                <h3 class="view-title">Navigation</h3>
+            </div>
+
+            <div class="navigation-steps-container">
+                <div id="navigationStepsList">
+                    <!-- Steps will be populated dynamically by JavaScript -->
+                </div>
+            </div>
+
+            <div class="navigation-actions">
+                <button class="end-navigation-btn" style="display: none;" id="endNavigationBtn">End Navigation</button>
+            </div>
+        </div>
+
+
+        <!-- Original map controls and panels -->
+
+
+        <div class="card" id="inputs">
+            <div class="location-input start">
+                <div class="label">A</div>
+                <select id="start" name="start">
+                    <option value="" disabled selected>Choose starting point</option>
+                </select>
+                <button class="clear-btn" id="clear-start">✕</button>
+            </div>
+            <div class="swap-btn" id="swap">⇅</div>
+            <div class="location-input end">
+                <div class="label">B</div>
+                <select id="end" name="end">
+                    <option value="" disabled selected>Choose destination</option>
+                </select>
+                <button class="clear-btn" id="clear-end">✕</button>
+            </div>
+        </div>
+
+        <div class="directions-panel" id="directions">
+            <div class="summary">
+                <div class="destination" id="destination-text">Destination</div>
+                <div class="time" id="duration">0 min</div>
+                <div class="distance" id="distance">0.0 mi</div>
+                <button class="cloes" id="close-directions">✕</button>
+            </div>
+            <div class="from" id="from-location">From: Starting Point</div>
+            <ul class="instructions" id="instructions"></ul>
+            <div class="to" id="to-location">To: Destination</div>
+            <div class="expandcollapse" id="toggle-details">
+                <i class="fa fa-chevron-down" id="toggle-icon"></i> Show Details
+            </div>
+            <button id="endroute">End Route</button>
+        </div>
+    </div>
+    <script type="module" src="./src/main.js"></script>
+    <script src="./src/will_removed_script.js"></script>
+    <script src="./src/will_removed_airport-data.js"></script>
+
+   
 </body>
 
 </html>

@@ -215,7 +215,7 @@ export async function routeLevel() {
 
   // Render panel and show
   renderDirectionsPanel(smartRoute, "directions-panel");
-  document.getElementById("directions-panel").style.display = "block";
+  document.getElementById("directions-panel").style.display = "none";
 
   // Draw route layers
   removeRouteLayer();
