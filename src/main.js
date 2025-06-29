@@ -4,12 +4,10 @@
  */
 // Importing the app module triggers its instantiation and startup logic.
 import './app.js';
-import { closeMenu, toggleMenu } from './controllers.js';
 
 // Ensure any DOM-dependent initialization happens after the document is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
   // Application startup is handled in app.js’s module scope on import
   // No additional logic required here
-    document.getElementById("closeBtn").addEventListener("click", closeMenu);
-    document.getElementById("accessibilityBtn").addEventListener("click", toggleMenu);
+   
 });

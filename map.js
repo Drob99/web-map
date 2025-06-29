@@ -206,17 +206,17 @@ function getCurrentTime() {
   return Math.floor(Date.now() / 1000);
 }
 
-function screensaver() {
-  setTimeout(() => {
-    const splash = document.getElementById("splash-screen");
-    splash.style.width = "unset";
-    splash.style.height = "unset";
-    splash.style.display = "none";
-    splash.classList.add("fade-out");
-    document.getElementsByClassName("loader-wrapper")[0].style.display = "none";
-    setTimeout(() => splash.classList.add("hidden"), 500);
-  }, 3000);
-}
+// function screensaver() {
+//   setTimeout(() => {
+//     const splash = document.getElementById("splash-screen");
+//     splash.style.width = "unset";
+//     splash.style.height = "unset";
+//     splash.style.display = "none";
+//     splash.classList.add("fade-out");
+//     document.getElementsByClassName("loader-wrapper")[0].style.display = "none";
+//     setTimeout(() => splash.classList.add("hidden"), 500);
+//   }, 3000);
+// }
 
 //! Auth & Data Loading
 function isAccessTokenExpired() {

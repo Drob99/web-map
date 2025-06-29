@@ -87,8 +87,11 @@ export const state = {
   globalDistance: null,
   globalTime: null,
   globalZLevel: null,
+  activeTools : new Set(),
   fullDistanceToDestination: 0,
   fullTimeToDestination: 0,
+  isBlackWhite : false,
+	isInverted : false,
   allPoiGeojson: {
     type: 'FeatureCollection',
     features: [

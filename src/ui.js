@@ -15,6 +15,7 @@ export function initUI() {
   initDropdown("#from_location");
   initDropdown("#to_location");
   bindSwapButton(".swap-btn");
+  initAccessabilty();
 }
 
 /**
@@ -30,6 +31,7 @@ function initDropdown(selector) {
     if (fromVal && toVal) handleSelection();
   });
 }
+
 
 /**
  * Binds click on swap button to exchange dropdown values.
@@ -158,6 +160,87 @@ export function screensaver() {
     .fadeOut(500, function () {
       $(this).addClass("hidden");
     });
+}
+
+
+function initAccessabilty()
+{
+   document.getElementById("closeBtn").addEventListener("click", closeMenu);
+   document.getElementById("accessibilityBtn").addEventListener("click", toggleMenu);
+   window.toggleCard = toggleCard;
+}
+
+ function closeMenu() {
+	const menu = document.getElementById("sideMenu");
+	menu.classList.remove("open");
+	menu.style.display = "none";
+}
+
+/**
+ * Toggle the accessabilty card open or closed.
+ */
+ function toggleMenu() {
+	const menu = document.getElementById("sideMenu");
+	menu.classList.toggle("open");
+}
+
+/**
+ * Toggle a accessability card's active state and apply its related functionality.
+ * @param {HTMLElement} element - The card element clicked.
+ * @param {string} toolName - The name of the tool to toggle.
+ */
+export function toggleCard(element, toolName) {
+	const isActive = element.classList.toggle("active");
+
+	if (isActive) {
+		state.activeTools.add(toolName);
+		
+	} else {
+		state.activeTools.delete(toolName);
+	}
+
+	// // Apply or revert tool behavior
+	if (toolName == "simpleFont") simpleFont_toggle();
+	else if (toolName == "biggerText") toggleTextSize();
+	else if (toolName == "desaturation") DesaturationToggle();
+	else if (toolName == "contrast") toggleColorScheme();
+	else if (toolName == "letterSpacing") toggleLetterSpacing();
+	else if (toolName == "lineSpacing") toggleLineSpacing();
+	else if (toolName == "readSpeaker") toggleSpeech();
+	else if (toolName == "cursor") toggleMapboxAccessibility();
+	else if (toolName == "pauseAnimation") pauseAnimationToggle();
+}
+
+function toggleColorScheme() {
+	state.isBlackWhite = !isBlackWhite;
+	updateFilter();
+}
+
+function DesaturationToggle() {
+	state.isInverted = !isInverted;
+	updateFilter();
+}
+
+function resetFilters() {
+	state.isBlackWhite = false;
+	state.isInverted = false;
+	updateFilter();
+}
+
+function updateFilter() {
+	let filter = '';
+
+	if (state.isBlackWhite) {
+		filter += 'saturate(0%) ';
+	} else {
+		filter += 'saturate(100%) ';
+	}
+
+	if (state.isInverted) {
+		filter += 'invert(1) hue-rotate(180deg)';
+	}
+
+	document.documentElement.style.filter = filter.trim();
 }
 
 

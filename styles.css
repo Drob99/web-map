@@ -2048,9 +2048,11 @@ Accessability Popup */
     font-weight: bold;
     cursor: pointer;
     position: absolute;
-    top: 10px;
+    top: 5px;
     right: 10px;
 	border-radius: 3px;
+    width: 30px;
+    height: 30px;
     transition: color 0.3s;
 }
 
