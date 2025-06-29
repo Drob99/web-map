@@ -8,8 +8,7 @@
  */
 export const API_CONFIG = Object.freeze({
   BASE_URL: "https://api.nearmotion.com/api/public/v1/",
-  ACCESS_TOKEN:
-    "pk.eyJ1Ijoibm1hY2NvdW50cyIsImEiOiJja2xhazRobjgzbDkxMm9xb2d3YmQ3d2s2In0.wGFavxo8mpa7OI_lEhYUow",
+  ACCESS_TOKEN:"pk.eyJ1Ijoibm1hY2NvdW50cyIsImEiOiJja2xhazRobjgzbDkxMm9xb2d3YmQ3d2s2In0.wGFavxo8mpa7OI_lEhYUow",
   MAPBOX_STYLE: "mapbox://styles/mapbox/streets-v11",
   CLIENT_ID: "5hk9KDD86eYhhcgpsA_FepLpC8g2iB5ic5htMUqhFtk",
   CLIENT_SECRET: "V0VJtEnRetTK_QOwy7V1M1JxRsnUbggE0ehvK8Pd210",
