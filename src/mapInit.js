@@ -26,6 +26,12 @@ export function initMap(
   } = {}
 ) {
   mapboxgl.accessToken = accessToken;
+  if (typeof mapboxgl.setTelemetryEnabled === "function") {
+    mapboxgl.setTelemetryEnabled(false); // Disable telemetry if supported
+  }
+  if (typeof mapboxgl.setPerformanceEnabled === "function") {
+    mapboxgl.setPerformanceEnabled(false); // Disable performance monitoring if supported
+  }
 
   const map = new mapboxgl.Map({
     container: containerId,

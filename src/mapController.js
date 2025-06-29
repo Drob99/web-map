@@ -265,6 +265,7 @@ export function removeRouteLayer() {
  * Clears current route, stops animation, and resets state and UI.
  */
 export function clearRoute() {
+  initializeArrowsSourceAndLayer();
   removeRouteLayer();
   stopAnimation();
   exitNavigationMode();
@@ -351,18 +352,6 @@ export function extractLngLat(routeStr) {
 }
 
 /**
- * Formats distance in meters to metric units.
- * @param {number} meters
- * @returns {{value:number,unit:string}}
- */
-export function formatDistanceImperial(meters) {
-  if (!meters) return { value: 0, unit: "" };
-  return meters < 1000
-    ? { value: Math.round(meters), unit: "meters" }
-    : { value: +(meters / 1000).toFixed(2), unit: "km" };
-}
-
-/**
  * Sums distances and estimates walking time (~80.4672 m/min).
  * @param {Array<Object>} instructions
  * @returns {{distance:number,time:number}}
@@ -407,8 +396,8 @@ export function enterNavigationMode(routeGeojson) {
   map.flyTo({
     center: [lng0, lat0],
     bearing,
-    pitch: 56.5,
-    zoom: 20.23,
+    pitch: 56.50000000000002,
+    zoom: 20.234504452665387,
     duration: 4000,
     essential: true,
   });
@@ -434,7 +423,7 @@ export function exitNavigationMode() {
     center: map.getCenter(),
     bearing: map.getBearing(),
     pitch: 0,
-    zoom: 19.34,
+    zoom: 19.343589520103954,
     duration: 4000,
     essential: true,
   });
@@ -486,13 +475,48 @@ export function showPoisByLevel() {
     type: "geojson",
     data: state.polyGeojsonLevel,
   });
+
+  if (map.getSource("municipalities_outside")) {
+    if (map.getLayer("polygons_outside")) map.removeLayer("polygons_outside");
+    map.removeSource("municipalities_outside");
+  }
+  map.addSource("municipalities_outside", {
+    type: "geojson",
+    data: state.polyGeojsonLevelOutsideBuilding,
+  });
+
   map.addLayer({
     id: "polygons",
     type: "fill",
     source: "municipalities",
     paint: {
-      "fill-color": ["get", "color"],
-      "fill-opacity": 0,
+      "fill-color": ["coalesce", ["get", "color"], "#CCCCCC"],
+      "fill-opacity": [
+        "interpolate",
+        ["exponential", 0.1],
+        ["zoom"],
+        16.4,
+        0,
+        20.31967926651499,
+        0.8,
+      ],
+    },
+  });
+  map.addLayer({
+    id: "polygons_outside",
+    type: "fill",
+    source: "municipalities_outside",
+    paint: {
+      "fill-color": ["coalesce", ["get", "color"], "#CCCCCC"],
+      "fill-opacity": [
+        "interpolate",
+        ["exponential", 0.1],
+        ["zoom"],
+        16.4,
+        0,
+        20.31967926651499,
+        0.8,
+      ],
     },
   });
   map.addLayer({
@@ -516,7 +540,7 @@ export function showPoisByLevel() {
         ["zoom"],
         16.4,
         0,
-        20.32,
+        20.31967926651499,
         1,
       ],
     },
@@ -542,7 +566,7 @@ export function showPoisByLevel() {
         ["zoom"],
         16.4,
         0,
-        20.32,
+        20.31967926651499,
         1,
       ],
       "text-opacity": [
@@ -551,7 +575,7 @@ export function showPoisByLevel() {
         ["zoom"],
         16.4,
         0,
-        20.32,
+        20.31967926651499,
         0.8,
       ],
       "text-color": "rgba(0,0,0,1)",
