@@ -28,14 +28,14 @@ export const ANIMATION_CONFIG = Object.freeze({
 /**
  * Rendering priority indexes.
  */
-export const INDEX_PRIORITY = Object.freeze([
+export const INDEX_PRIORITY = [
   0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, -1, -2, -3, -4, -5
-]);
+];
 
 /**
  * Floor index to title mappings.
  */
-export const FLOOR_TITLES = Object.freeze({
+export const FLOOR_TITLES = {
   '-5': 'Basement 5th Floor',
   '-4': 'Basement 4th Floor',
   '-3': 'Basement 3rd Floor',
@@ -52,7 +52,7 @@ export const FLOOR_TITLES = Object.freeze({
   '8': 'Eighth Floor',
   '9': 'Ninth Floor',
   '10': 'Tenth Floor'
-});
+};
 
 /**
  * Default application state.
@@ -73,7 +73,7 @@ export const state = {
   language: 'EN',
   polyGeojsonLevel: null,
   imageLoadFlag: true,
-  currentLevel: 1,
+  currentLevel: 0,
   levelRoutePoi: null,
   routeBuildings: {},
   routesArray: {},
@@ -81,6 +81,7 @@ export const state = {
   elevators: [],
   elevatorCount: 0,
   routeArray: [],
+  globalIcon: null,
   globalStartKey: null,
   globalEndKey: null,
   globalName: null,
@@ -92,27 +93,27 @@ export const state = {
   allPoiGeojson: {
     type: 'FeatureCollection',
     features: [
-      Object.freeze({
+      {
         id: '',
         type: 'Feature',
-        geometry: Object.freeze({ type: 'Polygon', coordinates: [] }),
-        properties: Object.freeze({
+        geometry: { type: 'Polygon', coordinates: [] },
+        properties: {
           title: '',
           icon: '',
           subtitles: [],
-          center: []
-        })
-      })
-    ]
+          center: [],
+        },
+      },
+    ],
   },
   fullPathRoute: {
     type: 'FeatureCollection',
     features: [
-      Object.freeze({
+      {
         type: 'Feature',
         geometry: Object.freeze({ type: 'LineString', coordinates: [] })
-      })
-    ]
+      },
+    ],
   },
   fromMarkerLocation: [],
   toMarkerLocation: [],

@@ -26,7 +26,7 @@ import { removeRouteLayer } from '../mapController.js';
  * @returns {boolean} True if all layers processed successfully.
  */
 export async function layersLevel(sortedLayers) {
-  let success = true;
+  let isLayersProcessed = true;
 
   try {
     // Iterate floors
@@ -69,7 +69,7 @@ export async function layersLevel(sortedLayers) {
           }
         } catch (err) {
           console.error(`Error processing layer ${kind}:`, err);
-          success = false;
+          isLayersProcessed = false;
         }
       }
 
@@ -84,10 +84,10 @@ export async function layersLevel(sortedLayers) {
     }
   } catch (err) {
     console.error('layersLevel error:', err);
-    success = false;
+    isLayersProcessed = false;
   }
 
-  return success;
+  return isLayersProcessed;
 }
 
 /**
@@ -104,7 +104,16 @@ export function toggleLayer(ids, name) {
   const firstId = `${ids[0]}/${name}`;
   const visible = map.getLayer(firstId)
     && map.getLayoutProperty(firstId, 'visibility') === 'visible';
-  if (visible) link.className = 'active';
+  
+  if (visible) {
+    link.className = 'active';
+    map.on('mouseenter', ids, function (e) {
+      map.getCanvas().style.cursor = 'pointer';
+    });
+    map.on('mouseleave', ids, function (e) {
+      map.getCanvas().style.cursor = '';
+    });
+  }
 
   link.onclick = function(e) {
     e.preventDefault();
