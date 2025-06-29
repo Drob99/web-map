@@ -9,6 +9,7 @@ import {
   elevatorGuide,
   enterNavigationMode,
   routeLevel,
+  switchFloorByNo
 } from "../mapController.js";
 import { setupArrowAnimation, initializeArrowsSourceAndLayer, startAnimation, stopAnimation } from "../animation/arrowAnimation.js";
 import { map } from "../mapInit.js";
@@ -186,6 +187,7 @@ export function drawPathToPoi(
   // Initialize GeoJSON and state
   state.routeEnabled = true;
   state.levelRoutePoi = fromLevel.toString();
+  switchFloorByNo(fromLevel);
   state.fullPathRoute = {
     type: "FeatureCollection",
     features: [

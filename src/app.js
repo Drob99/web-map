@@ -57,21 +57,23 @@ export default class App {
     catch (authError) {
       console.error("Authentication error failed:", authError);
     }
+    await Promise.all([
+      new Promise((resolve) => map.on("load", resolve)),
+    ]);
 
-    map.on("load", () => {
-      // 2) Initialize UI and map interactions
-      this.initUI();
-      this.initMapHandlers();
 
-      // 3) Start animations
-      this.initArrowAnimation();
+    // 2) Initialize UI and map interactions
+    this.initUI();
+    this.initMapHandlers();
 
-      // 4) Display the current floor
-      this.displayFloor();
+    // 3) Start animations
+    this.initArrowAnimation();
 
-      // 5) Hide splash screen
-      this.hideSplash();
-    });
+    // 4) Display the current floor
+    this.displayFloor();
+
+    // 5) Hide splash screen *now* that both map + data are ready
+    this.hideSplash();
   }
 }
 

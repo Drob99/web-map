@@ -51,7 +51,7 @@ export async function getBuildings(token = state.bearerToken) {
       if (success) {
         try {
           const data = JSON.parse(payload);
-          sessionStorage.setItem('state.buildings', JSON.stringify(data));
+          sessionStorage.setItem('state.buildingsObject', JSON.stringify(data));
           resolve({ data, isFetched: true });
         } catch (e) {
           reject('Failed to parse buildings JSON: ' + e.message);
