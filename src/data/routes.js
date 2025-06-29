@@ -185,7 +185,7 @@ export function drawPathToPoi(
 
   // Initialize GeoJSON and state
   state.routeEnabled = true;
-  state.levelRoutePoi = fromLevel;
+  state.levelRoutePoi = fromLevel.toString();
   state.fullPathRoute = {
     type: "FeatureCollection",
     features: [
