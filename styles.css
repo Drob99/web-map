@@ -2077,7 +2077,7 @@ Accessability Popup */
 	transform: scale(1.1);
   }
   .popup-menu {
-	font-family: 'Frutiger LT Pro', sans-serif;
+	font-family: 'Poppins';
 	position: fixed;
 	top: 50%;
 	left: 50%;
@@ -2094,6 +2094,7 @@ Accessability Popup */
 	z-index: 1000;
 	display: none;
 	animation: fadeInPopup 0.5s ease forwards;
+    font-size: 0.7em;
   }
   @keyframes fadeInPopup {
 	from { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
@@ -2104,9 +2105,9 @@ Accessability Popup */
   }
   .menu-header {
 	font-size: 18px;
-	font-weight: bold;
 	text-align: center;
 	margin-bottom: 20px;
+    font-family: 'Poppins';
   }
   .tabs {
 	display: flex;
@@ -2134,7 +2135,7 @@ Accessability Popup */
 	background-color: #f0f0f0;
 	border-radius: 8px;
 	border: 2px solid #f0f0f0;
-	padding: 10px;
+	padding: 20px;
 	text-align: center;
 	font-weight: 500;
 	cursor: pointer;
@@ -2163,8 +2164,14 @@ Accessability Popup */
 	background-color: #ddd;
 	border-radius: 6px;
 	cursor: pointer;
-	font-weight: bold;
+    border: 1px solid lightgray;
   }
+
+  .reset-button:hover{
+    background-color: white;
+    transform: translateY(-2px);
+  }
+
   .footer {
 	text-align: right;
 	font-size: 12px;

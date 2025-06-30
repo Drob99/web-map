@@ -1,4 +1,6 @@
 //! Global Variables
+import {state} from "./config.js";
+
 var Bearer_token,
   buildings_object,
   category_object,
@@ -10,7 +12,7 @@ var Bearer_token,
   level_array = {},
   Layersnames = [],
   toggleableLayerIds = [];
-var index_pority = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, -1, -2, -3, -4, -5],
+  var index_pority = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, -1, -2, -3, -4, -5],
   POI_counter = 0,
   language = "EN",
   Poly_geojson_level,
@@ -105,7 +107,7 @@ function initMap(containerId, opts) {
 }
 
 // Bring back the same global you were using:
-const map = initMap("map", {
+export const map = initMap("map", {
   token:
     "pk.eyJ1Ijoibm1hY2NvdW50cyIsImEiOiJja2xhazRobjgzbDkxMm9xb2d3YmQ3d2s2In0.wGFavxo8mpa7OI_lEhYUow",
   center: [-74.5, 40],
@@ -1388,7 +1390,7 @@ async function get_image(url, name) {
 function poi_show_by_level() {
   var counter = 0;
   var counter_building = 0;
-
+  state.spacing = state.isLetterSpaced ? 0.3 : 0;
   Poly_geojson_level = {
     type: "FeatureCollection",
     features: [
@@ -1595,6 +1597,7 @@ function poi_show_by_level() {
       "text-size": 12,
       "text-offset": [0, 0.8],
       "symbol-placement": "point",
+      "text-letter-spacing": spacing,
     },
     paint: {
       "icon-opacity": [

@@ -92,6 +92,16 @@ export const state = {
   fullTimeToDestination: 0,
   isBlackWhite : false,
 	isInverted : false,
+  isLetterSpaced : false,
+  spacing : false ? 0.3 : 0,
+  isLineSpaced : false,
+  lineHeight : false ? 2 : 1.2,
+  isBigText : false,
+  size :false ? 20 : 14,
+  isSimpleFont : false,
+  isSpeechEnabled : false,
+  isAnimationPaused : false,
+  font : false? ['Arial Unicode MS Regular']: ['Arial Unicode MS Regular'],
   allPoiGeojson: {
     type: 'FeatureCollection',
     features: [
