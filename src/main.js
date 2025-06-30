@@ -9,4 +9,5 @@ import './app.js';
 document.addEventListener('DOMContentLoaded', () => {
   // Application startup is handled in app.js’s module scope on import
   // No additional logic required here
+   
 });
