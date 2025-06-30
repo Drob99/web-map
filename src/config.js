@@ -7,11 +7,11 @@
  * API and Mapbox settings.
  */
 export const API_CONFIG = Object.freeze({
-  BASE_URL: "https://api.nearmotion.com/api/public/v1/",
+  BASE_URL: "https://mapsapi.kkia.sa/api/public/v1/",
   ACCESS_TOKEN:"pk.eyJ1Ijoibm1hY2NvdW50cyIsImEiOiJja2xhazRobjgzbDkxMm9xb2d3YmQ3d2s2In0.wGFavxo8mpa7OI_lEhYUow",
   MAPBOX_STYLE: "mapbox://styles/mapbox/streets-v11",
-  CLIENT_ID: "5hk9KDD86eYhhcgpsA_FepLpC8g2iB5ic5htMUqhFtk",
-  CLIENT_SECRET: "V0VJtEnRetTK_QOwy7V1M1JxRsnUbggE0ehvK8Pd210",
+  CLIENT_ID: "pqXhZPUYSu4WS7I93slT13ngFhUChqM-URiH0YaPh74",
+  CLIENT_SECRET: "OODWYKVd_Lt3pfPTAXvPiQd3MkaKPi-YSFwd6W4knI8",
 });
 
 /**

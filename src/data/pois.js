@@ -85,6 +85,7 @@ function processPoiProperties(poi) {
       iconUrl,
       category_id: poi.category_id,
       subtitles: poi.subtitles,
+      subcategories: poi.subcategories,
       center: [poi.longitude, poi.latitude],
       level: state.levelArray[poi.building_floor_id],
       color: isNaN(poi.title) ? poi.color : '#CDD0CB'

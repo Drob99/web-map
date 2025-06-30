@@ -1366,6 +1366,7 @@ async function POI_properties(POI_object) {
       Center: [POI_object.longitude, POI_object.latitude],
       Level: level_array[POI_object.building_floor_id],
       Color: color,
+      subcategories: POI_object.subcategories,
     },
     geometry: {
       coordinates: [POI_coordinates],
@@ -1373,7 +1374,7 @@ async function POI_properties(POI_object) {
     },
   };
   POI_counter++;
-  Load_dropdown_pois(POI_object);
+  Load_dropdown_pois(POI_object); 
 }
 
 async function get_image(url, name) {
