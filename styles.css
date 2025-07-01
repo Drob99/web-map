@@ -17,45 +17,276 @@
      width: 100%;
  }
 
+ /* Nearby Menu - Updated for new container structure */
+ #nearbyContainer .nearby-restaurant-card {
+      display: flex;
+      background-color: white;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      transition: transform 0.1s ease;
+    }
+
+    #nearbyContainer .nearby-restaurant-card:hover {
+      transform: scale(1.01);
+    }
+
+    #nearbyContainer .nearby-restaurant-info {
+      flex: 1;
+    }
+
+    #nearbyContainer .nearby-restaurant-name {
+      font-weight: bold;
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+
+    #nearbyContainer .nearby-rating {
+        display: none;
+      color: #fbbc05;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    #nearbyContainer .nearby-restaurant-type,
+    #nearbyContainer .nearby-restaurant-location,
+    #nearbyContainer .nearby-restaurant-hours,
+    #nearbyContainer .nearby-restaurant-tags {
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 3px;
+    }
+
+    #nearbyContainer .nearby-restaurant-status {
+      color: green;
+      font-weight: bold;
+      font-size: 13px;
+    }
+
+    #nearbyContainer .nearby-restaurant-image {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-left: 10px;
+    }
+
+ /* Language Button and Menu */
+ 
+.lang-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #eee;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 0 0 2px #eee inset;
+}
+
+.lang-button i {
+  color: #007bff; /* Blue icon */
+  font-size: 18px;
+}
+
+.language-panel {
+    display: none;
+    position: fixed;
+    max-height: 600px;
+    overflow: visible;
+    top: 20px;
+    left: 20px;
+    background: #fff;
+    border-radius: 20px;
+    width: 350px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+@keyframes fadeInLanguagePanel {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fadeInAnimation {
+    animation: fadeInLanguagePanel 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    to {
+    opacity: 1;
+    transform: translateY(0);
+    }
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    font-size: 17px;
+    font-weight: bold;
+    color: #333;
+    border-bottom: 1px solid #f0f0f0;
+    gap: 8px; /* Space between back icon and text */
+}
+
+.header .back-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+.header .back-button i {
+    font-size: 20px;
+    color: #333;
+}
+
+.header .back-button:hover {
+    transform: scale(1.1);
+}
+
+/* Animation for language panel sliding down when shown */
+.language-panel.show {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@keyframes slideFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.header i {
+    font-size: 20px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.language-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.language-item {
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+    color: #555;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.language-item:last-child {
+    border-bottom: none;
+}
+
+.language-item:hover {
+    background-color: #f9f9f9;
+    transform: translateX(4px);
+}
+
+.language-item.active {
+    color: #007bff;
+    font-weight: 500;
+}
+
+.language-item.active i {
+    color: #007bff;
+}
+
+/* Optional Scrollbar Styling */
+.language-list::-webkit-scrollbar {
+    width: 6px;
+}
+.language-list::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
  /* Airport Menu Component Styles */
- .menu-container {
-     position: fixed;
-     top: 20px;
-     left: 20px;
-     width: 350px !important;
-     background: white;
-     border-radius: 12px;
-     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-     overflow: hidden;
-     font-family: 'Poppins', sans-serif;
-     z-index: 1000;
-     transition: all 0.3s ease;
- }
+.menu-container {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 350px !important;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    font-family: 'Poppins', sans-serif;
+    z-index: 1000;
+    transition: max-height 0.4s ease, padding 0.4s ease, box-shadow 0.3s ease;
+    max-height: 250px; /* Start as collapsed */
+}
 
- /* Desktop States */
- .menu-container.desktop-collapsed {
-     height: auto;
-     max-height: 250px;
-     overflow: hidden;
- }
+/* Collapsed State */
+.menu-container.desktop-collapsed {
+    max-height: 250px;
+    overflow: hidden;
+}
 
- .menu-container.desktop-expanded {
-     height: auto;
-     max-height: 785px;
-     overflow: visible;
- }
+/* Expanded State */
+.menu-container.desktop-expanded {
+    max-height: 785px;
+    overflow: visible;
+}
 
- .menu-container.desktop-collapsed .menu-item.row-2,
- .menu-container.desktop-collapsed .menu-item.row-3,
- .menu-container.desktop-collapsed .menu-item.row-4 {
-     display: none;
- }
+/* Animate individual rows */
+.menu-item.row-2,
+.menu-item.row-3,
+.menu-item.row-4 {
+    opacity: 0;
+    transform: translateY(10px);
+    height: 0;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease, height 0.3s ease, padding 0.3s ease, margin 0.3s ease;
+    display: none;
+}
 
- .menu-container.desktop-expanded .menu-item.row-2,
- .menu-container.desktop-expanded .menu-item.row-3,
- .menu-container.desktop-expanded .menu-item.row-4 {
-     display: flex;
- }
+/* When Expanded: fade and slide in rows */
+.menu-container.desktop-expanded .menu-item.row-2,
+.menu-container.desktop-expanded .menu-item.row-3,
+.menu-container.desktop-expanded .menu-item.row-4 {
+    opacity: 1;
+    transform: translateY(0);
+    height: auto;
+    padding: 16px 0; /* Restore padding if needed */
+    margin: 0;
+    display: flex;
+}
+
 
  /* Search Section */
  .search-section {
@@ -1970,7 +2201,7 @@
     width: 100%;
     height: 100%;
     background: white;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     z-index: 9999;
@@ -2022,3 +2253,80 @@
     opacity: 0;
     transition: opacity 0s ease-out;
 }
+
+.menu-container.hide {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+}
+
+.menu-container.show {
+    display: block;
+    opacity: 1;
+    transition: opacity 0.5s ease-in;
+}
+
+.language-panel {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    z-index: 1000;
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+    height: auto;
+    max-height: 250px;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.language-panel.show {
+    transform: translateX(0);
+}
+
+.language-panel.hide {
+    transform: translateX(100%);
+}
+
+.back-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
+    margin-right: 10px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#nearbyContainer {
+    display: none;
+    position: absolute;
+    /* width: 100%; */
+    /* height: 57%; */
+    background-color: white;
+    z-index: 1000;
+    transition: transform 0.3s ease-in-out;
+    top: 20px;
+    left: 20px;
+    height: auto;
+    max-height: 506px;
+}
+
+#nearbyContainer.show {
+    transform: translateX(0);
+}
+
+#nearbyContainer.hide {
+    transform: translateX(100%);
+}
+
