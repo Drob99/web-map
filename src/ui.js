@@ -164,232 +164,221 @@ export function screensaver() {
 }
 
 
-/**
- * Initialize accessibility tools: attaches event listeners to toggle buttons
- * and exposes toggle/reset functions globally.
- */
-function initAccessabilty() {
-   document.getElementById("closeBtn").addEventListener("click", closeMenu);
-   document.getElementById("accessibilityBtn").addEventListener("click", toggleMenu);
-   window.toggleCard = toggleCard;
-   window.resetSettings = resetSettings;
+
+// Language Selection 
+
+  const languages = [
+    "English",
+    "عربي",
+    "中国人"
+  ];
+
+  const languageListEl = document.getElementById('languageList');
+
+  languages.forEach((lang, index) => {
+    const li = document.createElement('li');
+    li.classList.add('language-item');
+    if (index === 0) {
+      li.classList.add('active');
+      li.innerHTML = `${lang} <i class="bi bi-check-lg"></i>`;
+    } else {
+      li.textContent = lang;
+    }
+    li.addEventListener('click', () => selectLanguage(li));
+    languageListEl.appendChild(li);
+  });
+
+  function selectLanguage(selectedEl) {
+    document.querySelectorAll('.language-item').forEach(item => {
+      item.classList.remove('active');
+      if (item.querySelector('i')) item.querySelector('i').remove();
+    });
+    selectedEl.classList.add('active');
+    selectedEl.innerHTML += ' <i class="bi bi-check-lg"></i>';
+
+    // Small click animation
+    selectedEl.style.transform = 'scale(1.05)';
+    setTimeout(() => {
+      selectedEl.style.transform = 'scale(1)';
+    }, 150);
+  }
+
+export function openLanguageFromMenu() {
+    document.querySelector('.language-panel').style.display = 'block';
+    document.getElementById('menuContainer').style.display = 'none';
+    document.getElementById('nearbyContainer').style.display = 'none';
 }
 
-/**
- * Close the side accessibility menu by removing the 'open' class.
- */
-function closeMenu() {
-	const menu = document.getElementById("sideMenu");
-	menu.classList.remove("open");
+export function languageMenu() {
+    const languagePanel = document.querySelector(".language-panel");
+    const menuContainer = document.getElementById("menuContainer");
+
+    if (languagePanel.classList.contains("show")) {
+        // Hide language panel
+        languagePanel.classList.remove("show");
+        languagePanel.classList.add("hide");
+        languagePanel.style.display = "none";
+
+        // Show main menu
+        menuContainer.classList.remove("hide");
+        menuContainer.classList.add("show");
+        menuContainer.style.display = "block";
+    } else {
+        // Show language panel
+        languagePanel.classList.remove("hide");
+        languagePanel.classList.add("show");
+        languagePanel.style.display = "block";
+
+        // Hide main menu
+        menuContainer.classList.remove("show");
+        menuContainer.classList.add("hide");
+        menuContainer.style.display = "none";
+    }
 }
 
-/**
- * Toggle the visibility of the side accessibility menu.
- */
-function toggleMenu() {
-	const menu = document.getElementById("sideMenu");
-	menu.classList.toggle("open");
+
+function toggleNearbyMenu() {
+    const nearbyContainer = document.getElementById("nearbyContainer");
+    const menuContainer = document.getElementById("menuContainer");
+
+    const isNearbyVisible = nearbyContainer.style.display === 'block';
+
+    if (isNearbyVisible) {
+        // Hide Nearby, Show Main Menu
+        nearbyContainer.style.display = 'none';
+        menuContainer.style.display = 'block';
+    } else {
+        // Show Nearby, Hide Main Menu
+        nearbyContainer.style.display = 'block';
+        menuContainer.style.display = 'none';
+    }
 }
 
-/**
- * Toggle a specific accessibility tool and apply its effect.
- * @param {HTMLElement} element - The clicked card element.
- * @param {string} toolName - The name of the tool to enable/disable.
- */
-export function toggleCard(element, toolName) {
-	const isActive = element.classList.toggle("active");
 
-	if (isActive) {
-		state.activeTools.add(toolName);
-	} else {
-		state.activeTools.delete(toolName);
-	}
+document.addEventListener("DOMContentLoaded", function() {
+    const languageButton = document.getElementById("languageToggleButton");
+    const nearbyButton = document.getElementById("nearbyToggleButton");
+    const languageBackButton = document.getElementById("languageBack");
+    const nearbyBackButton = document.getElementById("nearbyBack");
 
-	// Activate/deactivate the corresponding tool
-	if (toolName == "simpleFont") simpleFont_toggle();
-	else if (toolName == "biggerText") toggleTextSize();
-	else if (toolName == "desaturation") desaturationToggle();
-	else if (toolName == "contrast") toggleColorScheme();
-	else if (toolName == "letterSpacing") toggleLetterSpacing();
-	else if (toolName == "lineSpacing") toggleLineSpacing();
-	else if (toolName == "readSpeaker") toggleSpeech();
-	else if (toolName == "cursor") toggleMapboxAccessibility();
-	else if (toolName == "pauseAnimation") pauseAnimationToggle();
-}
+    if (languageButton) {
+        languageButton.addEventListener("click", languageMenu);
+    }
 
-/**
- * Toggle between normal and high-contrast (black-and-white) mode.
- */
-function toggleColorScheme() {
-	state.isBlackWhite = !state.isBlackWhite;
-	updateFilter();
-}
+    if (nearbyButton) {
+        nearbyButton.addEventListener("click", toggleNearbyMenu);
+    }
 
-/**
- * Toggle desaturation (grayscale) mode.
- */
-function desaturationToggle() {
-	state.isInverted = !state.isInverted;
-	updateFilter();
-}
+    if (languageBackButton) {
+        languageBackButton.addEventListener("click", languageMenu);
+    }
 
-/**
- * Reset both black-white and grayscale filters to default.
- */
-function resetFilters() {
-	state.isBlackWhite = false;
-	state.isInverted = false;
-	updateFilter();
-}
+    if (nearbyBackButton) {
+        nearbyBackButton.addEventListener("click", toggleNearbyMenu);
+    }
+});
 
-/**
- * Apply current filter state to the document's root element.
- */
-function updateFilter() {
-	let filter = '';
+ // Nearby Menu
+ const nearbyRestaurants = [
+      {
+        name: "Somewhere Bujairi",
+        rating: "4.3",
+        reviews: "(2,642)",
+        price: "SAR 200+",
+        type: "Restaurant",
+        icon: "fa-utensils",
+        status: "Open",
+        hours: "Closes 12 AM",
+        tags: "Dine-in · Takeaway · No delivery",
+        image: "https://via.placeholder.com/80"
+      },
+      {
+        name: "Brunch & Cake Al Bujairi",
+        rating: "4.4",
+        reviews: "(2,880)",
+        price: "-",
+        type: "Brunch",
+        icon: "fa-coffee",
+        status: "Open",
+        hours: "Closes 11:45 PM",
+        tags: "Dine-in · Takeaway · No-contact delivery",
+        image: "https://via.placeholder.com/80/ff8888"
+      },
+      {
+        name: "Bujairi Terrace",
+        rating: "4.6",
+        reviews: "(11,789)",
+        price: "-",
+        type: "Tourist attraction",
+        icon: "fa-map-marker-alt",
+        status: "Open",
+        hours: "Closes 12 AM",
+        tags: "Dine-in · Takeaway",
+        image: "https://via.placeholder.com/80/ccddff"
+      },
+      {
+        name: "Dim Light Restaurant",
+        rating: "3.7",
+        reviews: "(3,981)",
+        price: "$$",
+        type: "Restaurant",
+        icon: "fa-utensils",
+        status: "Open 24 hours",
+        hours: "24/7",
+        tags: "Dine-in · Takeaway · No-contact delivery",
+        image: "https://via.placeholder.com/80/ffeebb"
+      },
+      {
+        name: "Sum+Things",
+        rating: "3.9",
+        reviews: "(2,072)",
+        price: "$$$",
+        type: "Restaurant",
+        icon: "fa-utensils",
+        status: "Closed",
+        hours: "Opens 5 PM",
+        tags: "Dine-in · Takeaway · No-contact delivery",
+        image: "https://via.placeholder.com/80/bbccaa"
+      },
+      {
+        name: "Cafe De L’ Esplanade",
+        rating: "3.6",
+        reviews: "(492)",
+        price: "SAR 200+",
+        type: "French",
+        icon: "fa-wine-glass-alt",
+        status: "Opens soon",
+        hours: "10 AM",
+        tags: "Dine-in · Takeaway",
+        image: "https://via.placeholder.com/80/ddaaff"
+      }
+    ];
 
-	if (state.isBlackWhite) {
-		filter += 'saturate(0%) ';
-	} else {
-		filter += 'saturate(100%) ';
-	}
+    const nearbyRestaurantList = document.getElementById("nearbyRestaurantList");
 
-	if (state.isInverted) {
-		filter += 'invert(1) hue-rotate(180deg)';
-	}
+    nearbyRestaurants.forEach(nearbyRestaurant => {
+      const nearbyCard = document.createElement("div");
+      nearbyCard.className = "nearby-restaurant-card";
 
-	document.documentElement.style.filter = filter.trim();
-}
+      const nearbyInfoDiv = document.createElement("div");
+      nearbyInfoDiv.className = "nearby-restaurant-info";
 
-/**
- * Toggle letter spacing in the map's text layer.
- */
-function toggleLetterSpacing() {
-	state.spacing = state.isLetterSpaced ? 0 : 0.3;
-	map.setLayoutProperty('municipality-name', 'text-letter-spacing', state.spacing);
-	state.isLetterSpaced = !state.isLetterSpaced;
-}
+      nearbyInfoDiv.innerHTML = `
+        <div class="nearby-restaurant-name">${nearbyRestaurant.name}</div>
+        <div class="nearby-rating">⭐ ${nearbyRestaurant.rating} ${nearbyRestaurant.reviews} · ${nearbyRestaurant.price}</div>
+        <div class="nearby-restaurant-type"><i class="fas ${nearbyRestaurant.icon}"></i> ${nearbyRestaurant.type}</div>
+        <div class="nearby-restaurant-status" style="color: ${nearbyRestaurant.status.includes('Open') ? 'green' : (nearbyRestaurant.status.includes('Closed') ? 'red' : '#fbbc05')}">${nearbyRestaurant.status}</div>
+        <div class="nearby-restaurant-hours">${nearbyRestaurant.hours}</div>
+        <div class="nearby-restaurant-tags">${nearbyRestaurant.tags}</div>
+      `;
 
-/**
- * Reset letter spacing to default.
- */
-function resetLetterSpacing() {
-	map.setLayoutProperty('municipality-name', 'text-letter-spacing', 0);
-	state.isLetterSpaced = false;
-}
+      const nearbyImg = document.createElement("img");
+      nearbyImg.src = nearbyRestaurant.image;
+      nearbyImg.className = "nearby-restaurant-image";
 
-/**
- * Toggle line spacing in the map's text layer.
- */
-function toggleLineSpacing() {
-	state.lineHeight = state.isLineSpaced ? 1.2 : 2.0;
-	map.setLayoutProperty('municipality-name', 'text-line-height', state.lineHeight);
-	state.isLineSpaced = !state.isLineSpaced;
-}
+      nearbyCard.appendChild(nearbyInfoDiv);
+      nearbyCard.appendChild(nearbyImg);
 
-/**
- * Reset line spacing to default.
- */
-function resetLineSpacing() {
-	map.setLayoutProperty('municipality-name', 'text-line-height', 1.2);
-	state.isLineSpaced = false;
-}
+      nearbyRestaurantList.appendChild(nearbyCard);
+    });
 
-/**
- * Toggle text size between normal and large.
- */
-function toggleTextSize() {
-	state.size = state.isBigText ? 14 : 20;
-	map.setLayoutProperty('municipality-name', 'text-size', state.size);
-	state.isBigText = !state.isBigText;
-}
-
-/**
- * Reset text size to default.
- */
-function resetTextStyle() {
-	map.setLayoutProperty('municipality-name', 'text-size', 14);
-	state.isBigText = false;
-}
-
-/**
- * Toggle between default font and simplified font (e.g. Arial).
- */
-function simpleFont_toggle() {
-	state.font = state.isSimpleFont
-		? ['Arial Unicode MS Regular']
-		: ['Arial Unicode MS Regular']; // Same font in this case; change if needed
-	map.setLayoutProperty('municipality-name', 'text-font', state.font);
-	state.isSimpleFont = !state.isSimpleFont;
-}
-
-/**
- * Reset font to default.
- */
-function resetFont() {
-	map.setLayoutProperty('municipality-name', 'text-font', ['Arial Unicode MS Regular']);
-	state.isSimpleFont = false;
-}
-
-/**
- * Toggle speech reader functionality.
- */
-function toggleSpeech() {
-	state.isSpeechEnabled = !state.isSpeechEnabled;
-}
-
-/**
- * Disable speech reader functionality.
- */
-function SpeechReset() {
-	state.isSpeechEnabled = false;
-}
-
-/**
- * Toggle pause/resume of animations (e.g., route animations).
- * Function is currently commented and may require implementation.
- */
-function pauseAnimationToggle() {
-	// Placeholder: Add logic to pause/resume animation if needed
-}
-
-/**
- * Reset animation state to default.
- */
-function resetAnimation() {
-	// Placeholder: Add logic to reset animation if needed
-}
-
-/**
- * Toggle map-specific accessibility features like a custom cursor.
- */
-function toggleMapboxAccessibility() {
-	// Placeholder: Add logic to toggle custom cursor or other features
-}
-
-/**
- * Reset map-specific accessibility features to default.
- */
-function resetMapboxAccessibility() {
-	// Placeholder: Add logic to reset map accessibility state
-}
-
-/**
- * Reset all accessibility tools and settings to default values.
- */
-function resetSettings() {
-	resetFont();
-	resetTextStyle();
-	resetFilters();
-	resetLetterSpacing();
-	resetLineSpacing();
-	SpeechReset();
-	resetMapboxAccessibility();
-	resetAnimation();
-
-	document.querySelectorAll(".tool-card.active").forEach(card => {
-		card.classList.remove("active", "green");
-	});
-	state.activeTools.clear();
-
-}

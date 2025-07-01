@@ -11,6 +11,7 @@ import { switchFloorByNo } from "./mapController.js";
 import { API_CONFIG } from "./config.js";
 import { map } from "./mapInit.js";
 
+
 /**
  * Main application class following Dependency Injection (DI) and Single Responsibility.
  */
