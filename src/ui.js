@@ -7,6 +7,7 @@ import { FLOOR_TITLES, state } from "./config.js";
 import { drawPathToPoi } from "./data/routes.js";
 import { clearRoute, routeEnabled } from "./mapController.js";
 import { stringMatch } from "./utils.js";
+import { map } from "./mapInit.js";
 
 /**
  * Initialize UI: dropdowns and swap button.
@@ -15,6 +16,7 @@ export function initUI() {
   initDropdown("#from_location");
   initDropdown("#to_location");
   bindSwapButton(".swap-btn");
+  initAccessabilty();
 }
 
 /**
@@ -30,6 +32,7 @@ function initDropdown(selector) {
     if (fromVal && toVal) handleSelection();
   });
 }
+
 
 /**
  * Binds click on swap button to exchange dropdown values.

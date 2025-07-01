@@ -8,8 +8,7 @@
  */
 export const API_CONFIG = Object.freeze({
   BASE_URL: "https://api.nearmotion.com/api/public/v1/",
-  ACCESS_TOKEN:
-    "pk.eyJ1Ijoibm1hY2NvdW50cyIsImEiOiJja2xhazRobjgzbDkxMm9xb2d3YmQ3d2s2In0.wGFavxo8mpa7OI_lEhYUow",
+  ACCESS_TOKEN:"pk.eyJ1Ijoibm1hY2NvdW50cyIsImEiOiJja2xhazRobjgzbDkxMm9xb2d3YmQ3d2s2In0.wGFavxo8mpa7OI_lEhYUow",
   MAPBOX_STYLE: "mapbox://styles/mapbox/streets-v11",
   CLIENT_ID: "5hk9KDD86eYhhcgpsA_FepLpC8g2iB5ic5htMUqhFtk",
   CLIENT_SECRET: "V0VJtEnRetTK_QOwy7V1M1JxRsnUbggE0ehvK8Pd210",
@@ -28,14 +27,14 @@ export const ANIMATION_CONFIG = Object.freeze({
 /**
  * Rendering priority indexes.
  */
-export const INDEX_PRIORITY = Object.freeze([
+export const INDEX_PRIORITY = [
   0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, -1, -2, -3, -4, -5
-]);
+];
 
 /**
  * Floor index to title mappings.
  */
-export const FLOOR_TITLES = Object.freeze({
+export const FLOOR_TITLES = {
   '-5': 'Basement 5th Floor',
   '-4': 'Basement 4th Floor',
   '-3': 'Basement 3rd Floor',
@@ -52,7 +51,7 @@ export const FLOOR_TITLES = Object.freeze({
   '8': 'Eighth Floor',
   '9': 'Ninth Floor',
   '10': 'Tenth Floor'
-});
+};
 
 /**
  * Default application state.
@@ -73,7 +72,7 @@ export const state = {
   language: 'EN',
   polyGeojsonLevel: null,
   imageLoadFlag: true,
-  currentLevel: 1,
+  currentLevel: 0,
   levelRoutePoi: null,
   routeBuildings: {},
   routesArray: {},
@@ -81,38 +80,52 @@ export const state = {
   elevators: [],
   elevatorCount: 0,
   routeArray: [],
+  globalIcon: null,
   globalStartKey: null,
   globalEndKey: null,
   globalName: null,
   globalDistance: null,
   globalTime: null,
   globalZLevel: null,
+  activeTools : new Set(),
   fullDistanceToDestination: 0,
   fullTimeToDestination: 0,
+  isBlackWhite : false,
+	isInverted : false,
+  isLetterSpaced : false,
+  spacing : false ? 0.3 : 0,
+  isLineSpaced : false,
+  lineHeight : false ? 2 : 1.2,
+  isBigText : false,
+  size :false ? 20 : 14,
+  isSimpleFont : false,
+  isSpeechEnabled : false,
+  isAnimationPaused : false,
+  font : false? ['Arial Unicode MS Regular']: ['Arial Unicode MS Regular'],
   allPoiGeojson: {
     type: 'FeatureCollection',
     features: [
-      Object.freeze({
+      {
         id: '',
         type: 'Feature',
-        geometry: Object.freeze({ type: 'Polygon', coordinates: [] }),
-        properties: Object.freeze({
+        geometry: { type: 'Polygon', coordinates: [] },
+        properties: {
           title: '',
           icon: '',
           subtitles: [],
-          center: []
-        })
-      })
-    ]
+          center: [],
+        },
+      },
+    ],
   },
   fullPathRoute: {
     type: 'FeatureCollection',
     features: [
-      Object.freeze({
+      {
         type: 'Feature',
         geometry: Object.freeze({ type: 'LineString', coordinates: [] })
-      })
-    ]
+      },
+    ],
   },
   fromMarkerLocation: [],
   toMarkerLocation: [],
