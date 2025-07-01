@@ -67,7 +67,7 @@
             this.currentLocation = null;
             this.currentStep = 0;
             this.totalSteps = 7;
-
+            this.categoryItem;
             // Touch/drag variables
             this.startY = 0;
             this.currentY = 0;
@@ -186,9 +186,9 @@
             if (this.locationsBackBtn) {
                 this.locationsBackBtn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    if(this.currentSubcategory != null){
+                    if (this.currentSubcategory != null) {
                         this.showSubcategoriesView(this.currentCategory);
-                    }else{
+                    } else {
                         this.showCategoriesView();
                     }
                 });
@@ -253,6 +253,7 @@
                 item.addEventListener('click', (e) => {
                     e.preventDefault();
                     const categoryName = item.querySelector('.menu-label').textContent;
+                    this.categoryItem = categoryName;
                     // console.log('Menu item clicked', { categoryName, index });
                     //if (this.hasSubcategories(categoryName)) {
                     this.showSubcategoriesView(categoryName);
@@ -268,7 +269,7 @@
                 });
 
                 this.searchInput.addEventListener('input', (e) => {
-                    //console.log('Search input changed:', e.target.value);
+                    console.log('Search input changed:', e.target.value);
                 });
             }
         }
@@ -385,14 +386,14 @@
             if (this.navigationView) this.navigationView.style.display = 'none';
         }
 
-         showLocationsViewByID(categoryID) {
+        showLocationsViewByID(categoryID) {
             //console.log('Showing locations view for', subcategoryName);
             this.currentView = 'locations';
             this.currentSubcategory = null;
 
             // Auto-expand menu
             this.expandMenu();
-          
+
             this.populateLocationsByID(categoryID);
 
             if (this.categoriesSection) this.categoriesSection.style.display = 'none';
@@ -429,7 +430,7 @@
             // Set destination
             const destinationText = document.getElementById('destinationText');
             if (destinationText && location) {
-                destinationText.textContent = location.name || 'Selected Location';
+                destinationText.textContent = location.properties.title || 'Selected Location';
             }
 
             // Hide search bar when showing directions
@@ -469,7 +470,7 @@
             departureInput.addEventListener('input', (e) => {
                 const query = e.target.value.trim();
                 if (query.length > 0) {
-                    this.searchLocations(query);
+                    this.populatePopularLocationsByName(query);
                 } else {
                     departureResults.style.display = 'none';
                 }
@@ -478,64 +479,19 @@
             // Handle focus to show popular locations
             departureInput.addEventListener('focus', () => {
                 if (departureInput.value.trim() === '') {
-                    this.showPopularDepartureLocations();
+                    //this.showPopularDepartureLocations();
                 }
             });
 
             // Hide results when clicking outside
             document.addEventListener('click', (e) => {
                 if (!departureInput.contains(e.target) && !departureResults.contains(e.target)) {
-                    departureResults.style.display = 'none';
+                    //departureResults.style.display = 'none';
                 }
             });
         }
 
-        searchLocations(query) {
-            const departureResults = document.getElementById('departureResults');
-            if (!departureResults) return;
 
-            // Get all locations from airport data
-            const allLocations = [];
-            Object.values(window.airportData.locations).forEach(location => {
-                allLocations.push(location);
-            });
-
-            // Filter locations based on query
-            const filteredLocations = allLocations.filter(location =>
-                location.name.toLowerCase().includes(query.toLowerCase()) ||
-                location.address.toLowerCase().includes(query.toLowerCase())
-            );
-
-            // Display search results with "Locations" header
-            let resultsHTML = '<div class="search-header">Locations</div>';
-
-            filteredLocations.forEach(location => {
-                const icon = this.getLocationIcon(location.category || 'default');
-                resultsHTML += `
-                    <div class="search-result-item" data-location-id="${location.id}">
-                        <span class="result-icon">${icon}</span>
-                        <div class="result-info">
-                            <div class="result-name">${location.name}</div>
-                            <div class="result-address">${location.address}</div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            departureResults.innerHTML = resultsHTML;
-            departureResults.style.display = 'block';
-
-            // Add click handlers for search results
-            departureResults.querySelectorAll('.search-result-item').forEach(item => {
-                item.addEventListener('click', (e) => {
-                    const locationId = e.currentTarget.getAttribute('data-location-id');
-                    const location = filteredLocations.find(loc => loc.id === locationId);
-                    if (location) {
-                        this.selectDepartureLocation(location);
-                    }
-                });
-            });
-        }
 
         getLocationIcon(category) {
             const icons = {
@@ -573,7 +529,7 @@
 
         // Updated showCompleteDirectionsInterface function
         showCompleteDirectionsInterface(departureLocation) {
-            // console.log('Showing complete directions interface for:', departureLocation);
+            console.log('Showing complete directions interface for:', departureLocation , this.currentLocation);
 
             // Ensure we're in the directions view
             this.currentView = 'directions';
@@ -617,10 +573,10 @@
             if (departureContainer) {
                 const icon = this.getLocationIcon(departureLocation.type || departureLocation.category || 'default');
                 departureContainer.innerHTML = `
-            <div class="selected-departure">
-                <span class="destination-text">${departureLocation.name}</span>
-            </div>
-        `;
+                    <div class="selected-departure">
+                        <span class="destination-text">${departureLocation.properties.title}</span>
+                    </div>
+                `;
             }
 
             // Update destination to show current location with proper styling
@@ -628,7 +584,7 @@
             if (destinationContainer && this.currentLocation) {
                 const destinationIcon = this.getLocationIcon(this.currentLocation.type || 'starbucks');
                 destinationContainer.innerHTML = `
-            <div class="destination-text">${this.currentLocation.name}</div>
+            <div class="destination-text">${this.currentLocation.properties.tilte}</div>
             <button class="swap-locations-btn" id="swapLocationsBtn">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M7 16l4-4-4-4"></path>
@@ -1100,7 +1056,7 @@
                 `;
 
                 resultItem.addEventListener('click', () => {
-                    // console.log("Selected !!!")
+                    console.log("Selected !!!")
                     this.selectDepartureLocation(location);
                 });
 
@@ -1120,41 +1076,40 @@
             return colors[iconClass] || colors.default;
         }
 
-        selectDepartureLocation(departureLocation) {
-            const departureInput = document.getElementById('departureInput');
-            const departureResults = document.getElementById('departureResults');
-            const routeSummary = document.getElementById('routeSummary');
-            const backButton = document.getElementById('directionsBackBtn');
-            const headerOptions = document.querySelector('.header-options');
+        // selectDepartureLocation(departureLocation) {
+        //     const departureInput = document.getElementById('departureInput');
+        //     const departureResults = document.getElementById('departureResults');
+        //     const routeSummary = document.getElementById('routeSummary');
+        //     const backButton = document.getElementById('directionsBackBtn');
+        //     const headerOptions = document.querySelector('.header-options');
+        //     if (departureInput) {
+        //         departureInput.value = departureLocation.properties.title;
+        //         departureInput.classList.add('filled');
+        //     }
 
-            if (departureInput) {
-                departureInput.value = departureLocation.name;
-                departureInput.classList.add('filled');
-            }
+        //     if (departureResults) {
+        //         departureResults.style.display = 'none';
+        //     }
 
-            if (departureResults) {
-                departureResults.style.display = 'none';
-            }
+        //     // Show the complete interface after departure is set
+        //     if (routeSummary) {
+        //         routeSummary.style.display = 'block';
+        //     }
 
-            // Show the complete interface after departure is set
-            if (routeSummary) {
-                routeSummary.style.display = 'block';
-            }
+        //     if (backButton) {
+        //         backButton.style.display = 'block';
+        //     }
 
-            if (backButton) {
-                backButton.style.display = 'block';
-            }
+        //     if (headerOptions) {
+        //         headerOptions.style.display = 'flex';
+        //     }
 
-            if (headerOptions) {
-                headerOptions.style.display = 'flex';
-            }
-
-            // Update departure location in the interface
-            const departureLocationElement = document.querySelector('.departure-location-name');
-            if (departureLocationElement) {
-                departureLocationElement.textContent = departureLocation.name;
-            }
-        }
+        //     // Update departure location in the interface
+        //     const departureLocationElement = document.querySelector('.departure-location-name');
+        //     if (departureLocationElement) {
+        //         departureLocationElement.textContent = ddepartureLocation.properties.title;
+        //     }
+        // }
 
         showNavigationView() {
             // console.log('Showing navigation view');
@@ -1207,8 +1162,51 @@
             if (this.subcategoriesView) this.subcategoriesView.style.display = 'none';
             if (this.locationsView) this.locationsView.style.display = 'none';
             if (this.locationDetailsView) this.locationDetailsView.style.display = 'none';
-            if (this.directionsView) this.directionsView.style.display = 'none';
+            if (this.directionsView) this.directionsView.style.display = 'block';
             if (this.navigationView) this.navigationView.style.display = 'none';
+        }
+
+
+        populatePopularLocationsByName(poiName) {
+            const popularLocationsList = document.getElementById('popularLocationsList');
+            if (!popularLocationsList) return;
+
+            // Get all locations from airport data if available, otherwise use legacy data
+            let allLocations = [];
+
+            cfg.state.allPoiGeojson.features.forEach((feature) => {
+                if (feature.properties.title.toLowerCase().includes(poiName.toLowerCase())) {
+                    allLocations.push(feature);
+                }
+            });
+
+            popularLocationsList.innerHTML = '';
+
+            allLocations.forEach(location => {
+                var icon = location?.properties?.iconUrl
+                ? location.properties.iconUrl
+                : "./src/images/missingpoi.png";
+
+                const item = document.createElement('div');
+                item.className = 'location-item';
+                item.innerHTML = `
+                    <div class="location-icon">
+                        <img style="width: 50px;" border-radius: 5px; src="${icon}" />
+                    </div>
+                    <div class="location-details">
+                        <div class="location-name">${location.properties.title}</div>
+                        <div class="location-address">${location.properties.location}</div>
+                    </div>
+                `;
+
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    console.log('Popular location clicked', location);
+                    this.selectDepartureLocation(location);
+                });
+
+                popularLocationsList.appendChild(item);
+            });
         }
 
         populatePopularLocations() {
@@ -1217,62 +1215,33 @@
 
             // Get all locations from airport data if available, otherwise use legacy data
             let allLocations = [];
-            if (window.AIRPORT_DATA) {
-                allLocations = Object.values(window.AIRPORT_DATA.locations);
-            }
 
-            // Fallback to legacy data if no locations found
-            if (allLocations.length === 0) {
-                // Legacy popular locations data
-                allLocations = [
-                    { name: 'American Express Centurion Lounge', amenities: ['WiFi', 'Seating', 'Mobile Order', 'Grab & Go'], address: 'L4, Terminal B', type: 'amex', category: 'Services' },
-                    { name: 'Panda Express', amenities: ['WiFi', 'Seating', 'Mobile Order', 'Grab & Go'], address: 'L4, Terminal B', type: 'panda', category: 'Food & Drinks' },
-                    { name: 'Panda Express', address: 'L3, Terminal C', type: 'panda', category: 'Food & Drinks' },
-                    { name: 'Starbucks', amenities: ['WiFi', 'Seating', 'Mobile Order', 'Grab & Go'], address: 'L4, Terminal B', type: 'starbucks', category: 'Food & Drinks' },
-                    { name: 'Starbucks', amenities: ['WiFi', 'Seating', 'Mobile Order', 'Grab & Go'], address: 'L3, Terminal C', type: 'starbucks', category: 'Food & Drinks' },
-                    { name: 'Starbucks', amenities: ['WiFi', 'Seating', 'Mobile Order', 'Grab & Go'], address: 'L2, Terminal A', type: 'starbucks', category: 'Food & Drinks' },
-                    { name: 'Duty Free', amenities: ['WiFi', 'Seating', 'Mobile Order', 'Grab & Go'], address: 'Terminal 1', type: 'duty_free', category: 'Shops' },
-                    { name: 'Burger King', amenities: ['WiFi', 'Seating', 'Mobile Order', 'Grab & Go'], address: 'L2, Terminal B', type: 'burger', category: 'Food & Drinks' }
-                ];
-            }
-
-            // Sort locations by popularity (you can customize this logic)
-            // For now, we'll prioritize certain types and categories
-            const popularityOrder = {
-                'starbucks': 10,
-                'panda': 9,
-                'amex': 8,
-                'burger': 7,
-                'duty_free': 6
-            };
-
-            allLocations.sort((a, b) => {
-                const aScore = popularityOrder[a.type] || 0;
-                const bScore = popularityOrder[b.type] || 0;
-                return bScore - aScore;
+            cfg.state.allPoiGeojson.features.forEach((feature) => {
+                    allLocations.push(feature);
             });
-
-            // Take top 8 most popular locations
-            const popularLocations = allLocations.slice(0, 8);
 
             popularLocationsList.innerHTML = '';
 
-            popularLocations.forEach(location => {
+            allLocations.forEach(location => {
+                var icon = location?.properties?.iconUrl
+                ? location.properties.iconUrl
+                : "./src/images/missingpoi.png";
+
                 const item = document.createElement('div');
                 item.className = 'location-item';
                 item.innerHTML = `
-                    <div class="location-icon ${location.type}">
-                        ${this.getLocationIcon(location.type)}
+                    <div class="location-icon">
+                        <img style="width: 50px;" border-radius: 5px; src="${icon}" />
                     </div>
                     <div class="location-details">
-                        <div class="location-name">${location.name}</div>
-                        <div class="location-address">${location.address}</div>
+                        <div class="location-name">${location.properties.title}</div>
+                        <div class="location-address">${location.properties.location}</div>
                     </div>
                 `;
 
                 item.addEventListener('click', (e) => {
                     e.preventDefault();
-                    //console.log('Popular location clicked', location);
+                    console.log('Popular location clicked', location);
                     this.selectDepartureLocation(location);
                 });
 
@@ -1285,6 +1254,18 @@
 
             // Store the selected departure location
             this.selectedDeparture = departureLocation;
+            const departureInput = document.getElementById('departureInput');
+             if (departureInput) {
+                departureInput.value = departureLocation.properties.title;
+                departureInput.classList.add('filled');
+            }
+
+            const destinationInput = document.getElementById('destinationInput');
+             if (destinationInput) {
+                destinationInput.value = this.currentLocation.properties.title;
+                destinationInput.classList.add('filled');
+            }
+
 
             // Hide the popular locations view
             const popularView = document.getElementById('popularLocationsView');
@@ -1357,7 +1338,7 @@
                 subcategories = [];
                 this.subcategoriesList.innerHTML = '';
                 this.showLocationsViewByID(clickedCategoryId);
-                
+
             } else {
                 subcategories = [...new Set(subcategories)];
                 subcategories.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
@@ -1373,14 +1354,14 @@
 
                     item.addEventListener('click', (e) => {
                         e.preventDefault();
-                        if(subcategory != "All"){
+                        if (subcategory != "All") {
                             this.showLocationsView(subcategory);
-                        }else{
+                        } else {
                             subcategories = [];
                             this.subcategoriesList.innerHTML = '';
                             this.showLocationsViewByID(clickedCategoryId);
                         }
-                        
+
                     });
 
                     this.subcategoriesList.appendChild(item);
@@ -1394,6 +1375,7 @@
                 if (this.navigationView) this.navigationView.style.display = 'none';
             }
         }
+
 
 
         populateLocations(subcategoryName) {
@@ -1419,9 +1401,9 @@
             this.locationsList.innerHTML = '';
             locations.sort((a, b) => a.properties.title.localeCompare(b.properties.title, undefined, { sensitivity: 'base' }));
             locations.forEach(location => {
-                var icon = location?.properties?.iconUrl 
-                ? location.properties.iconUrl 
-                : "./src/images/missingpoi.png";
+                var icon = location?.properties?.iconUrl
+                    ? location.properties.iconUrl
+                    : "./src/images/missingpoi.png";
                 const item = document.createElement('div');
                 item.className = 'location-item';
                 item.innerHTML = `
@@ -1430,7 +1412,7 @@
                     </div>
                     <div class="location-details">
                         <div class="location-name">${location.properties.title}</div>
-                        <div class="location-address">Terminal 2 - Level ${location.properties.level}</div>
+                        <div class="location-address">${location.properties.location} - Level ${location.properties.level}</div>
                     </div>
                 `;
 
@@ -1453,13 +1435,13 @@
                     locations.push(feature);
                 }
             });
-            
+
             this.locationsList.innerHTML = '';
             locations.sort((a, b) => a.properties.title.localeCompare(b.properties.title, undefined, { sensitivity: 'base' }));
             locations.forEach(location => {
-                var icon = location?.properties?.iconUrl 
-                ? location.properties.iconUrl 
-                : "./src/images/missingpoi.png";
+                var icon = location?.properties?.iconUrl
+                    ? location.properties.iconUrl
+                    : "./src/images/missingpoi.png";
                 const item = document.createElement('div');
                 item.className = 'location-item';
                 item.innerHTML = `
@@ -1468,7 +1450,7 @@
                     </div>
                     <div class="location-details">
                         <div class="location-name">${location.properties.title}</div>
-                        <div class="location-address">Terminal 2 - Level ${location.properties.level}</div>
+                        <div class="location-address">${location.properties.location} - Level ${location.properties.level}</div>
                     </div>
                 `;
 
@@ -1483,12 +1465,11 @@
 
         populateLocationDetails(location) {
             if (!this.locationInfo) return;
-
-            const amenities = location.amenities || ['WiFi', 'Seating', 'Mobile Order'];
-
+            const amenities = getEnglishOnly(location.properties.subcategories);
+            amenities.push(this.categoryItem);
             this.locationInfo.innerHTML = `
-                <div class="location-title">${location.name}</div>
-                <div class="location-subtitle">${location.address}</div>
+                <div class="location-title">${location.properties.title}</div>
+                <div class="location-subtitle">${location.properties.location}</div>
                 
                 <div class="location-amenities">
                     <div class="amenities-title">Categories</div>
@@ -1735,3 +1716,8 @@ function isItEnglish(text) {
     return englishPattern.test(text);
 }
 
+
+function getEnglishOnly(arr) {
+    const englishRegex = /^[\u0000-\u007F]+$/; // Matches only basic Latin characters
+    return arr.filter(item => englishRegex.test(item));
+}

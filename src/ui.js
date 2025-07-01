@@ -27,8 +27,6 @@ function initAccessabilty() {
    window.resetSettings = resetSettings;
 }
 
-
-
 function closeMenu() {
 	const menu = document.getElementById("sideMenu");
 	menu.classList.remove("open");
@@ -39,6 +37,8 @@ function toggleMenu() {
 	const menu = document.getElementById("sideMenu");
 	menu.classList.toggle("open");
 }
+
+
 /**
  * Sets up a Select2 dropdown with custom matcher and template.
  * @param {string} selector - CSS selector for the dropdown.

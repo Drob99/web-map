@@ -89,7 +89,7 @@ function processPoiProperties(poi) {
       center: [poi.longitude, poi.latitude],
       level: state.levelArray[poi.building_floor_id],
       terminal:getPoiTerminal([poi.longitude, poi.latitude]),
-      location:"Terminal - "+getPoiTerminal([poi.longitude, poi.latitude]),
+      location:"Terminal "+getPoiTerminal([poi.longitude, poi.latitude]),
       color: isNaN(poi.title) ? poi.color : '#CDD0CB'
     }
   });
@@ -119,7 +119,7 @@ export function getPoiTerminal(center) {
             return i + 1; // Return terminal number (1-based)
         }
     }
-    return null; // No match found
+    return 0; // No match found
 }
 
 function isInside(centerCoord, intendedArea) {
