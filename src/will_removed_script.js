@@ -186,7 +186,11 @@
             if (this.locationsBackBtn) {
                 this.locationsBackBtn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    this.showSubcategoriesView(this.currentCategory);
+                    if(this.currentSubcategory != null){
+                        this.showSubcategoriesView(this.currentCategory);
+                    }else{
+                        this.showCategoriesView();
+                    }
                 });
             }
 
@@ -361,13 +365,6 @@
             }
 
             this.populateSubcategories(categoryName);
-
-            if (this.categoriesSection) this.categoriesSection.style.display = 'none';
-            if (this.subcategoriesView) this.subcategoriesView.style.display = 'block';
-            if (this.locationsView) this.locationsView.style.display = 'none';
-            if (this.locationDetailsView) this.locationDetailsView.style.display = 'none';
-            if (this.directionsView) this.directionsView.style.display = 'none';
-            if (this.navigationView) this.navigationView.style.display = 'none';
         }
 
         showLocationsView(subcategoryName) {
@@ -391,7 +388,7 @@
          showLocationsViewByID(categoryID) {
             //console.log('Showing locations view for', subcategoryName);
             this.currentView = 'locations';
-            this.currentSubcategory = categoryID;
+            this.currentSubcategory = null;
 
             // Auto-expand menu
             this.expandMenu();
@@ -1360,8 +1357,10 @@
                 subcategories = [];
                 this.subcategoriesList.innerHTML = '';
                 this.showLocationsViewByID(clickedCategoryId);
+                
             } else {
                 subcategories = [...new Set(subcategories)];
+                subcategories.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
                 this.subcategoriesList.innerHTML = '';
                 subcategories.forEach(subcategory => {
                     if (!isItEnglish(subcategory)) return;
@@ -1374,11 +1373,25 @@
 
                     item.addEventListener('click', (e) => {
                         e.preventDefault();
-                        this.showLocationsView(subcategory);
+                        if(subcategory != "All"){
+                            this.showLocationsView(subcategory);
+                        }else{
+                            subcategories = [];
+                            this.subcategoriesList.innerHTML = '';
+                            this.showLocationsViewByID(clickedCategoryId);
+                        }
+                        
                     });
 
                     this.subcategoriesList.appendChild(item);
                 });
+
+                if (this.categoriesSection) this.categoriesSection.style.display = 'none';
+                if (this.subcategoriesView) this.subcategoriesView.style.display = 'block';
+                if (this.locationsView) this.locationsView.style.display = 'none';
+                if (this.locationDetailsView) this.locationDetailsView.style.display = 'none';
+                if (this.directionsView) this.directionsView.style.display = 'none';
+                if (this.navigationView) this.navigationView.style.display = 'none';
             }
         }
 
@@ -1403,15 +1416,17 @@
                     locations.push(feature);
                 }
             });
-
             this.locationsList.innerHTML = '';
-            console.log(locations);
+            locations.sort((a, b) => a.properties.title.localeCompare(b.properties.title, undefined, { sensitivity: 'base' }));
             locations.forEach(location => {
+                var icon = location?.properties?.iconUrl 
+                ? location.properties.iconUrl 
+                : "./src/images/missingpoi.png";
                 const item = document.createElement('div');
                 item.className = 'location-item';
                 item.innerHTML = `
                     <div class="location-icon">
-                        <img style="width: 50px;" border-radius: 5px; src="${location.properties.iconUrl}" />
+                        <img style="width: 50px;" border-radius: 5px; src="${icon}" />
                     </div>
                     <div class="location-details">
                         <div class="location-name">${location.properties.title}</div>
@@ -1440,12 +1455,16 @@
             });
             
             this.locationsList.innerHTML = '';
+            locations.sort((a, b) => a.properties.title.localeCompare(b.properties.title, undefined, { sensitivity: 'base' }));
             locations.forEach(location => {
+                var icon = location?.properties?.iconUrl 
+                ? location.properties.iconUrl 
+                : "./src/images/missingpoi.png";
                 const item = document.createElement('div');
                 item.className = 'location-item';
                 item.innerHTML = `
                     <div class="location-icon">
-                        <img style="width: 50px; border-radius: 5px;" src="${location.properties.iconUrl}" />
+                        <img style="width: 50px; border-radius: 5px;" src="${icon}" />
                     </div>
                     <div class="location-details">
                         <div class="location-name">${location.properties.title}</div>
