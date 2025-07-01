@@ -66,7 +66,7 @@ function processPoiBatch(poiData) {
 function processPoiProperties(poi) {
   // Prepare coordinates array
   const coordinates = poi.coordinates.map(c => [c.longitude, c.latitude]);
-
+  
   // Handle icon loading
   const iconUrl = poi.icon?.url;
   const iconName = poi.icon?.filename;
@@ -88,13 +88,16 @@ function processPoiProperties(poi) {
       subcategories: poi.subcategories,
       center: [poi.longitude, poi.latitude],
       level: state.levelArray[poi.building_floor_id],
+      terminal:getPoiTerminal([poi.longitude, poi.latitude]),
+      location:"Terminal - "+getPoiTerminal([poi.longitude, poi.latitude]),
       color: isNaN(poi.title) ? poi.color : '#CDD0CB'
     }
   });
-
+  
   // Update UI dropdowns
   loadDropdownPoi(poi);
 }
+
 
 /**
  * Loads a POI icon into the Mapbox map if not already present.
@@ -109,3 +112,137 @@ export function loadPoiImage(url, name) {
     }
   });
 }
+
+export function getPoiTerminal(center) {
+    for (let i = 0; i < terminals_boundries.length; i++) {
+        if (isInside(center, terminals_boundries[i])) {
+            return i + 1; // Return terminal number (1-based)
+        }
+    }
+    return null; // No match found
+}
+
+function isInside(centerCoord, intendedArea) {
+    if (!intendedArea) return false;
+
+    const point = turf.point(centerCoord); // centerCoord = [lng, lat]
+    const polygon = intendedArea.features[0]; // assuming only one polygon per terminal
+
+    return turf.booleanPointInPolygon(point, polygon);
+}
+
+
+let terminals_boundries = [
+	{
+		type: "FeatureCollection",
+		features: [
+			{
+				type: "Feature",
+				properties: {},
+				geometry: {
+					type: "Polygon",
+					coordinates: [
+						[
+							[46.70171141624451, 24.96586782305689],
+							[46.69740915298462, 24.9636210209986],
+							[46.69753789901734, 24.96303742933773],
+							[46.69878244400024, 24.96108237711173],
+							[46.70346021652222, 24.96337785814286],
+							[46.70171141624451, 24.96586782305689],
+						],
+					],
+				},
+			},
+		],
+	},
+	{
+		type: "FeatureCollection",
+		features: [
+			{
+				type: "Feature",
+				properties: {},
+				geometry: {
+					type: "Polygon",
+					coordinates: [
+						[
+							[46.69878244400024,24.96108237711173],
+                        	[46.70043468475343,24.95850477323632],
+                    		[46.70528411865235,24.96081975579015],
+                        	[46.7036207,24.9634651],
+                        	[46.7021101,24.9626984],
+                        	[46.7021956,24.9616396],
+                        	[46.701303,24.9611916],
+							[46.7007588,24.9620752],
+                        	[46.69878244400024,24.96108237711173]
+						],
+					],
+				},
+			},
+		],
+	},
+	{
+		type: "FeatureCollection",
+		features: [
+			{
+				type: "Feature",
+				properties: {},
+				geometry: {
+					type: "Polygon",
+					coordinates: [
+						[
+							[46.70043468475343, 24.95850477323632],
+							[46.70209765434265, 24.95584929846356],
+							[46.7069685459137, 24.95819351175757],
+							[46.70528411865235, 24.96081975579015],
+							[46.70043468475343, 24.95850477323632],
+						],
+					],
+				},
+			},
+		],
+	},
+	{
+		type: "FeatureCollection",
+		features: [
+			{
+				type: "Feature",
+				properties: {},
+				geometry: {
+					type: "Polygon",
+					coordinates: [
+						[
+							[46.70209765434265, 24.95584929846356],
+							[46.70482277870179, 24.95145256230046],
+							[46.7096507549286, 24.95449722153711],
+							[46.7069685459137, 24.95819351175757],
+							[46.70209765434265, 24.95584929846356],
+						],
+					],
+				},
+			},
+		],
+	},
+	{
+		type: "FeatureCollection",
+		features: [
+			{
+				type: "Feature",
+				properties: {},
+				geometry: {
+					type: "Polygon",
+					coordinates: [
+						[
+							[46.70805215835571, 24.94454586773382],
+							[46.71257972717285, 24.94648172682466],
+							[46.71671032905579, 24.94030438167143],
+							[46.71163558959962, 24.93797928491837],
+							[46.70805215835571, 24.94454586773382],
+						],
+					],
+				},
+			},
+		],
+	},
+];
+
+

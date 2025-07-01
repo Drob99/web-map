@@ -19,6 +19,26 @@ export function initUI() {
   initAccessabilty();
 }
 
+
+function initAccessabilty() {
+   document.getElementById("closeBtn").addEventListener("click", closeMenu);
+   document.getElementById("accessibilityBtn").addEventListener("click", toggleMenu);
+   window.toggleCard = toggleCard;
+   window.resetSettings = resetSettings;
+}
+
+
+
+function closeMenu() {
+	const menu = document.getElementById("sideMenu");
+	menu.classList.remove("open");
+	menu.style.display = "none";
+}
+
+function toggleMenu() {
+	const menu = document.getElementById("sideMenu");
+	menu.classList.toggle("open");
+}
 /**
  * Sets up a Select2 dropdown with custom matcher and template.
  * @param {string} selector - CSS selector for the dropdown.
@@ -290,7 +310,7 @@ document.addEventListener("DOMContentLoaded", function() {
         status: "Open",
         hours: "Closes 12 AM",
         tags: "Dine-in · Takeaway · No delivery",
-        image: "https://via.placeholder.com/80"
+        image: "./src/images/missingpoi.png"
       },
       {
         name: "Brunch & Cake Al Bujairi",
@@ -302,7 +322,7 @@ document.addEventListener("DOMContentLoaded", function() {
         status: "Open",
         hours: "Closes 11:45 PM",
         tags: "Dine-in · Takeaway · No-contact delivery",
-        image: "https://via.placeholder.com/80/ff8888"
+        image: "./src/images/missingpoi.png"
       },
       {
         name: "Bujairi Terrace",
@@ -314,7 +334,7 @@ document.addEventListener("DOMContentLoaded", function() {
         status: "Open",
         hours: "Closes 12 AM",
         tags: "Dine-in · Takeaway",
-        image: "https://via.placeholder.com/80/ccddff"
+        image: "./src/images/missingpoi.png"
       },
       {
         name: "Dim Light Restaurant",
@@ -326,7 +346,7 @@ document.addEventListener("DOMContentLoaded", function() {
         status: "Open 24 hours",
         hours: "24/7",
         tags: "Dine-in · Takeaway · No-contact delivery",
-        image: "https://via.placeholder.com/80/ffeebb"
+        image: "./src/images/missingpoi.png"
       },
       {
         name: "Sum+Things",
@@ -338,7 +358,7 @@ document.addEventListener("DOMContentLoaded", function() {
         status: "Closed",
         hours: "Opens 5 PM",
         tags: "Dine-in · Takeaway · No-contact delivery",
-        image: "https://via.placeholder.com/80/bbccaa"
+        image: "./src/images/missingpoi.png"
       },
       {
         name: "Cafe De L’ Esplanade",
@@ -350,7 +370,7 @@ document.addEventListener("DOMContentLoaded", function() {
         status: "Opens soon",
         hours: "10 AM",
         tags: "Dine-in · Takeaway",
-        image: "https://via.placeholder.com/80/ddaaff"
+        image: "./src/images/missingpoi.png"
       }
     ];
 

@@ -266,7 +266,7 @@
 .menu-item.row-3,
 .menu-item.row-4 {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(3px);
     height: 0;
     overflow: hidden;
     padding: 0;
@@ -280,9 +280,9 @@
 .menu-container.desktop-expanded .menu-item.row-3,
 .menu-container.desktop-expanded .menu-item.row-4 {
     opacity: 1;
-    transform: translateY(0);
+    /* transform: translateY(0); */
     height: auto;
-    padding: 16px 0; /* Restore padding if needed */
+    padding: 5px 0; /* Restore padding if needed */
     margin: 0;
     display: flex;
 }
@@ -327,7 +327,7 @@
  .categories-grid {
      display: grid;
      grid-template-columns: repeat(4, 1fr);
-     gap: 12px;
+     gap: 0px;
      margin-bottom: 16px;
  }
 
