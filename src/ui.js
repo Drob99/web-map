@@ -8,6 +8,9 @@ import { drawPathToPoi } from "./data/routes.js";
 import { clearRoute, routeEnabled } from "./mapController.js";
 import { stringMatch } from "./utils.js";
 import { map } from "./mapInit.js";
+import { languageService } from "./i18n/languageService.js";
+import { uiTranslator } from "./i18n/uiTranslator.js";
+import { mapTranslator } from "./i18n/mapTranslator.js";
 
 /**
  * Initialize UI: dropdowns and swap button.
@@ -151,17 +154,36 @@ function parseSelection(selector) {
  */
 export function loadDropdownPoi(poi) {
   const level = state.levelArray[poi.building_floor_id];
-  const levelName = FLOOR_TITLES[level];
-  const category =
+  const levelName = languageService.translate(
+    "floors",
+    level.toString(),
+    `Floor ${level}`
+  );
+
+  const categoryName =
     poi.category_id != null
-      ? `${state.categoryArray[poi.category_id]} - `
-      : `${state.buildingsObject.buildings[0].name} - `;
+      ? languageService.translate(
+          "categories",
+          state.categoryArray[poi.category_id],
+          state.categoryArray[poi.category_id]
+        )
+      : state.buildingsObject.buildings[0].name;
+
   const iconUrl = poi.icon?.url || "./icontap.png";
-  const optionHtml = `<option data-foo="${category}${levelName}" data-icon="${iconUrl}" value="${[
-    poi.longitude,
-    poi.latitude,
-    poi.building_floor_id,
-  ].join(",")}">${poi.title}</option>`;
+
+  // Translate POI title if it's a known category
+  const translatedTitle = languageService.translate(
+    "categories",
+    poi.title,
+    poi.title
+  );
+
+  const optionHtml = `<option 
+    data-foo="${categoryName} - ${levelName}" 
+    data-icon="${iconUrl}" 
+    value="${[poi.longitude, poi.latitude, poi.building_floor_id].join(",")}"
+  >${translatedTitle}</option>`;
+
   ["#from_location", "#to_location"].forEach((selector) =>
     $(selector).append($(optionHtml))
   );
@@ -187,41 +209,107 @@ export function screensaver() {
 
 // Language Selection 
 
-  const languages = [
-    "English",
-    "عربي",
-    "中国人"
-  ];
+// Language mapping
+const languageMap = {
+  'English': 'EN',
+  'عربي': 'AR',
+  '中国人': 'ZN'
+};
 
-  const languageListEl = document.getElementById('languageList');
-
-  languages.forEach((lang, index) => {
+// Update language list initialization
+const languageListEl = document.getElementById('languageList');
+if (languageListEl) {
+  languageListEl.innerHTML = ''; // Clear existing
+  
+  Object.entries(languageMap).forEach(([displayName, code]) => {
     const li = document.createElement('li');
     li.classList.add('language-item');
-    if (index === 0) {
+    li.setAttribute('data-lang', code);
+    
+    if (languageService.getCurrentLanguage() === code) {
       li.classList.add('active');
-      li.innerHTML = `${lang} <i class="bi bi-check-lg"></i>`;
+      li.innerHTML = `${displayName} <i class="bi bi-check-lg"></i>`;
     } else {
-      li.textContent = lang;
+      li.textContent = displayName;
     }
-    li.addEventListener('click', () => selectLanguage(li));
+    
+    li.addEventListener('click', () => selectLanguage(li, code));
     languageListEl.appendChild(li);
   });
+}
 
-  function selectLanguage(selectedEl) {
-    document.querySelectorAll('.language-item').forEach(item => {
-      item.classList.remove('active');
-      if (item.querySelector('i')) item.querySelector('i').remove();
-    });
-    selectedEl.classList.add('active');
-    selectedEl.innerHTML += ' <i class="bi bi-check-lg"></i>';
+/**
+ * Handle language selection
+ * @param {HTMLElement} selectedEl - Selected list item
+ * @param {string} langCode - Language code
+ */
+function selectLanguage(selectedEl, langCode) {
+  // Update visual selection
+  document.querySelectorAll('.language-item').forEach(item => {
+    item.classList.remove('active');
+    const icon = item.querySelector('i');
+    if (icon) icon.remove();
+  });
+  
+  selectedEl.classList.add('active');
+  selectedEl.innerHTML += ' <i class="bi bi-check-lg"></i>';
 
-    // Small click animation
-    selectedEl.style.transform = 'scale(1.05)';
+  // Animation
+  selectedEl.style.transform = 'scale(1.05)';
+  setTimeout(() => {
+    selectedEl.style.transform = 'scale(1)';
+  }, 150);
+
+  // Change language
+  if (languageService.setLanguage(langCode)) {
+    // Update UI translations
+    uiTranslator.updateUITranslations();
+    
+    // Update POIs
+    updatePOITranslations();
+    
+    // Update map layers if needed
+    updateMapLayers(langCode);
+    
+    // Hide language panel after selection
     setTimeout(() => {
-      selectedEl.style.transform = 'scale(1)';
-    }, 150);
+      languageMenu();
+    }, 300);
   }
+}
+
+/**
+ * Update POI translations
+ */
+function updatePOITranslations() {
+  mapTranslator.updatePOILabels();
+
+  // Re-render POIs with new language
+  if (typeof showPoisByLevel === 'function') {
+    showPoisByLevel();
+  }
+}
+
+/**
+ * Update map layer text fields
+ * @param {string} langCode - Language code
+ */
+function updateMapLayers(langCode) {
+  if (!map) return;
+  
+  const textFieldMap = {
+    'EN': '{NameEN}',
+    'AR': '{NameAR}',
+    'ZN': '{NameZN}'
+  };
+  
+  const textField = textFieldMap[langCode] || '{NameEN}';
+  
+  // Update map layers with text fields
+  if (map.getLayer('municipality-name')) {
+    map.setLayoutProperty('municipality-name', 'text-field', ['get', 'title']);
+  }
+}
 
 export function openLanguageFromMenu() {
     document.querySelector('.language-panel').style.display = 'block';
