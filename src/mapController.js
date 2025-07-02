@@ -435,10 +435,6 @@ export function exitNavigationMode() {
  * Shows POIs by the current level, adding polygon layers to the map.
  */
 export function showPoisByLevel() {
-  // Import at the top of the file if not already present
-  // import { mapTranslator } from "./i18n/mapTranslator.js";
-  // import { languageService } from "./i18n/languageService.js";
-  
   if (state.levelRoutePoi == null) state.levelRoutePoi = 1;
   state.polyGeojsonLevel = { type: "FeatureCollection", features: [] };
   state.polyGeojsonLevelOutsideBuilding = {
@@ -447,22 +443,44 @@ export function showPoisByLevel() {
   };
 
   state.allPoiGeojson.features.forEach((feat) => {
-    const props = feat.properties;
+    // Create a deep copy of the feature to avoid modifying the original
+    const featureCopy = JSON.parse(JSON.stringify(feat));
+    const props = featureCopy.properties;
+
     if (props.icon && state.imageLoadFlag && props.iconUrl)
       loadPoiImage(props.iconUrl, props.icon);
+
     if (props.level === state.levelRoutePoi) {
       if (props.title === "room") props.title = "";
-      
-      // Translate POI properties
-      const translatedProps = mapTranslator.translatePOIProperties(feat);
-      
+
+      // Translate POI properties on the copy
+      const translatedProps = mapTranslator.translatePOIProperties(featureCopy);
+
+      // Determine which title to display based on current language
+      const currentLang = languageService.getCurrentLanguage();
+      let displayTitle = props.title; // Default to original
+
+      if (currentLang === "AR" && translatedProps.title_ar) {
+        displayTitle = translatedProps.title_ar;
+      } else if (currentLang === "ZN" && translatedProps.title_zn) {
+        displayTitle = translatedProps.title_zn;
+      } else if (currentLang === "EN" && translatedProps.title_en) {
+        displayTitle = translatedProps.title_en;
+      }
+
       const base = {
-        id: feat.id,
+        id: featureCopy.id,
         type: "Feature",
-        geometry: feat.geometry,
-        properties: { ...props, ...translatedProps },
+        geometry: featureCopy.geometry,
+        properties: {
+          ...props,
+          ...translatedProps,
+          title: displayTitle || props.title || "", // Ensure title is never undefined
+        },
       };
+
       state.polyGeojsonLevel.features.push(base);
+
       if (
         ["Admin Building Entrance", "Burjeel Darak Entrance"].includes(
           props.title
@@ -472,8 +490,10 @@ export function showPoisByLevel() {
       }
     }
   });
+
   state.imageLoadFlag = false;
 
+  // Remove existing layers and sources
   if (map.getSource("municipalities")) {
     ["polygons", "polygons_outline", "municipality-name"].forEach((id) => {
       if (map.getLayer(id)) map.removeLayer(id);
@@ -490,11 +510,13 @@ export function showPoisByLevel() {
     if (map.getLayer("polygons_outside")) map.removeLayer("polygons_outside");
     map.removeSource("municipalities_outside");
   }
+
   map.addSource("municipalities_outside", {
     type: "geojson",
     data: state.polyGeojsonLevelOutsideBuilding,
   });
 
+  // Add polygon layer
   map.addLayer({
     id: "polygons",
     type: "fill",
@@ -512,7 +534,8 @@ export function showPoisByLevel() {
       ],
     },
   });
-  
+
+  // Add outside polygon layer
   map.addLayer({
     id: "polygons_outside",
     type: "fill",
@@ -530,7 +553,8 @@ export function showPoisByLevel() {
       ],
     },
   });
-  
+
+  // Add outline layer
   map.addLayer({
     id: "polygons_outline",
     type: "line",
@@ -557,7 +581,8 @@ export function showPoisByLevel() {
       ],
     },
   });
-  
+
+  // Add symbol layer with simple text field
   map.addLayer({
     id: "municipality-name",
     type: "symbol",
@@ -566,12 +591,7 @@ export function showPoisByLevel() {
       "icon-image": ["get", "icon"],
       "icon-anchor": "bottom",
       "icon-size": 0.2,
-      "text-field": [
-        'coalesce',
-        ['get', languageService.getCurrentLanguage() === 'AR' ? 'title_ar' : 
-                languageService.getCurrentLanguage() === 'ZN' ? 'title_zn' : 'title_en'],
-        ['get', 'title']
-      ],
+      "text-field": ["get", "title"],
       "text-size": 12,
       "text-offset": [0, 0.8],
       "symbol-placement": "point",

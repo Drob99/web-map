@@ -10,7 +10,8 @@ import {
     staticTranslations,
     floorTranslations,
   } from "./translations.js";
-  import { state } from "../config.js";
+import { state } from "../config.js";
+  import { poiNameTranslations, getTranslatedPOIName } from "./poiTranslations.js";
   
   /**
    * LanguageService class manages all language-related operations
@@ -26,9 +27,10 @@ import {
         categories: categoryTranslations,
         static: staticTranslations,
         floors: floorTranslations,
+        poi: poiNameTranslations,
       };
     }
-  
+
     /**
      * Get current language
      * @returns {string} Current language code
@@ -36,7 +38,7 @@ import {
     getCurrentLanguage() {
       return this.currentLanguage;
     }
-  
+
     /**
      * Set language and update state
      * @param {string} lang - Language code (EN, AR, ZN)
@@ -47,18 +49,20 @@ import {
         console.warn(`Language ${lang} not supported`);
         return false;
       }
-      
+
       this.currentLanguage = lang;
       state.language = lang;
-      
+
       // Dispatch custom event for language change
-      window.dispatchEvent(new CustomEvent('languageChanged', { 
-        detail: { language: lang } 
-      }));
-      
+      window.dispatchEvent(
+        new CustomEvent("languageChanged", {
+          detail: { language: lang },
+        })
+      );
+
       return true;
     }
-  
+
     /**
      * Translate a key with fallback
      * @param {string} category - Translation category
@@ -68,14 +72,24 @@ import {
      */
     translate(category, key, fallback = key) {
       try {
-        const translation = this.translations[category]?.[this.currentLanguage]?.[key];
+        const translation =
+          this.translations[category]?.[this.currentLanguage]?.[key];
         return translation !== undefined ? translation : fallback;
       } catch (error) {
         console.warn(`Translation error for ${category}.${key}:`, error);
         return fallback;
       }
     }
-  
+
+    /**
+     * Translate POI name
+     * @param {string} poiName - Original POI name
+     * @returns {string} Translated POI name
+     */
+    translatePOIName(poiName) {
+      return getTranslatedPOIName(poiName, this.currentLanguage);
+    }
+
     /**
      * Translate number to localized format
      * @param {number|string} number - Number to translate
@@ -83,11 +97,12 @@ import {
      */
     translateNumber(number) {
       const numStr = number.toString();
-      return numStr.split('').map(digit => 
-        this.translate('numbers', digit, digit)
-      ).join('');
+      return numStr
+        .split("")
+        .map((digit) => this.translate("numbers", digit, digit))
+        .join("");
     }
-  
+
     /**
      * Check if current language is RTL
      * @returns {boolean} True if RTL
@@ -95,15 +110,16 @@ import {
     isRTL() {
       return this.currentLanguage === "AR";
     }
-  
+
     /**
      * Get all translations for current language
      * @returns {Object} All translations
      */
     getAllTranslations() {
       const result = {};
-      Object.keys(this.translations).forEach(category => {
-        result[category] = this.translations[category][this.currentLanguage] || {};
+      Object.keys(this.translations).forEach((category) => {
+        result[category] =
+          this.translations[category][this.currentLanguage] || {};
       });
       return result;
     }

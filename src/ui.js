@@ -244,33 +244,39 @@ if (languageListEl) {
  * @param {string} langCode - Language code
  */
 function selectLanguage(selectedEl, langCode) {
+  // Store current floor level
+  const currentFloor = state.levelRoutePoi || state.currentLevel || 1;
+
   // Update visual selection
-  document.querySelectorAll('.language-item').forEach(item => {
-    item.classList.remove('active');
-    const icon = item.querySelector('i');
+  document.querySelectorAll(".language-item").forEach((item) => {
+    item.classList.remove("active");
+    const icon = item.querySelector("i");
     if (icon) icon.remove();
   });
-  
-  selectedEl.classList.add('active');
+
+  selectedEl.classList.add("active");
   selectedEl.innerHTML += ' <i class="bi bi-check-lg"></i>';
 
   // Animation
-  selectedEl.style.transform = 'scale(1.05)';
+  selectedEl.style.transform = "scale(1.05)";
   setTimeout(() => {
-    selectedEl.style.transform = 'scale(1)';
+    selectedEl.style.transform = "scale(1)";
   }, 150);
 
   // Change language
   if (languageService.setLanguage(langCode)) {
+    // Restore floor level
+    state.levelRoutePoi = currentFloor;
+
     // Update UI translations
     uiTranslator.updateUITranslations();
-    
+
     // Update POIs
     updatePOITranslations();
-    
+
     // Update map layers if needed
     updateMapLayers(langCode);
-    
+
     // Hide language panel after selection
     setTimeout(() => {
       languageMenu();
@@ -282,9 +288,7 @@ function selectLanguage(selectedEl, langCode) {
  * Update POI translations
  */
 function updatePOITranslations() {
-  mapTranslator.updatePOILabels();
-
-  // Re-render POIs with new language
+  // Simply re-render POIs with new language
   if (typeof showPoisByLevel === 'function') {
     showPoisByLevel();
   }
