@@ -10,6 +10,7 @@ import { setupMapEventHandlers } from "./markers.js";
 import { switchFloorByNo } from "./mapController.js";
 import { API_CONFIG } from "./config.js";
 import { map } from "./mapInit.js";
+import { setupMapLanguageListener } from "./mapController.js";
 
 
 /**
@@ -73,7 +74,10 @@ export default class App {
     // 4) Display the current floor
     this.displayFloor();
 
-    // 5) Hide splash screen *now* that both map + data are ready
+    // 5) Set up language change listener for the map
+    setupMapLanguageListener();
+
+    // 6) Hide splash screen *now* that both map + data are ready
     this.hideSplash();
   }
 }
