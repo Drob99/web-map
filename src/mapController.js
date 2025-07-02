@@ -13,6 +13,8 @@ import { getAllPoi, loadPoiImage } from "./data/pois.js";
 import { map } from "./mapInit.js";
 import { renderDirectionsPanel } from "./navigation.js";
 import { resetMarkers } from "./markers.js";
+import { mapTranslator } from "./i18n/mapTranslator.js";
+import { languageService } from "./i18n/languageService.js";
 
 // Routing state
 export let routeEnabled = false;
@@ -433,6 +435,10 @@ export function exitNavigationMode() {
  * Shows POIs by the current level, adding polygon layers to the map.
  */
 export function showPoisByLevel() {
+  // Import at the top of the file if not already present
+  // import { mapTranslator } from "./i18n/mapTranslator.js";
+  // import { languageService } from "./i18n/languageService.js";
+  
   if (state.levelRoutePoi == null) state.levelRoutePoi = 1;
   state.polyGeojsonLevel = { type: "FeatureCollection", features: [] };
   state.polyGeojsonLevelOutsideBuilding = {
@@ -446,11 +452,15 @@ export function showPoisByLevel() {
       loadPoiImage(props.iconUrl, props.icon);
     if (props.level === state.levelRoutePoi) {
       if (props.title === "room") props.title = "";
+      
+      // Translate POI properties
+      const translatedProps = mapTranslator.translatePOIProperties(feat);
+      
       const base = {
         id: feat.id,
         type: "Feature",
         geometry: feat.geometry,
-        properties: { ...props },
+        properties: { ...props, ...translatedProps },
       };
       state.polyGeojsonLevel.features.push(base);
       if (
@@ -502,6 +512,7 @@ export function showPoisByLevel() {
       ],
     },
   });
+  
   map.addLayer({
     id: "polygons_outside",
     type: "fill",
@@ -519,6 +530,7 @@ export function showPoisByLevel() {
       ],
     },
   });
+  
   map.addLayer({
     id: "polygons_outline",
     type: "line",
@@ -545,6 +557,7 @@ export function showPoisByLevel() {
       ],
     },
   });
+  
   map.addLayer({
     id: "municipality-name",
     type: "symbol",
@@ -553,7 +566,12 @@ export function showPoisByLevel() {
       "icon-image": ["get", "icon"],
       "icon-anchor": "bottom",
       "icon-size": 0.2,
-      "text-field": ["get", "title"],
+      "text-field": [
+        'coalesce',
+        ['get', languageService.getCurrentLanguage() === 'AR' ? 'title_ar' : 
+                languageService.getCurrentLanguage() === 'ZN' ? 'title_zn' : 'title_en'],
+        ['get', 'title']
+      ],
       "text-size": 12,
       "text-offset": [0, 0.8],
       "symbol-placement": "point",

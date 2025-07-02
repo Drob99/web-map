@@ -12,3 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // No additional logic required here
    
 });
+
+// Listen for language changes
+window.addEventListener('languageChanged', (event) => {
+  console.log('Language changed to:', event.detail.language);
+  
+  // Any additional global updates needed when language changes
+  // This event can be listened to by any module that needs to react to language changes
+});
