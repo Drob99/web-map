@@ -29,6 +29,7 @@ let elevatorLngs = [];
 let elevatorLats = [];
 let elevatorLvls = [];
 let nextElevatorLvls = [];
+let languageChangeCleanup = null;
 
 export let popupsGlobal = [];
 export let removeExtraRouteFlag = false;
@@ -591,7 +592,9 @@ export function showPoisByLevel() {
       "icon-image": ["get", "icon"],
       "icon-anchor": "bottom",
       "icon-size": 0.2,
-      "text-field": ["get", "title"],
+      "text-field": mapTranslator.getTextFieldExpression(
+        languageService.getCurrentLanguage()
+      ),
       "text-size": 12,
       "text-offset": [0, 0.8],
       "symbol-placement": "point",
@@ -622,6 +625,68 @@ export function showPoisByLevel() {
       "text-halo-blur": 0,
     },
   });
+
+  updateMapSourceWithTranslations();
+}
+
+/**
+ * Updates the map source with translated POI data
+ */
+function updateMapSourceWithTranslations() {
+  if (!map || !map.getSource("municipalities")) return;
+
+  try {
+    // Update the text field mapping for the current language
+    mapTranslator.updatePOILabels();
+    
+    // Force a small refresh to ensure changes are visible
+    setTimeout(() => {
+      if (map && typeof map.triggerRepaint === 'function') {
+        map.triggerRepaint();
+      }
+    }, 10);
+  } catch (error) {
+    console.error("Error updating map source with translations:", error);
+  }
+}
+
+/**
+ * Sets up language change listener
+ */
+export function setupMapLanguageListener() {
+  // Only set up once
+  if (languageChangeCleanup) {
+    languageChangeCleanup();
+    languageChangeCleanup = null;
+  }
+
+  // Register listener for language changes
+  const unsubscribe = languageService.onLanguageChange((newLanguage) => {
+    console.log(`Map responding to language change: ${newLanguage}`);
+    
+    // Update map layers with new language after a short delay
+    setTimeout(() => {
+      if (map && map.getSource("municipalities")) {
+        updateMapSourceWithTranslations();
+      }
+    }, 50);
+  });
+  
+  languageChangeCleanup = unsubscribe;
+
+  console.log("Map language listener set up successfully");
+}
+
+/**
+ * Optional: Clean up language listener
+ * Call this if you ever need to clean up (e.g., during app shutdown)
+ */
+export function cleanupMapLanguageListener() {
+  if (languageChangeCleanup) {
+    languageChangeCleanup();
+    languageChangeCleanup = null;
+    console.log("Map language listener cleaned up");
+  }
 }
 
 /**

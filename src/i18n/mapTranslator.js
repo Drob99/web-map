@@ -1,6 +1,7 @@
 /**
  * @module mapTranslator
  * @description Handles map-related translations following Single Responsibility Principle
+ * Enhanced to properly update all POI-related layers
  */
 
 import { languageService } from "./languageService.js";
@@ -16,22 +17,47 @@ class MapTranslator {
   constructor() {
     this.textFieldMap = {
       EN: "title",
-      AR: "title_ar",
+      AR: "title_ar", 
       ZN: "title_zn",
     };
+    
+    // List of layers that need translation updates
+    this.poiLayerIds = [
+      "municipality-name",
+      "polygons", // Add other POI layers as needed
+      "polygons_outline"
+    ];
   }
 
   /**
    * Update POI text field based on current language
+   * Enhanced to handle all POI layers properly
    */
   updatePOILabels() {
-    if (!map || !map.getLayer("municipality-name")) return;
+    if (!map) return;
 
     const lang = languageService.getCurrentLanguage();
-
-    // Force refresh the layer with new text field
     const textField = this.getTextFieldExpression(lang);
-    map.setLayoutProperty("municipality-name", "text-field", textField);
+
+    // Update all POI-related layers
+    this.poiLayerIds.forEach(layerId => {
+      if (map.getLayer(layerId)) {
+        try {
+          // Only update symbol layers (text layers)
+          const layer = map.getLayer(layerId);
+          if (layer && layer.type === 'symbol') {
+            map.setLayoutProperty(layerId, "text-field", textField);
+          }
+        } catch (error) {
+          console.warn(`Could not update layer ${layerId}:`, error);
+        }
+      }
+    });
+
+    // Force map repaint to ensure changes are visible
+    if (typeof map.triggerRepaint === 'function') {
+      map.triggerRepaint();
+    }
   }
 
   /**
@@ -41,8 +67,16 @@ class MapTranslator {
    */
   getTextFieldExpression(lang) {
     const titleField = this.textFieldMap[lang];
-
-    return ["coalesce", ["get", titleField], ["get", "title"]];
+    
+    // Create a more robust expression that handles missing translations
+    return [
+      "case",
+      ["!=", ["get", titleField], null],
+      ["get", titleField],
+      ["!=", ["get", titleField], ""],
+      ["get", titleField],
+      ["get", "title"] // Fallback to original title
+    ];
   }
 
   /**
@@ -70,7 +104,7 @@ class MapTranslator {
     // Use the original title for translations
     const titleToTranslate = props.title_original || originalTitle;
 
-    // First try POI-specific translations
+    // Generate translations for all languages
     props.title_en = titleToTranslate; // English uses original
     props.title_ar = getTranslatedPOIName(titleToTranslate, "AR");
     props.title_zn = getTranslatedPOIName(titleToTranslate, "ZN");
@@ -78,16 +112,32 @@ class MapTranslator {
     // If no POI translation found, try category translations
     if (props.title_ar === titleToTranslate) {
       props.title_ar =
-        languageService.translations.categories.AR[titleToTranslate] ||
+        languageService.translations.categories?.AR?.[titleToTranslate] ||
         titleToTranslate;
     }
     if (props.title_zn === titleToTranslate) {
       props.title_zn =
-        languageService.translations.categories.ZN[titleToTranslate] ||
+        languageService.translations.categories?.ZN?.[titleToTranslate] ||
         titleToTranslate;
     }
 
     return props;
+  }
+
+  /**
+   * Force refresh all POI translations
+   * This method should be called when language changes
+   */
+  refreshAllPOITranslations() {
+    // Update the labels
+    this.updatePOILabels();
+    
+    // Trigger a map style refresh if needed
+    setTimeout(() => {
+      if (map && typeof map.triggerRepaint === 'function') {
+        map.triggerRepaint();
+      }
+    }, 100);
   }
 }
 
