@@ -1,0 +1,134 @@
+/**
+ * @module config
+ * @description Centralized configuration constants and default application state.
+ */
+
+/**
+ * API and Mapbox settings.
+ */
+export const API_CONFIG = Object.freeze({
+  BASE_URL: "https://mapsapi.kkia.sa/api/public/v1/",
+  ACCESS_TOKEN:"pk.eyJ1Ijoibm1hY2NvdW50cyIsImEiOiJja2xhazRobjgzbDkxMm9xb2d3YmQ3d2s2In0.wGFavxo8mpa7OI_lEhYUow",
+  MAPBOX_STYLE: "mapbox://styles/mapbox/streets-v11",
+  CLIENT_ID: "pqXhZPUYSu4WS7I93slT13ngFhUChqM-URiH0YaPh74",
+  CLIENT_SECRET: "OODWYKVd_Lt3pfPTAXvPiQd3MkaKPi-YSFwd6W4knI8",
+});
+
+/**
+ * Animation-related constants.
+ */
+export const ANIMATION_CONFIG = Object.freeze({
+  BASE_ARROWS_PER_KM: 80,
+  MIN_ARROWS: 0,
+  MAX_ARROWS: 100,
+  STEPS: 300
+});
+
+/**
+ * Rendering priority indexes.
+ */
+export const INDEX_PRIORITY = [
+  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, -1, -2, -3, -4, -5
+];
+
+/**
+ * Floor index to title mappings.
+ */
+export const FLOOR_TITLES = {
+  '-5': 'Basement 5th Floor',
+  '-4': 'Basement 4th Floor',
+  '-3': 'Basement 3rd Floor',
+  '-2': 'Basement 2nd Floor',
+  '-1': 'Basement Floor',
+  '0': 'Ground Floor',
+  '1': 'First Floor',
+  '2': 'Second Floor',
+  '3': 'Third Floor',
+  '4': 'Fourth Floor',
+  '5': 'Fifth Floor',
+  '6': 'Sixth Floor',
+  '7': 'Seventh Floor',
+  '8': 'Eighth Floor',
+  '9': 'Ninth Floor',
+  '10': 'Tenth Floor'
+};
+
+/**
+ * Default application state.
+ */
+export const state = {
+  bearerToken: null,
+  buildingsObject: null,
+  categoryObject: null,
+  categoryArray: {},
+  floorsObjects: [],
+  layersObjects: [],
+  floorNameTitle: [],
+  outlineFlag: false,
+  levelArray: {},
+  layerNames: [],
+  toggleableLayerIds: [],
+  poiCounter: 0,
+  language: 'EN',
+  polyGeojsonLevel: null,
+  imageLoadFlag: true,
+  currentLevel: 0,
+  levelRoutePoi: null,
+  routeBuildings: {},
+  routesArray: {},
+  elevatorLevel: null,
+  elevators: [],
+  elevatorCount: 0,
+  routeArray: [],
+  globalIcon: null,
+  globalStartKey: null,
+  globalEndKey: null,
+  globalName: null,
+  globalDistance: null,
+  globalTime: null,
+  globalZLevel: null,
+  activeTools : new Set(),
+  fullDistanceToDestination: 0,
+  fullTimeToDestination: 0,
+  isBlackWhite : false,
+	isInverted : false,
+  isLetterSpaced : false,
+  spacing : false ? 0.3 : 0,
+  isLineSpaced : false,
+  lineHeight : false ? 2 : 1.2,
+  isBigText : false,
+  size :false ? 20 : 14,
+  isSimpleFont : false,
+  isSpeechEnabled : false,
+  isAnimationPaused : false,
+  font : false? ['Arial Unicode MS Regular']: ['Arial Unicode MS Regular'],
+  allPoiGeojson: {
+    type: 'FeatureCollection',
+    features: [
+      {
+        id: '',
+        type: 'Feature',
+        geometry: { type: 'Polygon', coordinates: [] },
+        properties: {
+          title: '',
+          icon: '',
+          subtitles: [],
+          center: [],
+        },
+      },
+    ],
+  },
+  fullPathRoute: {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        geometry: Object.freeze({ type: 'LineString', coordinates: [] })
+      },
+    ],
+  },
+  fromMarkerLocation: [],
+  toMarkerLocation: [],
+  fromMarkerLevel: null,
+  toMarkerLevel: null
+};
