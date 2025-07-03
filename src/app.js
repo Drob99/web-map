@@ -85,12 +85,13 @@ const app = new App(
   {
     authenticate: authenticate,
     initUI,
-    initMapHandlers: setupMapEventHandlers,
     initArrowAnimation: setupArrowAnimation,
     displayFloor: switchFloorByNo,
+    initMapHandlers: setupMapEventHandlers,
     hideSplash: screensaver,
   },
   API_CONFIG
 );
 
 app.start();
+

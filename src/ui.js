@@ -24,10 +24,10 @@ export function initUI() {
 
 
 function initAccessabilty() {
-   document.getElementById("closeBtn").addEventListener("click", closeMenu);
-   document.getElementById("accessibilityBtn").addEventListener("click", toggleMenu);
-   window.toggleCard = toggleCard;
-   window.resetSettings = resetSettings;
+  //  document.getElementById("closeBtn").addEventListener("click", closeMenu);
+  //  document.getElementById("accessibilityBtn").addEventListener("click", toggleMenu);
+  //  window.toggleCard = toggleCard;
+  //  window.resetSettings = resetSettings;
 }
 
 function closeMenu() {

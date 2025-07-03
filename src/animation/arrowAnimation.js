@@ -5,6 +5,7 @@
 import { map } from '../mapInit.js';
 import { ANIMATION_CONFIG, state } from '../config.js';
 
+
 let worker = null;
 let arrowAnimationState = [];
 let animationFrameId = null;
@@ -49,6 +50,7 @@ export function setupArrowAnimation() {
     animateArrows();
   };
   startAnimation();
+  
 }
 
 /**
@@ -73,12 +75,13 @@ export function startAnimation() {
  * Sends route data to the worker and begins arrow animation frames.
  */
 export function initializeAnimation() {
-  const features = state.fullPathRoute?.features;
+  const src = map.getSource('route_outline')._data;
+  const features = src?.features;
   if (!Array.isArray(features) || !features.length) {
-    console.error('Invalid route data');
+    //console.error('Invalid route data');
     return;
   }
-  if (state.levelRoutePoi == null) state.levelRoutePoi = 1;
+ 
   worker.postMessage({
     features,
     level: state.levelRoutePoi.toString(),
@@ -129,7 +132,7 @@ export function initializeArrowsSourceAndLayer() {
       source: 'arrow-point',
       layout: {
         'icon-image': 'arrow-icon',
-        'icon-size': 0.25,
+        'icon-size': 0.20,
         'icon-allow-overlap': true,
         'icon-ignore-placement': true,
         'icon-rotate': ['get', 'bearing'],
@@ -137,6 +140,10 @@ export function initializeArrowsSourceAndLayer() {
       },
     });
   }
+    setTimeout(() => {
+        map.moveLayer("arrow-layer");
+    }, 500);
+  
 }
 
 /**

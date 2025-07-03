@@ -35,26 +35,32 @@ export function generateNavigationInstructions(geojsonRoute) {
 
   // Direction & turn icons
   const directionIcons = {
-    N: "↑",
-    NE: "↗",
-    E: "→",
-    SE: "↘",
-    S: "↓",
-    SW: "↙",
-    W: "←",
-    NW: "↖",
+    N: "⬆️",
+    NE:"↗️",
+    E: "➡️",
+    SE:"↘️",
+    S: "⬇️",
+    SW:"↙️",
+    W: "⬅️",
+    NW: "↖️",
   };
   const turnIcons = {
-    left: "↰",
-    right: "↱",
-    "slight-left": "↰",
-    "slight-right": "↱",
-    "sharp-left": "⬅",
-    "sharp-right": "➡",
-    "u-turn": "⟲",
+    left: "⬅️",               // normal left
+    right: "➡️",              // normal right
+    "slight-left": "↖️",      // more intuitive slight left
+    "slight-right": "↗️",     // slight right
+    "sharp-left": "↩️",       // sharp left turn
+    "sharp-right": "↪️",      // sharp right turn
+    "u-turn": "🔁",           // U-turn
   };
-  const floorIcons = { up: "🔼", down: "🔽" };
-  const startEndIcons = { start: "🏁", destination: "🎯" };
+const floorIcons = {
+  up: "🛗⬆️",      // Elevator Up or 🔼
+  down: "🛗⬇️",    // Elevator Down or 🔽
+};
+const startEndIcons = {
+  start: "🟢",          // Start (green circle)
+  destination: "🏁",    // Checkered flag (finish)
+};
 
   // Helpers
   const calculateBearing = (start, end) => {
@@ -280,6 +286,29 @@ export function renderDirectionsPanel(
   } catch (error) {
     console.error("Error rendering directions panel:", error);
   }
+}
+
+
+export function formatDistanceImperial(meters) {
+    if (!meters) return { value: '', unit: '' };
+
+    // Convert to feet (1m ≈ 3.28084ft)
+    const feet = meters;
+
+    if (feet < 1000) {
+        // Less than 1000 feet, show in feet
+        return {
+            value: Math.round(feet),
+            unit: 'meters'
+        };
+    } else {
+        // More than 1000 feet, show in miles
+        const miles = feet / 1000;
+        return {
+            value: miles.toFixed(2),
+            unit: 'km'
+        };
+    }
 }
 
 /**

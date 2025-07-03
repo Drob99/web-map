@@ -5,7 +5,7 @@
 import { drawPathToPoi } from './data/routes.js';
 import { clearRoute, routeEnabled } from './mapController.js';
 import { map } from './mapInit.js';
-
+import { state } from './config.js';
 // Marker state
 let fromMarker = null;
 let toMarker = null;
@@ -18,26 +18,50 @@ let toLng, toLat, toLevel, toPoiName;
  * Sets up click handler on the 'polygons' layer.
  */
 export function setupMapEventHandlers() {
-  map.on('click', 'polygons', handleMapClick);
+  //map.on('click', 'polygons', handleMapClick);
 }
-
+map.on('click', 'polygons', handleMapClick);
 /**
  * Handles map click to place or reset markers and start routing.
  * @param {Object} e - Mapbox event.
  */
 function handleMapClick(e) {
   const feature = e.features[0];
-  const coords = e.lngLat.toArray();
-  const id = feature.id;
-  const level = feature.properties.level || 0;
-  const title = feature.properties.title || '';
-
+  const coords = turf.centroid(feature).geometry.coordinates;
+  const props = feature.properties;
+  
   if (!fromMarker) {
-    placeFromMarker(id, coords, level, title);
+    fromPolygonId = feature.id;
+    fromLng = coords[0];
+    fromLat = coords[1];
+    fromLevel = props.level || 0;
+    fromPoiName = props.title || "Point A";
+    fromMarker = new mapboxgl.Marker(createMarkerEl("A", "#3BB3D0")).setLngLat([coords[0], coords[1]]).addTo(map);
+    if (state.routeEnabled) {
+        clearRoute();
+    }
   } else if (!toMarker) {
-    placeToMarker(id, coords, level, title);
+    if (feature.id === fromPolygonId) {
+      //alert("Please select a different polygon for destination (B).");
+      return;
+    }
+    toPolygonId = feature.id;
+    if (state.routeEnabled) {
+      clearRoute();
+    }
+    toLng = coords[0];
+    toLat = coords[1];
+    toLevel = props.level || 0;
+    toPoiName = props.title || "Point B";
+    toMarker = new mapboxgl.Marker(createMarkerEl("B", "#8B8ACC")).setLngLat([coords[0], coords[1]]).addTo(map);
+    fromLng, fromLat, fromLevel, fromPoiName
+    drawPathToPoi(
+      fromPoiName, fromLng, fromLat, fromLevel,
+      toPoiName, toLng, toLat, toLevel
+    );
+
   } else {
-    clearRoute();
+    console.log("REST MARKERS");
     resetMarkers();
   }
 }
@@ -94,6 +118,7 @@ function placeToMarker(id, [lng, lat], level, title) {
 export function resetMarkers() {
   if (fromMarker) fromMarker.remove();
   if (toMarker) toMarker.remove();
+  
   fromMarker = null;
   toMarker = null;
   fromPolygonId = null;
