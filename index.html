@@ -135,14 +135,17 @@
 
 
     <!-- Airport Menu Component -->
-    <div class="menu-container show" id="menuContainer">
+    <div class="menu-container show desktop-expanded" id="menuContainer">
         <!-- Search Section -->
         <div class="search-section">
             <input type="text" class="search-input" placeholder="Search" id="searchInput">
-            <button id="languageToggleButton" style="vertical-align: middle; width: 45px; height: 45px; border-radius: 50px;    border: 1px solid #ddd;
-    background: rgb(242, 242, 242);"><img style="width: 25px;" src="./src/images/language.png"></button>
-            <button id="nearbyToggleButton" style="vertical-align: middle; width: 45px; height: 45px; border-radius: 50px;    border: 1px solid #ddd;
-    background: rgb(242, 242, 242)"><img style="width: 25px;" src="./src/images/map.png"></button>
+            <button id="languageToggleButton" style="vertical-align: middle; width: 45px; height: 45px; border-radius: 50px;    border: 0px solid #ddd;
+    background: rgb(242, 242, 242);"><div class="category-icon"><svg xmlns="http://www.w3.org/2000/svg" width="23" height="40" fill="currentColor" class="bi bi-translate" viewBox="0 0 16 16">
+  <path d="M4.545 6.714 4.11 8H3l1.862-5h1.284L8 8H6.833l-.435-1.286zm1.634-.736L5.5 3.956h-.049l-.679 2.022z"/>
+  <path d="M0 2a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v3h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-3H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zm7.138 9.995q.289.451.63.846c-.748.575-1.673 1.001-2.768 1.292.178.217.451.635.555.867 1.125-.359 2.08-.844 2.886-1.494.777.665 1.739 1.165 2.93 1.472.133-.254.414-.673.629-.89-1.125-.253-2.057-.694-2.82-1.284.681-.747 1.222-1.651 1.621-2.757H14V8h-3v1.047h.765c-.318.844-.74 1.546-1.272 2.13a6 6 0 0 1-.415-.492 2 2 0 0 1-.94.31"/>
+</svg></div></button>
+            <button id="nearbyToggleButton" style="vertical-align: middle; width: 45px; height: 45px; border-radius: 50px;    border: 0px solid #ddd;
+    background: rgb(242, 242, 242)"><div class="category-icon"><i class="fa-solid fa-map-location-dot"></i></div></button>
         </div>
 
         <!-- Categories Section -->
@@ -150,198 +153,199 @@
             <h3 class="section-title" data-translate="Categories">Categories</h3>
 
             <div class="categories-grid">
-                <!-- Row 1 -->
-                <div class="menu-item">
-                    <div class="menu-icon">
-                       <img src="./src/images/eatDrink.svg" alt="" class="Main-category-icon" />
+                <!-- Row 1 - Visible by default -->
+                <div class="category-item">
+                    <div class="category-icon">
+                        <i class="fas fa-utensils"></i>
                     </div>
-                    <span class="menu-label">Dine</span>
+                    <span class="category-label">Dine</span>
                 </div>
-
-                <div class="menu-item">
-                    <div class="menu-icon">
-                       <img src="./src/images/shops.svg" alt="" class="Main-category-icon" />
+                
+                <div class="category-item">
+                    <div class="category-icon">
+                        <i class="fas fa-shopping-bag"></i>
                     </div>
-                    <span class="menu-label">Shops</span>
+                    <span class="category-label">Shops</span>
                 </div>
-
-                <div class="menu-item">
-                    <div class="menu-icon">
-                        <img src="./src/images/checkin.svg" alt="" class="Main-category-icon" />
+                
+                <div class="category-item">
+                    <div class="category-icon">
+                        <i class="fas fa-ticket-alt"></i>
                     </div>
-                    <span class="menu-label">Checkin</span>
+                    <span class="category-label">Checkin</span>
                 </div>
-
-                <div class="menu-item">
-                    <div class="menu-icon">
-                        <img src="./src/images/parking.svg" alt="" class="Main-category-icon" />
+                
+                <div class="category-item">
+                    <div class="category-icon">
+                        <i class="fas fa-parking"></i>
                     </div>
-                    <span class="menu-label">Parking & Transportation</span>
+                    <span class="category-label">Parking & Transportation</span>
                 </div>
-
-                <!-- Row 2 -->
-                <div class="menu-item row-2">
-                    <div class="menu-icon">
-                        <img src="./src/images/Self Services.svg" alt="" class="Main-category-icon" />
+                
+                <!-- Row 2 - Hidden initially -->
+                <div class="category-item hidden" id="row2-1">
+                    <div class="category-icon">
+                        <i class="fas fa-user-cog"></i>
                     </div>
-                    <span class="menu-label">Self Services</span>
+                    <span class="category-label">Self Services</span>
                 </div>
-
-                <div class="menu-item row-2">
-                    <div class="menu-icon">
-                        <img src="./src/images/wallet.svg" alt="" class="Main-category-icon" />
+                
+                <div class="category-item hidden" id="row2-2">
+                    <div class="category-icon">
+                        <i class="fas fa-university"></i>
                     </div>
-                    <span class="menu-label">Banks - ATM - Exchange</span>
+                    <span class="category-label">Banks - ATM - Exchange</span>
                 </div>
-
-                <div class="menu-item row-2">
-                    <div class="menu-icon">
-                       <img src="./src/images/Boarding Gate.png" alt="" class="Main-category-icon" />
+                
+                <div class="category-item hidden" id="row2-3">
+                    <div class="category-icon">
+                        <i class="fas fa-door-open"></i>
                     </div>
-                    <span class="menu-label">Boarding Gates</span>
+                    <span class="category-label">Boarding Gates</span>
                 </div>
-
-                <div class="menu-item row-2">
-                    <div class="menu-icon">
-                       <img src="./src/images/baggage.svg" alt="" class="Main-category-icon" />
+                
+                <div class="category-item hidden" id="row2-4">
+                    <div class="category-icon">
+                        <i class="fas fa-suitcase"></i>
                     </div>
-                    <span class="menu-label">Baggage</span>
+                    <span class="category-label">Baggage</span>
                 </div>
-
-                <!-- Row 3 -->
-                <div class="menu-item row-3">
-                    <div class="menu-icon">
-                        <img src="./src/images/Services.svg" alt="" class="Main-category-icon" />
+                
+                <!-- Row 3 - Hidden initially -->
+                <div class="category-item hidden" id="row3-1">
+                    <div class="category-icon">
+                        <i class="fas fa-concierge-bell"></i>
                     </div>
-                    <span class="menu-label">Services</span>
+                    <span class="category-label">Services</span>
                 </div>
-
-                <div class="menu-item row-3">
-                    <div class="menu-icon">
-                        <img src="./src/images/Lounges.png" alt="" class="Main-category-icon" />
+                
+                <div class="category-item hidden" id="row3-2">
+                    <div class="category-icon">
+                        <i class="fas fa-couch"></i>
                     </div>
-                    <span class="menu-label">Lounges</span>
+                    <span class="category-label">Lounges</span>
                 </div>
-
-                <div class="menu-item row-3">
-                    <div class="menu-icon">
-                        <img src="./src/images/passengersWithReducedMobility.svg" alt="" class="Main-category-icon" />
+                
+                <div class="category-item hidden" id="row3-3">
+                    <div class="category-icon">
+                        <i class="fas fa-hands-helping"></i>
                     </div>
-                    <span class="menu-label">Assistance</span>
+                    <span class="category-label">Assistance</span>
                 </div>
-
-                <div class="menu-item row-3">
-                    <div class="menu-icon">
-                        <img src="./src/images/Ask Me Counters.svg" alt="" class="Main-category-icon" />
+                
+                <div class="category-item hidden" id="row3-4">
+                    <div class="category-icon">
+                        <i class="fas fa-info-circle"></i>
                     </div>
-                    <span class="menu-label">Ask me Counters</span>
+                    <span class="category-label">Ask me Counters</span>
                 </div>
-
-                <!-- Row 4 -->
-                <div class="menu-item row-4">
-                    <div class="menu-icon">
-                        <img src="./src/images/Mother Services.svg" alt="" class="Main-category-icon" />
+                
+                <!-- Row 4 - Hidden initially -->
+                <div class="category-item hidden" id="row4-1">
+                    <div class="category-icon">
+                        <i class="fas fa-baby"></i>
                     </div>
-                    <span class="menu-label">Mother services</span>
+                    <span class="category-label">Mother services</span>
                 </div>
-
-                <div class="menu-item row-4">
-                    <div class="menu-icon">
-                        <img src="./src/images/Medical Services.svg" alt="" class="Main-category-icon" />
+                
+                <div class="category-item hidden" id="row4-2">
+                    <div class="category-icon">
+                        <i class="fas fa-first-aid"></i>
                     </div>
-                    <span class="menu-label">Medical Services</span>
+                    <span class="category-label">Medical Services</span>
                 </div>
-
-                <div class="menu-item row-4">
-                    <div class="menu-icon">
-                        <img src="./src/images/Security & Customs.svg" alt="" class="Main-category-icon" />
+                
+                <div class="category-item hidden" id="row4-3">
+                    <div class="category-icon">
+                        <i class="fas fa-shield-alt"></i>
                     </div>
-                    <span class="menu-label">Security & Customs</span>
+                    <span class="category-label">Security & Customs</span>
                 </div>
-
-                <div class="menu-item row-4">
-                    <div class="menu-icon">
-                        <img src="./src/images/Airlines.png" alt="" class="Main-category-icon" />
+                
+                <div class="category-item hidden" id="row4-4">
+                    <div class="category-icon">
+                        <i class="fas fa-plane"></i>
                     </div>
-                    <span class="menu-label">Airlines</span>
+                    <span class="category-label">Airlines</span>
                 </div>
-
-
-                <div class="menu-item row-4">
-                    <div class="menu-icon">
-                        <img src="./src/images/toilets.png" alt="" class="Main-category-icon" />
+                
+                <!-- Row 5 - Hidden initially -->
+                <div class="category-item hidden" id="row5-1">
+                    <div class="category-icon">
+                        <i class="fas fa-restroom"></i>
                     </div>
-                    <span class="menu-label">Toilets</span>
+                    <span class="category-label">Toilets</span>
                 </div>
-
-                <div class="menu-item row-4">
-                    <div class="menu-icon">
-                        <img src="./src/images/Mosque.png" alt="" class="Main-category-icon" />
+                
+                <div class="category-item hidden" id="row5-2">
+                    <div class="category-icon">
+                        <i class="fas fa-pray"></i>
                     </div>
-                    <span class="menu-label">Prayer Rooms</span>
+                    <span class="category-label">Prayer Rooms</span>
                 </div>
-
-                <div class="menu-item row-4">
-                    <div class="menu-icon">
-                        <img src="./src/images/Entrance.png" alt="" class="Main-category-icon" />
+                
+                <div class="category-item hidden" id="row5-3">
+                    <div class="category-icon">
+                        <i class="fas fa-sign-in-alt"></i>
                     </div>
-                    <span class="menu-label">Airport Entrances</span>
+                    <span class="category-label">Airport Entrances</span>
                 </div>
-
-                <div class="menu-item row-4">
-                    <div class="menu-icon">
-                        <img src="./src/images/Exit.png" alt="" class="Main-category-icon" />
+                
+                <div class="category-item hidden" id="row5-4">
+                    <div class="category-icon">
+                        <i class="fas fa-sign-out-alt"></i>
                     </div>
-                    <span class="menu-label">Airport Exit gates</span>
+                    <span class="category-label">Airport Exit gates</span>
                 </div>
-
-
-                 <div class="menu-item row-4">
-                    <div class="menu-icon">
-                        <img src="./src/images/Arrival gates.png" alt="" class="Main-category-icon" />
+                
+                <!-- Row 6 - Hidden initially -->
+                <div class="category-item hidden" id="row6-1">
+                    <div class="category-icon">
+                        <i class="fas fa-plane-arrival"></i>
                     </div>
-                    <span class="menu-label">Arrival Gates</span>
+                    <span class="category-label">Arrival Gates</span>
                 </div>
-
-
-                <div class="menu-item row-4">
-                    <div class="menu-icon">
-                       <img src="./src/images/Elevators.png" alt="" class="Main-category-icon" />
+                
+                <div class="category-item hidden" id="row6-2">
+                    <div class="category-icon">
+                        <i class="fas fa-elevator"></i>
                     </div>
-                    <span class="menu-label">Elevators</span>
+                    <span class="category-label">Elevators</span>
                 </div>
-
-
-                 <div class="menu-item row-4">
-                    <div class="menu-icon">
-                        <img src="./src/images/Escalator.png" alt="" class="Main-category-icon" />
+                
+                <div class="category-item hidden" id="row6-3">
+                    <div class="category-icon">
+                        <i class="fas fa-arrow-up"></i>
                     </div>
-                    <span class="menu-label">Escalators</span>
+                    <span class="category-label">Escalators</span>
                 </div>
-                <div class="menu-item row-4">
-                    <div class="menu-icon">
-                        <img src="./src/images/Stairways.png" alt="" class="Main-category-icon" />
+                
+                <div class="category-item hidden" id="row6-4">
+                    <div class="category-icon">
+                        <i class="fas fa-stairs"></i>
                     </div>
-                    <span class="menu-label">Stairs</span>
+                    <span class="category-label">Stairs</span>
                 </div>
-
-
-                 <div class="menu-item row-4">
-                    <div class="menu-icon">
-                       <img src="./src/images/Others.png" alt="" class="Main-category-icon" />
+                
+                <!-- Row 7 - Hidden initially -->
+                <div class="category-item hidden" id="row7-1">
+                    <div class="category-icon">
+                        <i class="fas fa-ellipsis-h"></i>
                     </div>
-                    <span class="menu-label">Others</span>
+                    <span class="category-label">Others</span>
                 </div>
             </div>
 
-            <!-- Menu Arrow -->
+         
+            
+        </div>
+   <!-- Menu Arrow -->
             <div class="menu-arrow" id="menuArrow">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg style="    background-color: rgb(242, 242, 242);
+    border-radius: 50%;" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M6 9l6 6 6-6"></path>
                 </svg>
             </div>
-        </div>
-
         <!-- Subcategories View -->
         <div class="subcategories-view" id="subcategoriesView">
             <div class="view-header">
@@ -606,6 +610,7 @@
 		</div>
 	</div>
     <script type="module" src="./src/main.js"></script>
+    <script src="./src/menu-navigation-fix.js"></script>
     <script src="./src/will_removed_script.js"></script>
     <script src="./src/will_removed_airport-data.js"></script>
 

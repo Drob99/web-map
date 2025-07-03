@@ -490,3 +490,5 @@ document.addEventListener("DOMContentLoaded", function() {
       nearbyRestaurantList.appendChild(nearbyCard);
     });
 
+// Menu navigation is now handled by the menu-navigation module
+// This code has been moved to menu-navigation.js for better organization

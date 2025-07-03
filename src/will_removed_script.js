@@ -275,11 +275,11 @@
         }
 
         setupMenuItemClicks() {
-            const menuItems = document.querySelectorAll('.menu-item');
+            const menuItems = document.querySelectorAll('.category-item');
             menuItems.forEach((item, index) => {
                 item.addEventListener('click', (e) => {
                     e.preventDefault();
-                    const categoryName = item.querySelector('.menu-label').textContent;
+                    const categoryName = item.querySelector('.category-label').textContent;
                     this.categoryItem = categoryName;
                     // console.log('Menu item clicked', { categoryName, index });
                     //if (this.hasSubcategories(categoryName)) {
@@ -368,6 +368,22 @@
             if (this.locationDetailsView) this.locationDetailsView.style.display = 'none';
             if (this.directionsView) this.directionsView.style.display = 'none';
             if (this.navigationView) this.navigationView.style.display = 'none';
+            
+            // Restore menu arrow visibility when returning to categories view
+            const menuArrow = document.getElementById('menuArrow');
+            if (menuArrow) {
+                menuArrow.style.display = 'flex';
+            }
+            
+            // Restore proper container sizing for categories view
+            if (this.menuContainer) {
+                // Check if menu is expanded and set appropriate height
+                if (this.isExpanded || this.menuContainer.classList.contains('desktop-expanded')) {
+                    this.menuContainer.style.maxHeight = '785px';
+                } else {
+                    this.menuContainer.style.maxHeight = '250px';
+                }
+            }
         }
 
         // Auto-expand menu when clicking categories, subcategories, or locations
@@ -393,6 +409,25 @@
             }
 
             this.populateSubcategories(categoryName);
+            
+            // Hide menu arrow in subcategories view and adjust container
+            const menuArrow = document.getElementById('menuArrow');
+            if (menuArrow) {
+                menuArrow.style.display = 'none';
+            }
+            
+            // Show subcategories view and hide others
+            if (this.categoriesSection) this.categoriesSection.style.display = 'none';
+            if (this.subcategoriesView) this.subcategoriesView.style.display = 'block';
+            if (this.locationsView) this.locationsView.style.display = 'none';
+            if (this.locationDetailsView) this.locationDetailsView.style.display = 'none';
+            if (this.directionsView) this.directionsView.style.display = 'none';
+            if (this.navigationView) this.navigationView.style.display = 'none';
+            
+            // Adjust container height to fit content
+            if (this.menuContainer) {
+                this.menuContainer.style.maxHeight = 'fit-content';
+            }
         }
 
         showLocationsView(subcategoryName) {
