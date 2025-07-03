@@ -1,3 +1,4 @@
+
 // Airport Menu Component - Interactive Functionality
 (function () {
     'use strict';
@@ -7,6 +8,27 @@
         return;
     }
     import('/src/config.js').then(cfg => window.cfg = cfg);
+    import('/src/data/routes.js').then(route => {
+        console.log('route loaded:', route);
+        window.route = route;
+    }).catch(err => {
+        console.error('Failed to load route:', err);
+    });
+
+     import('/src/mapController.js').then(mapc => {
+        console.log('route loaded:', mapc);
+        window.mapc = mapc;
+    }).catch(err => {
+        console.error('Failed to load route:', err);
+    });
+
+     import('/src/navigation.js').then(navigation => {
+        console.log('navigation loaded:', navigation);
+        window.navigation = navigation;
+    }).catch(err => {
+        console.error('Failed to load route:', err);
+    });
+
 
     const toggle = document.getElementById('legendToggle');
     const panel = document.getElementById('legendPanel');
@@ -204,6 +226,11 @@
             if (this.directionsBackBtn) {
                 this.directionsBackBtn.addEventListener('click', (e) => {
                     e.preventDefault();
+                    const departureContainer = document.getElementsByClassName("departure-input-container")[0];
+                    const destinationContainer = document.getElementsByClassName("destination-container")[0];
+                    departureContainer.style.display = "block";
+                    destinationContainer.style.display = "block";
+                     mapc.clearRoute();
                     this.showLocationDetailsView(this.currentLocation);
                 });
             }
@@ -458,14 +485,15 @@
         }
 
         showDirectionsView(location) {
-            //console.log('Showing directions view for', location);
+            console.log('Showing Destination view for', location);
             this.currentView = 'directions';
             this.currentLocation = location;
 
             // Set destination
-            const destinationText = document.getElementById('destinationText');
+            const destinationText = document.getElementById('destinationInput');
             if (destinationText && location) {
-                destinationText.textContent = location.properties.title || 'Selected Location';
+                destinationText.value = location.properties.title || 'Selected Location';
+                destinationText.disabled = true;
             }
 
             // Hide search bar when showing directions
@@ -505,6 +533,7 @@
             departureInput.addEventListener('input', (e) => {
                 const query = e.target.value.trim();
                 if (query.length > 0) {
+                    this.showPopularLocationsView();
                     this.populatePopularLocationsByName(query);
                 } else {
                     departureResults.style.display = 'none';
@@ -603,31 +632,35 @@
             if (accessibilityToggle) accessibilityToggle.style.display = 'block';
             if (optionsMenu) optionsMenu.style.display = 'block';
 
-            // Replace departure input with selected departure display
-            const departureContainer = document.querySelector('.destination-container');
-            if (departureContainer) {
-                const icon = this.getLocationIcon(departureLocation.type || departureLocation.category || 'default');
-                departureContainer.innerHTML = `
-                    <div class="selected-departure">
-                        <span class="destination-text">${departureLocation.properties.title}</span>
-                    </div>
-                `;
-            }
 
-            // Update destination to show current location with proper styling
-            const destinationContainer = document.querySelector('.destination-container');
-            if (destinationContainer && this.currentLocation) {
-                const destinationIcon = this.getLocationIcon(this.currentLocation.type || 'starbucks');
-                destinationContainer.innerHTML = `
-            <div class="destination-text">${this.currentLocation.properties.tilte}</div>
-            <button class="swap-locations-btn" id="swapLocationsBtn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M7 16l4-4-4-4"></path>
-                    <path d="M17 8l4 4-4 4"></path>
-                </svg>
-            </button>
-        `;
-            }
+            route.drawPathToPoi(
+                departureLocation.properties.title,
+                parseFloat(departureLocation.properties.center[0]),
+                parseFloat(departureLocation.properties.center[1]),
+                departureLocation.properties.level,
+                this.currentLocation.properties.title,
+                parseFloat(this.currentLocation.properties.center[0]),
+                parseFloat(this.currentLocation.properties.center[1]),
+                this.currentLocation.properties.level
+            );
+            // Replace departure input with selected departure display
+            // const departureContainer = document.querySelector('.destination-container');
+            // if (departureContainer) {
+            //     const icon = this.getLocationIcon(departureLocation.type || departureLocation.category || 'default');
+            //     departureContainer.innerHTML = `
+            //         <div class="selected-departure">
+            //             <span class="destination-text">${departureLocation.properties.title}</span>
+            //         </div>
+            //     `;
+            // }
+
+            // // Update destination to show current location with proper styling
+            // const destinationContainer = document.querySelector('.destination-container');
+            // if (destinationContainer && this.currentLocation) {
+            //     console.log(this.currentLocation.properties.title);
+            //     destinationContainer.innerHTML = `
+            //     <div class="destination-text"><input type="text" class="departure-input" id="destinationInput" placeholder="Choose Destination" disabled="" value = "${this.currentLocation.properties.title}"></div>`;
+            // }
 
             // Show "Add destination" section
             const addDestination = document.querySelector('.add-destination');
@@ -641,12 +674,12 @@
                 routeSummary.style.display = 'block';
 
                 // Update time estimate (you can calculate this based on distance)
-                const timeValue = document.querySelector('.time-value');
-                if (timeValue) {
-                    // Calculate estimated time based on locations
-                    const estimatedTime = this.calculateTravelTime(departureLocation, this.currentLocation);
-                    timeValue.textContent = `${estimatedTime} minutes`;
-                }
+                // const timeValue = document.querySelector('.time-value');
+                // if (timeValue) {
+                //     // Calculate estimated time based on locations
+                //     const estimatedTime = this.calculateTravelTime(departureLocation, this.currentLocation);
+                //     timeValue.textContent = `${estimatedTime} minutes`;
+                // }
 
                 // Add event listener for Steps button
                 const stepsButton = document.getElementById('stepsButton');
@@ -657,6 +690,14 @@
                     };
                     stepsButton.addEventListener('click', this.handleStepsClick);
                 }
+
+                const endroutebtn = document.getElementById('endRoutebtn');
+                 endroutebtn.removeEventListener('click', this.handleEndRouteClick); // Remove old listener
+                    this.handleEndRouteClick = () => {
+                       mapc.clearRoute();
+                    document.getElementById("directionsBackBtn").click();
+                    };
+                    endroutebtn.addEventListener('click', this.handleEndRouteClick);
             }
 
             // Show journey breakdown
@@ -672,6 +713,16 @@
             if (backBtn) {
                 backBtn.removeEventListener('click', this.handleBackClick); // Remove old listener
                 this.handleBackClick = () => {
+                    routeSummary.style.display = 'none';
+                     const departureInput = document.getElementById('departureInput');
+                    if (departureInput) {
+                        departureInput.value = "";
+                    }
+
+                    const destinationInput = document.getElementById('destinationInput');
+                    if (destinationInput) {
+                        destinationInput.value = "";
+                    }
                     this.showLocationDetailsView(this.currentLocation);
                 };
                 backBtn.addEventListener('click', this.handleBackClick);
@@ -854,20 +905,21 @@
             // Get navigation steps from airport data or use default steps
             let steps = [];
 
-            if (window.AIRPORT_DATA && this.selectedDeparture && this.currentLocation) {
-                const path = window.AIRPORT_DATA.getPathBetween(
-                    this.selectedDeparture.id,
-                    this.currentLocation.id
-                );
-                if (path && path.steps) {
-                    steps = path.steps;
-                }
-            }
+            // if (window.AIRPORT_DATA && this.selectedDeparture && this.currentLocation) {
+            //     const path = window.AIRPORT_DATA.getPathBetween(
+            //         this.selectedDeparture.id,
+            //         this.currentLocation.id
+            //     );
+            //     if (path && path.steps) {
+            //         steps = path.steps;
+            //     }
+            // }
 
             // Enhanced default steps with proper directions and landmarks
             if (steps.length === 0) {
-                const departureName = this.selectedDeparture ? this.selectedDeparture.name : 'your departure location';
-                const destinationName = this.currentLocation ? this.currentLocation.name : 'your destination';
+                console.log("departure : "+this.selectedDeparture.properties.title)
+                const departureName = this.selectedDeparture ? this.selectedDeparture.properties.title : 'your departure location';
+                const destinationName = this.currentLocation ? this.currentLocation.properties.title : 'your destination';
 
                 steps = [
                     {
@@ -915,6 +967,9 @@
                 ];
             }
 
+            const instructions = navigation.generateNavigationInstructions(mapc.smartRoute);
+            console.log(instructions);
+
             // Clear existing steps
             navigationStepsList.innerHTML = '';
 
@@ -924,13 +979,13 @@
                 departureHeader.className = 'location-header';
                 departureHeader.innerHTML = `
             <div class="location-dot departure"></div>
-            <div class="location-text">${this.selectedDeparture.name}</div>
+            <div class="location-text">${this.selectedDeparture.properties.title}</div>
         `;
                 navigationStepsList.appendChild(departureHeader);
             }
 
             // Add each step with clean design and timeline dots
-            steps.forEach((step, index) => {
+            instructions.forEach((step, index) => {
                 const stepElement = document.createElement('div');
                 stepElement.className = 'clean-step-item';
 
@@ -943,16 +998,21 @@
                 <div class="clean-step-icon">${step.icon}</div>
                 <div class="clean-step-content">
                     <div class="clean-step-text">${step.text}</div>
+                    \
                 </div>
             `;
                 } else {
-                    stepElement.innerHTML = `
+                const distance = step?.distance ? navigation.formatDistanceImperial(step.distance) : null;
+
+                stepElement.innerHTML = `
                 <div class="clean-step-icon">${step.icon}</div>
                 <div class="clean-step-content">
                     <div class="clean-step-text">${step.text}</div>
-                    <div class="clean-step-time">12 meter</div>
+                    <div class="clean-step-time">
+                    ${distance ? `${distance.value}&nbsp;${distance.unit}` : ''}
+                    </div>
                 </div>
-            `;
+                `;
                 }
 
                 navigationStepsList.appendChild(stepElement);
@@ -964,13 +1024,13 @@
                 destinationFooter.className = 'location-header';
                 destinationFooter.innerHTML = `
             <div class="location-dot destination"></div>
-            <div class="location-text">${this.currentLocation.name}</div>
+            <div class="location-text">${this.currentLocation.properties.title}</div>
         `;
                 navigationStepsList.appendChild(destinationFooter);
             }
 
             // Apply timeline styling
-            this.applyTimelineStyles();
+            //this.applyTimelineStyles();
         }
 
         // Remove or comment out the old populateNavigation function since it's no longer needed

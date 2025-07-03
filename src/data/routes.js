@@ -11,8 +11,10 @@ import {
   routeLevel,
   switchFloorByNo
 } from "../mapController.js";
-import { setupArrowAnimation, initializeArrowsSourceAndLayer, startAnimation, stopAnimation } from "../animation/arrowAnimation.js";
+import { initializeAnimation, initializeArrowsSourceAndLayer, startAnimation, stopAnimation } from "../animation/arrowAnimation.js";
 import { map } from "../mapInit.js";
+import { updateJourneyInfo } from "../mapController.js";
+
 
 /**
  * Simple directed graph using an adjacency list.
@@ -139,7 +141,7 @@ export async function startRoutes() {
     }
   }
 
-  return (state.routeEnabled = true);
+  return (state.routeEnabled = false);
 }
 
 /**
@@ -261,13 +263,13 @@ export function drawPathToPoi(
     state.fromMarkerLevel,
     state.toMarkerLevel
   );
-
+  updateJourneyInfo(state.globalName , state.globalDistance , state.globalTime , state.globalZLevel);
   // Render per-floor route and camera
   routeLevel();
   enterNavigationMode(state.fullPathRoute);
 
   // Animate arrows
   initializeArrowsSourceAndLayer(map);
-  setupArrowAnimation();
+  initializeAnimation()
   startAnimation();
 }

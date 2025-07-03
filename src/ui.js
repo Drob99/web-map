@@ -24,10 +24,10 @@ export function initUI() {
 
 
 function initAccessabilty() {
-   document.getElementById("closeBtn").addEventListener("click", closeMenu);
-   document.getElementById("accessibilityBtn").addEventListener("click", toggleMenu);
-   window.toggleCard = toggleCard;
-   window.resetSettings = resetSettings;
+  //  document.getElementById("closeBtn").addEventListener("click", closeMenu);
+  //  document.getElementById("accessibilityBtn").addEventListener("click", toggleMenu);
+  //  window.toggleCard = toggleCard;
+  //  window.resetSettings = resetSettings;
 }
 
 function closeMenu() {
@@ -238,40 +238,48 @@ if (languageListEl) {
   });
 }
 
+
 /**
- * Handle language selection
+ * Handle language selection with proper translation updates
  * @param {HTMLElement} selectedEl - Selected list item
  * @param {string} langCode - Language code
  */
 function selectLanguage(selectedEl, langCode) {
-  // Update visual selection
-  document.querySelectorAll('.language-item').forEach(item => {
-    item.classList.remove('active');
-    const icon = item.querySelector('i');
+  // Store current floor level to maintain context
+  const currentFloor = state.levelRoutePoi || state.currentLevel || 1;
+
+  // Update visual selection in UI
+  document.querySelectorAll(".language-item").forEach((item) => {
+    item.classList.remove("active");
+    const icon = item.querySelector("i");
     if (icon) icon.remove();
   });
-  
-  selectedEl.classList.add('active');
+
+  selectedEl.classList.add("active");
   selectedEl.innerHTML += ' <i class="bi bi-check-lg"></i>';
 
-  // Animation
-  selectedEl.style.transform = 'scale(1.05)';
+  // Visual feedback animation
+  selectedEl.style.transform = "scale(1.05)";
   setTimeout(() => {
-    selectedEl.style.transform = 'scale(1)';
+    selectedEl.style.transform = "scale(1)";
   }, 150);
 
-  // Change language
   if (languageService.setLanguage(langCode)) {
-    // Update UI translations
+    console.log(`Language changed to: ${langCode}`);
+    
+    // 1. Restore floor level context
+    state.levelRoutePoi = currentFloor;
+
+    // 2. Update UI translations first
     uiTranslator.updateUITranslations();
-    
-    // Update POIs
+
+    // 3. Update POI data and map layers
     updatePOITranslations();
-    
-    // Update map layers if needed
+
+    // 4. Update other map layers if needed
     updateMapLayers(langCode);
-    
-    // Hide language panel after selection
+
+    // 5. Hide language panel after successful change
     setTimeout(() => {
       languageMenu();
     }, 300);
@@ -279,14 +287,36 @@ function selectLanguage(selectedEl, langCode) {
 }
 
 /**
- * Update POI translations
+ * Complete POI translation update workflow
  */
 function updatePOITranslations() {
-  mapTranslator.updatePOILabels();
+  try {
+    // Step 1: Re-render POIs with new language (this updates the source data)
+    if (typeof showPoisByLevel === 'function') {
+      showPoisByLevel();
+    }
 
-  // Re-render POIs with new language
-  if (typeof showPoisByLevel === 'function') {
-    showPoisByLevel();
+    // Step 2: Force refresh map translator (this updates the text-field expressions) 
+    mapTranslator.refreshAllPOITranslations();
+
+    // Step 3: Ensure map source is properly updated with a small delay
+    setTimeout(() => {
+      if (map && map.getSource("municipalities")) {
+        // Trigger a source refresh
+        const source = map.getSource("municipalities");
+        if (source && typeof source.setData === 'function') {
+          // Force re-evaluation of the source
+          const currentData = source.serialize().data;
+          if (currentData) {
+            source.setData(currentData);
+          }
+        }
+      }
+    }, 50);
+
+    console.log("POI translations updated successfully");
+  } catch (error) {
+    console.error("Error updating POI translations:", error);
   }
 }
 
@@ -297,18 +327,14 @@ function updatePOITranslations() {
 function updateMapLayers(langCode) {
   if (!map) return;
   
-  const textFieldMap = {
-    'EN': '{NameEN}',
-    'AR': '{NameAR}',
-    'ZN': '{NameZN}'
-  };
+  console.log(`Updating map layers for language: ${langCode}`);
   
-  const textField = textFieldMap[langCode] || '{NameEN}';
+  // Let the mapTranslator handle the text field updates
+  // as it has better logic for language-specific expressions
+  mapTranslator.updatePOILabels();
   
-  // Update map layers with text fields
-  if (map.getLayer('municipality-name')) {
-    map.setLayoutProperty('municipality-name', 'text-field', ['get', 'title']);
-  }
+  // Additional layer updates can be added here if needed
+  // For example, updating other text layers not handled by mapTranslator
 }
 
 export function openLanguageFromMenu() {

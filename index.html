@@ -420,14 +420,7 @@
             </div>
 
             <div class="destination-container">
-                <div class="destination-text" id="destinationText">Starbucks</div>
-                <button class="swap-locations-btn" id="swapLocationsBtn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M17 8l4 4-4 4"></path>
-                        <path d="M3 12h18"></path>
-                        <path d="M7 16l-4-4 4-4"></path>
-                    </svg>
-                </button>
+                <input type="text" class="departure-input" id="destinationInput" placeholder="Choose Destination">
             </div>
 
                          <div class="popular-locations-view" id="popularLocationsView">
@@ -495,15 +488,15 @@
                 <div class="journey-breakdown">
                     <div class="journey-step">
                         <span class="step-icon"><img style="width: 22px;" src="./src/images/time.png"></span>
-                        <span class="step-time">8 min</span>
+                        <span class="step-time" id="step-time"></span>
                     </div>
                     <div class="journey-step">
                         <span class="step-icon"><img style="width: 22px;" src="./src/images/distance.png"></span>
-                        <span class="step-time">575 meters</span>
+                        <span class="step-time" id="step-distance"></span>
                     </div>
                     <div class="journey-step">
                         <span class="step-icon"><img style="width: 22px;" src="./src/images/terminal.png"></span>
-                        <span class="step-time">Termianl 5</span>
+                        <span class="step-time" id="step-level">Termianl 5</span>
                     </div>
                 </div>
             </div>

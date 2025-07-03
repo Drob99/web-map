@@ -16,8 +16,8 @@ import { doorsLayer } from './doors.js';
 import { corridorsLayer } from './corridors.js';
 import { beLayer } from './be.js';
 import { gardenLayer } from './garden.js';
-import { showPoisByLevel, routeEnabled } from '../mapController.js';
-import { setupArrowAnimation } from '../animation/arrowAnimation.js';
+import { showPoisByLevel, routeEnabled , routeLevel, elevatorGuide , addFromToMarkers} from '../mapController.js';
+import { setupArrowAnimation ,initializeArrowsSourceAndLayer , stopAnimation  } from '../animation/arrowAnimation.js';
 import { removeRouteLayer } from '../mapController.js';
 
 /**
@@ -147,10 +147,20 @@ export function toggleLayer(ids, name) {
     showPoisByLevel();
 
     // If a route is active, redraw it and arrows
-    if (routeEnabled) {
+    if (state.routeEnabled ) {
       removeRouteLayer();
-      setupArrowAnimation();
-      map.moveLayer('arrow-layer');
+      //setupArrowAnimation();
+      routeLevel();
+      elevatorGuide();
+      addFromToMarkers(
+        state.fromMarkerLocation,
+        state.toMarkerLocation,
+        state.fromMarkerLevel,
+        state.toMarkerLevel
+      );
+      stopAnimation();
+      initializeArrowsSourceAndLayer();
+      map.moveLayer("arrow-layer")
     }
   };
 

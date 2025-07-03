@@ -29,6 +29,7 @@ let elevatorLngs = [];
 let elevatorLats = [];
 let elevatorLvls = [];
 let nextElevatorLvls = [];
+let languageChangeCleanup = null;
 
 export let popupsGlobal = [];
 export let removeExtraRouteFlag = false;
@@ -77,18 +78,18 @@ export async function loadPoisFloors(sortedLayer) {
  * @param {number} distance - Distance in meters.
  * @param {number} time - Time in minutes (can be fraction).
  */
-export function updateJourneyInfo(poiName, distance, time) {
+export function updateJourneyInfo(poiName, distance, time , level) {
   // Format time
-  const timeLabel =
-    time < 1 ? `${Math.floor(time * 60)} sec` : `${Math.floor(time)} min`;
-  document.getElementById("time_lbl").textContent = timeLabel;
+  const timeLabel =time < 1 ? `${Math.floor(time * 60)} sec` : `${Math.floor(time)} min`;
 
-  // Format distance
-  const distLabel =
-    distance > 1000
-      ? `${(distance / 1000).toFixed(1)} Km`
-      : `${distance} meter`;
-  document.getElementById("distance_lbl").textContent = distLabel;
+    const timeValue = document.querySelector('.time-value');
+    if (timeValue) {
+        timeValue.textContent = timeLabel;
+    }
+ document.getElementById("step-time").textContent = timeLabel;
+ const distLabel =distance > 1000? `${(distance / 1000).toFixed(1)} Km`: `${distance} meter`;    
+ document.getElementById("step-distance").textContent = distLabel;
+ document.getElementById("step-level").textContent = level;
 }
 
 /**
@@ -175,6 +176,8 @@ export function elevatorGuide() {
   }
 }
 
+
+export var smartRoute;
 /**
  * Builds and renders a multi-level GeoJSON route, then draws it on the map.
  */
@@ -183,7 +186,7 @@ export async function routeLevel() {
   routeCounterInc = 0;
 
   // Initialize SmartRoute feature collection
-  const smartRoute = {
+   smartRoute = {
     type: "FeatureCollection",
     features: [
       {
@@ -221,29 +224,108 @@ export async function routeLevel() {
 
   // Draw route layers
   removeRouteLayer();
-  ["route_another", "route_another_outline", "route", "route_outline"].forEach(
-    (id) => {
-      map.addSource(id, { type: "geojson", data: smartRoute });
-      const paint =
-        id === "route"
-          ? { "line-color": "#0099EA", "line-width": 15 }
-          : id === "route_outline"
-          ? { "line-color": "#40B3EF", "line-width": 9 }
-          : id === "route_another"
-          ? { "line-color": "#BBBBBB", "line-width": 9, "line-opacity": 0.4 }
-          : { "line-color": "#A5A4A4", "line-width": 15, "line-opacity": 0.4 };
-      map.addLayer({
-        id,
-        type: "line",
-        source: id,
-        filter: id.includes("another")
-          ? ["!=", "level", state.levelRoutePoi.toString()]
-          : ["==", "level", state.levelRoutePoi.toString()],
-        layout: { "line-join": "round", "line-cap": "round" },
-        paint,
-      });
-    }
-  );
+  // ["route_another", "route_another_outline", "route", "route_outline"].forEach(
+  //   (id) => {
+  //     map.addSource(id, { type: "geojson", data: smartRoute });
+  //     const paint =
+  //       id === "route"
+  //         ? { "line-color": "#0099EA", "line-width": 15 }
+  //         : id === "route_outline"
+  //         ? { "line-color": "#40B3EF", "line-width": 9 }
+  //         : id === "route_another"
+  //         ? { "line-color": "#BBBBBB", "line-width": 9, "line-opacity": 0.4 }
+  //         : { "line-color": "#A5A4A4", "line-width": 15, "line-opacity": 0.4 };
+  //     map.addLayer({
+  //       id,
+  //       type: "line",
+  //       source: id,
+  //       filter: id.includes("another")
+  //         ? ["!=", "level", state.levelRoutePoi.toString()]
+  //         : ["==", "level", state.levelRoutePoi.toString()],
+  //       layout: { "line-join": "round", "line-cap": "round" },
+  //       paint,
+  //     });
+  //   }
+  //);
+            map.addSource("route", {
+                type: "geojson",
+                data: smartRoute,
+            }),
+            map.addLayer({
+                id: "route",
+                type: "line",
+                source: "route",
+                filter: ["==", "level", state.levelRoutePoi.toString()],
+                layout: {
+                    "line-join": "round",
+                    "line-cap": "round",
+                },
+                paint: {
+                    "line-color": "#0099EA",
+                    "line-width": 15,
+                },
+            }),
+            map.addSource("route_outline", {
+                type: "geojson",
+                data: smartRoute,
+            }),
+            map.addLayer({
+                id: "route_outline",
+                type: "line",
+                filter: ["==", "level", state.levelRoutePoi.toString()],
+                source: "route_outline",
+                layout: {
+                    "line-join": "round",
+                    "line-cap": "round",
+                },
+                paint: {
+                    "line-color": "#40B3EF",
+                    "line-width": 9,
+                    //"line-pattern": "fast-forward3.png"
+                },
+            }),
+            map.addSource("route_another", {
+                type: "geojson",
+                data: smartRoute,
+            }),
+            map.addLayer({
+                id: "route_another",
+                type: "line",
+                source: "route_another",
+                filter: ["!=", "level", state.levelRoutePoi.toString()],
+                layout: {
+                    //visibility: "none",
+                    "line-join": "round",
+                    "line-cap": "round",
+                },
+                paint: {
+                    "line-color": "#BBBBBB",
+                    "line-width": 9,
+                    "line-opacity": 0.4,
+                    //"line-pattern": "fast-forward4.png"
+                },
+            }),
+            map.addSource("route_another_outline", {
+                type: "geojson",
+                data: smartRoute,
+            }),
+            map.addLayer({
+                id: "route_another_outline",
+                type: "line",
+                source: "route_another_outline",
+                filter: ["!=", "level", state.levelRoutePoi.toString()],
+                layout: {
+                    //visibility: "none",
+                    "line-join": "round",
+                    "line-cap": "round",
+                },
+                paint: {
+                    "line-color": "#A5A4A4",
+                    "line-width": 15,
+                    "line-opacity": 0.4,
+                },
+            }),
+
 
   // Start arrow animation
   initializeArrowsSourceAndLayer(map);
@@ -275,8 +357,7 @@ export function clearRoute() {
   state.routeArray = [];
   state.fullDistanceToDestination = 0;
   state.globalTime = 0;
-  routeEnabled = false;
-
+  state.routeEnabled = false;
   document.querySelector(".directions-panel").style.display = "none";
   document.getElementById("menu").style.display = "block";
 
@@ -435,10 +516,6 @@ export function exitNavigationMode() {
  * Shows POIs by the current level, adding polygon layers to the map.
  */
 export function showPoisByLevel() {
-  // Import at the top of the file if not already present
-  // import { mapTranslator } from "./i18n/mapTranslator.js";
-  // import { languageService } from "./i18n/languageService.js";
-  
   if (state.levelRoutePoi == null) state.levelRoutePoi = 1;
   state.polyGeojsonLevel = { type: "FeatureCollection", features: [] };
   state.polyGeojsonLevelOutsideBuilding = {
@@ -447,22 +524,44 @@ export function showPoisByLevel() {
   };
 
   state.allPoiGeojson.features.forEach((feat) => {
-    const props = feat.properties;
+    // Create a deep copy of the feature to avoid modifying the original
+    const featureCopy = JSON.parse(JSON.stringify(feat));
+    const props = featureCopy.properties;
+
     if (props.icon && state.imageLoadFlag && props.iconUrl)
       loadPoiImage(props.iconUrl, props.icon);
+
     if (props.level === state.levelRoutePoi) {
       if (props.title === "room") props.title = "";
-      
-      // Translate POI properties
-      const translatedProps = mapTranslator.translatePOIProperties(feat);
-      
+
+      // Translate POI properties on the copy
+      const translatedProps = mapTranslator.translatePOIProperties(featureCopy);
+
+      // Determine which title to display based on current language
+      const currentLang = languageService.getCurrentLanguage();
+      let displayTitle = props.title; // Default to original
+
+      if (currentLang === "AR" && translatedProps.title_ar) {
+        displayTitle = translatedProps.title_ar;
+      } else if (currentLang === "ZN" && translatedProps.title_zn) {
+        displayTitle = translatedProps.title_zn;
+      } else if (currentLang === "EN" && translatedProps.title_en) {
+        displayTitle = translatedProps.title_en;
+      }
+
       const base = {
-        id: feat.id,
+        id: featureCopy.id,
         type: "Feature",
-        geometry: feat.geometry,
-        properties: { ...props, ...translatedProps },
+        geometry: featureCopy.geometry,
+        properties: {
+          ...props,
+          ...translatedProps,
+          title: displayTitle || props.title || "", // Ensure title is never undefined
+        },
       };
+
       state.polyGeojsonLevel.features.push(base);
+
       if (
         ["Admin Building Entrance", "Burjeel Darak Entrance"].includes(
           props.title
@@ -472,8 +571,10 @@ export function showPoisByLevel() {
       }
     }
   });
+
   state.imageLoadFlag = false;
 
+  // Remove existing layers and sources
   if (map.getSource("municipalities")) {
     ["polygons", "polygons_outline", "municipality-name"].forEach((id) => {
       if (map.getLayer(id)) map.removeLayer(id);
@@ -490,11 +591,13 @@ export function showPoisByLevel() {
     if (map.getLayer("polygons_outside")) map.removeLayer("polygons_outside");
     map.removeSource("municipalities_outside");
   }
+
   map.addSource("municipalities_outside", {
     type: "geojson",
     data: state.polyGeojsonLevelOutsideBuilding,
   });
 
+  // Add polygon layer
   map.addLayer({
     id: "polygons",
     type: "fill",
@@ -512,7 +615,8 @@ export function showPoisByLevel() {
       ],
     },
   });
-  
+
+  // Add outside polygon layer
   map.addLayer({
     id: "polygons_outside",
     type: "fill",
@@ -530,7 +634,8 @@ export function showPoisByLevel() {
       ],
     },
   });
-  
+
+  // Add outline layer
   map.addLayer({
     id: "polygons_outline",
     type: "line",
@@ -557,7 +662,8 @@ export function showPoisByLevel() {
       ],
     },
   });
-  
+
+  // Add symbol layer with simple text field
   map.addLayer({
     id: "municipality-name",
     type: "symbol",
@@ -566,12 +672,9 @@ export function showPoisByLevel() {
       "icon-image": ["get", "icon"],
       "icon-anchor": "bottom",
       "icon-size": 0.2,
-      "text-field": [
-        'coalesce',
-        ['get', languageService.getCurrentLanguage() === 'AR' ? 'title_ar' : 
-                languageService.getCurrentLanguage() === 'ZN' ? 'title_zn' : 'title_en'],
-        ['get', 'title']
-      ],
+      "text-field": mapTranslator.getTextFieldExpression(
+        languageService.getCurrentLanguage()
+      ),
       "text-size": 12,
       "text-offset": [0, 0.8],
       "symbol-placement": "point",
@@ -602,13 +705,75 @@ export function showPoisByLevel() {
       "text-halo-blur": 0,
     },
   });
+
+  updateMapSourceWithTranslations();
+}
+
+/**
+ * Updates the map source with translated POI data
+ */
+function updateMapSourceWithTranslations() {
+  if (!map || !map.getSource("municipalities")) return;
+
+  try {
+    // Update the text field mapping for the current language
+    mapTranslator.updatePOILabels();
+    
+    // Force a small refresh to ensure changes are visible
+    setTimeout(() => {
+      if (map && typeof map.triggerRepaint === 'function') {
+        map.triggerRepaint();
+      }
+    }, 10);
+  } catch (error) {
+    console.error("Error updating map source with translations:", error);
+  }
+}
+
+/**
+ * Sets up language change listener
+ */
+export function setupMapLanguageListener() {
+  // Only set up once
+  if (languageChangeCleanup) {
+    languageChangeCleanup();
+    languageChangeCleanup = null;
+  }
+
+  // Register listener for language changes
+  const unsubscribe = languageService.onLanguageChange((newLanguage) => {
+    console.log(`Map responding to language change: ${newLanguage}`);
+    
+    // Update map layers with new language after a short delay
+    setTimeout(() => {
+      if (map && map.getSource("municipalities")) {
+        updateMapSourceWithTranslations();
+      }
+    }, 50);
+  });
+  
+  languageChangeCleanup = unsubscribe;
+
+  console.log("Map language listener set up successfully");
+}
+
+/**
+ * Optional: Clean up language listener
+ * Call this if you ever need to clean up (e.g., during app shutdown)
+ */
+export function cleanupMapLanguageListener() {
+  if (languageChangeCleanup) {
+    languageChangeCleanup();
+    languageChangeCleanup = null;
+    console.log("Map language listener cleaned up");
+  }
 }
 
 /**
  * Switches to the current floor based on state.levelRoutePoi or state.currentLevel.
  */
 export function switchToCurrentFloor() {
-  const floor = state.currentLevel || state.levelRoutePoi || 1;
+  const floor = state.currentLevel || state.levelRoutePoi || "G";
   switchFloorByNo(floor);
 }
 
