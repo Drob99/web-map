@@ -1,7 +1,6 @@
 /**
  * @module mapTranslator
  * @description Handles map-related translations following Single Responsibility Principle
- * Enhanced to properly update all POI-related layers
  */
 
 import { languageService } from "./languageService.js";
@@ -17,15 +16,15 @@ class MapTranslator {
   constructor() {
     this.textFieldMap = {
       EN: "title",
-      AR: "title_ar", 
+      AR: "title_ar",
       ZN: "title_zn",
     };
-    
+
     // List of layers that need translation updates
     this.poiLayerIds = [
       "municipality-name",
       "polygons", // Add other POI layers as needed
-      "polygons_outline"
+      "polygons_outline",
     ];
   }
 
@@ -40,12 +39,12 @@ class MapTranslator {
     const textField = this.getTextFieldExpression(lang);
 
     // Update all POI-related layers
-    this.poiLayerIds.forEach(layerId => {
+    this.poiLayerIds.forEach((layerId) => {
       if (map.getLayer(layerId)) {
         try {
           // Only update symbol layers (text layers)
           const layer = map.getLayer(layerId);
-          if (layer && layer.type === 'symbol') {
+          if (layer && layer.type === "symbol") {
             map.setLayoutProperty(layerId, "text-field", textField);
           }
         } catch (error) {
@@ -55,7 +54,7 @@ class MapTranslator {
     });
 
     // Force map repaint to ensure changes are visible
-    if (typeof map.triggerRepaint === 'function') {
+    if (typeof map.triggerRepaint === "function") {
       map.triggerRepaint();
     }
   }
@@ -67,7 +66,7 @@ class MapTranslator {
    */
   getTextFieldExpression(lang) {
     const titleField = this.textFieldMap[lang];
-    
+
     // Create a more robust expression that handles missing translations
     return [
       "case",
@@ -75,7 +74,7 @@ class MapTranslator {
       ["get", titleField],
       ["!=", ["get", titleField], ""],
       ["get", titleField],
-      ["get", "title"] // Fallback to original title
+      ["get", "title"], // Fallback to original title
     ];
   }
 
@@ -106,22 +105,38 @@ class MapTranslator {
 
     // Generate translations for all languages
     props.title_en = titleToTranslate; // English uses original
-    props.title_ar = getTranslatedPOIName(titleToTranslate, "AR");
-    props.title_zn = getTranslatedPOIName(titleToTranslate, "ZN");
+    // For Arabic, use subtitles[0] if available, otherwise keep original
+    if (
+      props.subtitles &&
+      Array.isArray(props.subtitles) &&
+      props.subtitles.length > 0 &&
+      props.subtitles[0]
+    ) {
+      props.title_ar = props.subtitles[0];
+    } else {
+      // Fallback to getTranslatedPOIName (which will return original if no translation)
+      props.title_ar = getTranslatedPOIName(titleToTranslate, "AR", feature);
+    }
 
-    // If no POI translation found, try category translations
-    if (props.title_ar === titleToTranslate) {
-      props.title_ar =
-        languageService.translations.categories?.AR?.[titleToTranslate] ||
-        titleToTranslate;
-    }
-    if (props.title_zn === titleToTranslate) {
-      props.title_zn =
-        languageService.translations.categories?.ZN?.[titleToTranslate] ||
-        titleToTranslate;
-    }
+    // For Chinese, use the translation system
+    props.title_zn = getTranslatedPOIName(titleToTranslate, "ZN", feature);
 
     return props;
+  }
+
+  /**
+   * Check if a POI should be excluded from display
+   * @param {string} title - POI title
+   * @returns {boolean} True if should be excluded
+   */
+  shouldExcludePOI(title) {
+    if (!title || !state.excludeList) return false;
+
+    // Check if the title (case-insensitive) is in the exclude list
+    const lowerTitle = title.toLowerCase();
+    return state.excludeList.some(
+      (excludeItem) => excludeItem.toLowerCase() === lowerTitle
+    );
   }
 
   /**
@@ -131,10 +146,10 @@ class MapTranslator {
   refreshAllPOITranslations() {
     // Update the labels
     this.updatePOILabels();
-    
+
     // Trigger a map style refresh if needed
     setTimeout(() => {
-      if (map && typeof map.triggerRepaint === 'function') {
+      if (map && typeof map.triggerRepaint === "function") {
         map.triggerRepaint();
       }
     }, 100);
