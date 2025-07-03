@@ -25,8 +25,20 @@ export function arrowsLayer(layerId, data) {
       source: layerId,
       layout: {},
       paint: {
-        'fill-color': '#ffffff',
-        'fill-outline-color': '#ffffff'
+        "fill-color": [
+				"case",
+				["has", "color"], ["get", "color"],
+				"#ffffff" // Default color if not found
+			],
+        'fill-outline-color': '#ffffff',
+        "fill-opacity": [
+				"interpolate",
+				["exponential", 0.1],
+				["zoom"],
+				16, 0,
+				20.31967926651499,
+				["case", ["has", "opacity"], ["get", "opacity"], 1]
+			],
       }
     });
   }

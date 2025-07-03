@@ -102,21 +102,43 @@ async function loadInitialData(token) {
   logDuration("Floors fetched", startTime);
 
   // Layers
-  await fetchAndCache(
-    "state.layers",
-    () => loadLayerData(),
-    async data => {
-      state.layersObjects = data;
-      const sorted = data
-        .slice()
-        .sort((a, b) =>
-          parseInt(b.building_floor.name) - parseInt(a.building_floor.name)
-        );
-      await layersLevel(sorted);
-      switchToCurrentFloor();
-    }
-  );
-  logDuration("Layers fetched", startTime);
+await fetchAndCache(
+  "state.layers",
+  () => loadLayerData(),
+  async data => {
+    state.layersObjects = data;
+
+    // Step 1: Convert "G" to "0" temporarily for sorting
+    const normalized = data.map(obj => ({
+      ...obj,
+      building_floor: {
+        ...obj.building_floor,
+        name: obj.building_floor.name === "G" ? "0" : obj.building_floor.name
+      }
+    }));
+
+    // Step 2: Sort floors descending by numeric floor name
+    const sorted = normalized
+      .slice()
+      .sort((a, b) =>
+        parseInt(b.building_floor.name) - parseInt(a.building_floor.name)
+      );
+
+    // Step 3: Restore "0" back to "G" after sorting
+    const restored = sorted.map(obj => ({
+      ...obj,
+      building_floor: {
+        ...obj.building_floor,
+        name: obj.building_floor.name === "0" ? "G" : obj.building_floor.name
+      }
+    }));
+
+    await layersLevel(restored);
+    switchToCurrentFloor();
+  }
+);
+
+logDuration("Layers fetched", startTime);
 
   // POIs & Routes
   await loadPoisAndRoutes(startTime);

@@ -108,25 +108,24 @@ function setupBackButtons() {
  * Setup category item click handlers
  */
 function setupCategoryItems() {
-    const categoryItems = document.querySelectorAll('.category-item');
-    categoryItems.forEach(item => {
-        item.addEventListener('click', function() {
-            // Add click animation
-            this.style.transform = 'scale(0.95)';
-            this.style.backgroundColor = 'rgba(33, 150, 243, 0.3)';
+    // const categoryItems = document.querySelectorAll('.category-item');
+    // categoryItems.forEach(item => {
+    //     item.addEventListener('click', function() {
+    //         // Add click animation
+    //         this.style.transform = 'scale(0.95)';
+    //         this.style.backgroundColor = 'rgba(33, 150, 243, 0.3)';
 
-            setTimeout(() => {
-                this.style.transform = '';
-                this.style.backgroundColor = '';
-            }, 300);
+    //         setTimeout(() => {
+    //             this.style.transform = '';
+    //             this.style.backgroundColor = '';
+    //         }, 300);
 
-            // Get category name
-            const category = this.querySelector('.category-label').textContent;
-            
-            // Navigate to subcategories view
-            navigateToSubcategories(category);
-        });
-    });
+    //         // Get category name
+    //         const category = this.querySelector('.category-label').textContent;
+    //         // Navigate to subcategories view
+    //         navigateToSubcategories(category);
+    //     });
+    // });
 }
 
 /**
@@ -216,22 +215,7 @@ export function navigateToDirections(destinationData) {
  * Navigate back to previous view
  */
 function navigateBack() {
-    if (navigationHistory.length === 0) {
-        resetToMainView();
-        return;
-    }
-
-    const previousView = navigationHistory.pop();
-    currentView = previousView;
-
-    hideAllViews();
-
-    if (currentView === 'categories') {
-        resetToMainView();
-    } else {
-        showView(getViewElementId(currentView));
-        hideMenuArrow();
-    }
+    showMenuArrow();
 }
 
 /**

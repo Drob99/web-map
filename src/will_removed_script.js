@@ -219,7 +219,8 @@
             if (this.locationDetailsBackBtn) {
                 this.locationDetailsBackBtn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    this.showLocationsView(this.currentSubcategory);
+
+                    this.showSubcategoriesView(this.currentSubcategory);
                 });
             }
 
@@ -281,7 +282,6 @@
                     e.preventDefault();
                     const categoryName = item.querySelector('.category-label').textContent;
                     this.categoryItem = categoryName;
-                    // console.log('Menu item clicked', { categoryName, index });
                     //if (this.hasSubcategories(categoryName)) {
                     this.showSubcategoriesView(categoryName);
                     //}
@@ -397,7 +397,7 @@
         }
 
         showSubcategoriesView(categoryName) {
-            //console.log('Showing subcategories view for', categoryName);
+            //console.log('1 - Showing subcategories view for', categoryName);
             this.currentView = 'subcategories';
             this.currentCategory = categoryName;
 
@@ -417,35 +417,17 @@
             }
             
             // Show subcategories view and hide others
-            if (this.categoriesSection) this.categoriesSection.style.display = 'none';
-            if (this.subcategoriesView) this.subcategoriesView.style.display = 'block';
-            if (this.locationsView) this.locationsView.style.display = 'none';
-            if (this.locationDetailsView) this.locationDetailsView.style.display = 'none';
-            if (this.directionsView) this.directionsView.style.display = 'none';
-            if (this.navigationView) this.navigationView.style.display = 'none';
+            // if (this.categoriesSection) this.categoriesSection.style.display = 'none';
+            // if (this.subcategoriesView) this.subcategoriesView.style.display = 'block';
+            // if (this.locationsView) this.locationsView.style.display = 'none';
+            // if (this.locationDetailsView) this.locationDetailsView.style.display = 'none';
+            // if (this.directionsView) this.directionsView.style.display = 'none';
+            // if (this.navigationView) this.navigationView.style.display = 'none';
             
             // Adjust container height to fit content
             if (this.menuContainer) {
                 this.menuContainer.style.maxHeight = 'fit-content';
             }
-        }
-
-        showLocationsView(subcategoryName) {
-            //console.log('Showing locations view for', subcategoryName);
-            this.currentView = 'locations';
-            this.currentSubcategory = subcategoryName;
-
-            // Auto-expand menu
-            this.expandMenu();
-
-            this.populateLocations(subcategoryName);
-
-            if (this.categoriesSection) this.categoriesSection.style.display = 'none';
-            if (this.subcategoriesView) this.subcategoriesView.style.display = 'none';
-            if (this.locationsView) this.locationsView.style.display = 'block';
-            if (this.locationDetailsView) this.locationDetailsView.style.display = 'none';
-            if (this.directionsView) this.directionsView.style.display = 'none';
-            if (this.navigationView) this.navigationView.style.display = 'none';
         }
 
         showLocationsViewByID(categoryID) {
@@ -485,7 +467,6 @@
         }
 
         showDirectionsView(location) {
-            console.log('Showing Destination view for', location);
             this.currentView = 'directions';
             this.currentLocation = location;
 
@@ -1296,7 +1277,6 @@
 
                 item.addEventListener('click', (e) => {
                     e.preventDefault();
-                    console.log('Popular location clicked', location);
                     this.selectDepartureLocation(location);
                 });
 
@@ -1336,7 +1316,6 @@
 
                 item.addEventListener('click', (e) => {
                     e.preventDefault();
-                    console.log('Popular location clicked', location);
                     this.selectDepartureLocation(location);
                 });
 
@@ -1406,6 +1385,24 @@
             if (popularView) popularView.style.display = 'none';
         }
 
+                showLocationsView(subcategoryName) {
+            //console.log('Showing locations view for', subcategoryName);
+            this.currentView = 'locations';
+            this.currentSubcategory = subcategoryName;
+
+            // Auto-expand menu
+            this.expandMenu();
+
+            this.populateLocations(subcategoryName);
+
+            if (this.categoriesSection) this.categoriesSection.style.display = 'none';
+            if (this.subcategoriesView) this.subcategoriesView.style.display = 'none';
+            if (this.locationsView) this.locationsView.style.display = 'block';
+            if (this.locationDetailsView) this.locationDetailsView.style.display = 'none';
+            if (this.directionsView) this.directionsView.style.display = 'none';
+            if (this.navigationView) this.navigationView.style.display = 'none';
+        }
+
         populateSubcategories(categoryName) {
             var clickedCategoryId;
 
@@ -1439,7 +1436,13 @@
                 subcategories.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
                 this.subcategoriesList.innerHTML = '';
                 subcategories.forEach(subcategory => {
+                    if (cfg.state.language === "EN") {
                     if (!isItEnglish(subcategory)) return;
+                    } else if (cfg.state.language === "AR") {
+                    if (!isItArabic(subcategory)) return;
+                    } else if (cfg.state.language === "ZN") {
+                    if (isItEnglish(subcategory) || isItArabic(subcategory)) return;
+}
                     const item = document.createElement('div');
                     item.className = 'subcategory-item';
                     item.innerHTML = `

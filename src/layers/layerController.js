@@ -76,8 +76,9 @@ export async function layersLevel(sortedLayers) {
       // Add floor toggle if not present
       const toggleId = `${buildingId}/${floorNum}`;
       if (!state.toggleableLayerIds.includes(toggleId)) {
-        if (!state.floorNameTitle.includes(floorNum)) {
         state.toggleableLayerIds.push(toggleId);
+        if (!state.floorNameTitle.includes(floorNum)) {
+        
         const label = floorNum === 0 ? 'G' : floorNum;
         toggleLayer([toggleId], label);
         state.floorNameTitle.push(floorNum);
