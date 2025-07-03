@@ -32,6 +32,12 @@ export function initMap(
   if (typeof mapboxgl.setPerformanceEnabled === "function") {
     mapboxgl.setPerformanceEnabled(false); // Disable performance monitoring if supported
   }
+  
+  mapboxgl.setRTLTextPlugin(
+    "https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.3.0/mapbox-gl-rtl-text.js",
+    null,
+    true // Lazy load the plugin
+  );
 
   const map = new mapboxgl.Map({
     container: containerId,

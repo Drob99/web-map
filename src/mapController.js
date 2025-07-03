@@ -534,6 +534,18 @@ export function showPoisByLevel() {
     if (props.level === state.levelRoutePoi) {
       if (props.title === "room") props.title = "";
 
+      // === ADDED: Check excludeList ===
+      const originalTitle = props.title;
+      if (originalTitle && state.excludeList) {
+        const lowerTitle = originalTitle.toLowerCase();
+        if (state.excludeList.some(item => item.toLowerCase() === lowerTitle)) {
+          // Handle excluded POIs like in the reference code
+          props.title = "";
+          // Don't modify props.color here to preserve original color logic
+        }
+      }
+      // === END ADDED ===
+
       // Translate POI properties on the copy
       const translatedProps = mapTranslator.translatePOIProperties(featureCopy);
 
@@ -557,6 +569,7 @@ export function showPoisByLevel() {
           ...props,
           ...translatedProps,
           title: displayTitle || props.title || "", // Ensure title is never undefined
+          icon: props.icon || "",
         },
       };
 
@@ -564,7 +577,7 @@ export function showPoisByLevel() {
 
       if (
         ["Admin Building Entrance", "Burjeel Darak Entrance"].includes(
-          props.title
+          originalTitle // Use originalTitle before it was potentially changed to "◉"
         )
       ) {
         state.polyGeojsonLevelOutsideBuilding.features.push(base);
