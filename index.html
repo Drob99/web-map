@@ -85,7 +85,7 @@
 
     <div class="dropdown-container">
 
-        <div class="dropdown" onclick="toggleDropdown()">
+        <div class="dropdown" id="TerminalsDropdownListBtn">
             <div class="dropdown-content">
                 <div class="dropdown-title">KKIA</div>
                 <div class="dropdown-subtitle">Terminals</div>
@@ -95,12 +95,14 @@
         <div class="dropdown-arrow" id="accessibilityBtn" style="margin-left: 10px;border-radius: 12px"><img style="width: 25px;"
                 src="./src/images/disabled.png"></div>
         <div class="dropdown-list" id="dropdownList">
-            <div class="dropdown-option">All</div>
-            <div class="dropdown-option">Terminal 1</div>
-            <div class="dropdown-option">Terminal 2</div>
-            <div class="dropdown-option">Terminal 3</div>
-            <div class="dropdown-option">Terminal 4</div>
-            <div class="dropdown-option">Terminal 5</div>
+            <div class="dropdown-option" data-terminal-id="All">All</div>
+            <div class="dropdown-option" data-terminal-id="Terminal 1">Terminal 1</div>
+            <div class="dropdown-option" data-terminal-id="Terminal 2">Terminal 2</div>
+            <div class="dropdown-option" data-terminal-id="Terminal 3">Terminal 3</div>
+            <div class="dropdown-option" data-terminal-id="Terminal 4">Terminal 4</div>
+            <div class="dropdown-option" data-terminal-id="Terminal 5">Terminal 5</div>
+            <div class="dropdown-option" data-terminal-id="Private Aviation">Private Aviation</div>
+            <!-- const terminalId = element.getAttribute("data-terminal-id"); // "T1" -->
         </div>
     </div>
 
@@ -469,22 +471,22 @@
                     <div class="time-label">Time to destination</div>
                     <div class="time-value">15 minutes</div>
                 </div>
-
-                <button class="steps-button" id="endRoutebtn" style="background-color: #AF3E3E !important;">
+                <div class="Navigationbtncontrollers" >
+                   <button class="steps-button" id="endRoutebtn" >
                     End Route
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M18 6L6 18"></path>
                         <path d="M6 6l12 12"></path>
                     </svg>
-                </button>
+                   </button>
 
-                <button class="steps-button" id="stepsButton" style="background-color: #4DA8DA !important;">
+                <button class="steps-button" id="stepsButton" >
                     Show Steps
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M9 18l6-6-6-6"></path>
                     </svg>
                 </button>
-
+                </div>
                 <div class="journey-breakdown">
                     <div class="journey-step">
                         <span class="step-icon"><img style="width: 22px;" src="./src/images/time.png"></span>
@@ -612,7 +614,6 @@
     <script type="module" src="./src/main.js"></script>
     <script src="./src/menu-navigation-fix.js"></script>
     <script src="./src/will_removed_script.js"></script>
-    <script src="./src/will_removed_airport-data.js"></script>
 
 
 </body>

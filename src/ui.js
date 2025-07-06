@@ -19,28 +19,8 @@ export function initUI() {
   initDropdown("#from_location");
   initDropdown("#to_location");
   bindSwapButton(".swap-btn");
-  initAccessabilty();
+  //initAccessabilty();
 }
-
-
-function initAccessabilty() {
-  //  document.getElementById("closeBtn").addEventListener("click", closeMenu);
-  //  document.getElementById("accessibilityBtn").addEventListener("click", toggleMenu);
-  //  window.toggleCard = toggleCard;
-  //  window.resetSettings = resetSettings;
-}
-
-function closeMenu() {
-	const menu = document.getElementById("sideMenu");
-	menu.classList.remove("open");
-	menu.style.display = "none";
-}
-
-function toggleMenu() {
-	const menu = document.getElementById("sideMenu");
-	menu.classList.toggle("open");
-}
-
 
 /**
  * Sets up a Select2 dropdown with custom matcher and template.
@@ -197,6 +177,7 @@ export function loadDropdownPoi(poi) {
  * Uses jQuery's delay and fadeOut for smooth transitions.
  */
 export function screensaver() {
+  initAccessabilty()
   // Fade out loader wrapper and splash screen
   $(".loader-wrapper").fadeOut(500);
   $("#splash-screen")
@@ -518,3 +499,232 @@ document.addEventListener("DOMContentLoaded", function() {
 
 // Menu navigation is now handled by the menu-navigation module
 // This code has been moved to menu-navigation.js for better organization
+
+
+function initAccessabilty() {
+  console.log("XXXX - initAccessabilty")
+   document.getElementById("closeBtn").addEventListener("click", closeMenu);
+   document.getElementById("accessibilityBtn").addEventListener("click", toggleMenu);
+   window.toggleCard = toggleCard;
+   window.resetSettings = resetSettings;
+}
+
+/**
+ * Close the side accessibility menu by removing the 'open' class.
+ */
+function closeMenu() {
+	const menu = document.getElementById("sideMenu");
+	menu.classList.remove("open");
+}
+
+/**
+ * Toggle the visibility of the side accessibility menu.
+ */
+function toggleMenu() {
+  console.log("Toggle Accessability !!!");
+	const menu = document.getElementById("sideMenu");
+	menu.classList.toggle("open");
+}
+
+/**
+ * Toggle a specific accessibility tool and apply its effect.
+ * @param {HTMLElement} element - The clicked card element.
+ * @param {string} toolName - The name of the tool to enable/disable.
+ */
+export function toggleCard(element, toolName) {
+	const isActive = element.classList.toggle("active");
+
+	if (isActive) {
+		state.activeTools.add(toolName);
+	} else {
+		state.activeTools.delete(toolName);
+	}
+
+	// Activate/deactivate the corresponding tool
+	if (toolName == "simpleFont") simpleFont_toggle();
+	else if (toolName == "biggerText") toggleTextSize();
+	else if (toolName == "desaturation") desaturationToggle();
+	else if (toolName == "contrast") toggleColorScheme();
+	else if (toolName == "letterSpacing") toggleLetterSpacing();
+	else if (toolName == "lineSpacing") toggleLineSpacing();
+	else if (toolName == "readSpeaker") toggleSpeech();
+	else if (toolName == "cursor") toggleMapboxAccessibility();
+	else if (toolName == "pauseAnimation") pauseAnimationToggle();
+}
+
+/**
+ * Toggle between normal and high-contrast (black-and-white) mode.
+ */
+function toggleColorScheme() {
+	state.isBlackWhite = !state.isBlackWhite;
+	updateFilter();
+}
+
+/**
+ * Toggle desaturation (grayscale) mode.
+ */
+function desaturationToggle() {
+	state.isInverted = !state.isInverted;
+	updateFilter();
+}
+
+/**
+ * Reset both black-white and grayscale filters to default.
+ */
+function resetFilters() {
+	state.isBlackWhite = false;
+	state.isInverted = false;
+	updateFilter();
+}
+
+/**
+ * Apply current filter state to the document's root element.
+ */
+function updateFilter() {
+	let filter = '';
+
+	if (state.isBlackWhite) {
+		filter += 'saturate(0%) ';
+	} else {
+		filter += 'saturate(100%) ';
+	}
+
+	if (state.isInverted) {
+		filter += 'invert(1) hue-rotate(180deg)';
+	}
+
+	document.documentElement.style.filter = filter.trim();
+}
+
+/**
+ * Toggle letter spacing in the map's text layer.
+ */
+function toggleLetterSpacing() {
+	state.spacing = state.isLetterSpaced ? 0 : 0.3;
+	map.setLayoutProperty('municipality-name', 'text-letter-spacing', state.spacing);
+	state.isLetterSpaced = !state.isLetterSpaced;
+}
+
+/**
+ * Reset letter spacing to default.
+ */
+function resetLetterSpacing() {
+	map.setLayoutProperty('municipality-name', 'text-letter-spacing', 0);
+	state.isLetterSpaced = false;
+}
+
+/**
+ * Toggle line spacing in the map's text layer.
+ */
+function toggleLineSpacing() {
+	state.lineHeight = state.isLineSpaced ? 1.2 : 2.0;
+	map.setLayoutProperty('municipality-name', 'text-line-height', state.lineHeight);
+	state.isLineSpaced = !state.isLineSpaced;
+}
+
+/**
+ * Reset line spacing to default.
+ */
+function resetLineSpacing() {
+	map.setLayoutProperty('municipality-name', 'text-line-height', 1.2);
+	state.isLineSpaced = false;
+}
+
+/**
+ * Toggle text size between normal and large.
+ */
+function toggleTextSize() {
+	state.size = state.isBigText ? 14 : 20;
+	map.setLayoutProperty('municipality-name', 'text-size', state.size);
+	state.isBigText = !state.isBigText;
+}
+
+/**
+ * Reset text size to default.
+ */
+function resetTextStyle() {
+	map.setLayoutProperty('municipality-name', 'text-size', 14);
+	state.isBigText = false;
+}
+
+/**
+ * Toggle between default font and simplified font (e.g. Arial).
+ */
+function simpleFont_toggle() {
+	state.font = state.isSimpleFont
+		? ['Arial Unicode MS Regular']
+		: ['Arial Unicode MS Regular']; // Same font in this case; change if needed
+	map.setLayoutProperty('municipality-name', 'text-font', state.font);
+	state.isSimpleFont = !state.isSimpleFont;
+}
+
+/**
+ * Reset font to default.
+ */
+function resetFont() {
+	map.setLayoutProperty('municipality-name', 'text-font', ['Arial Unicode MS Regular']);
+	state.isSimpleFont = false;
+}
+
+/**
+ * Toggle speech reader functionality.
+ */
+function toggleSpeech() {
+	state.isSpeechEnabled = !state.isSpeechEnabled;
+}
+
+/**
+ * Disable speech reader functionality.
+ */
+function SpeechReset() {
+	state.isSpeechEnabled = false;
+}
+
+/**
+ * Toggle pause/resume of animations (e.g., route animations).
+ * Function is currently commented and may require implementation.
+ */
+function pauseAnimationToggle() {
+	// Placeholder: Add logic to pause/resume animation if needed
+}
+
+/**
+ * Reset animation state to default.
+ */
+function resetAnimation() {
+	// Placeholder: Add logic to reset animation if needed
+}
+
+/**
+ * Toggle map-specific accessibility features like a custom cursor.
+ */
+function toggleMapboxAccessibility() {
+	// Placeholder: Add logic to toggle custom cursor or other features
+}
+
+/**
+ * Reset map-specific accessibility features to default.
+ */
+function resetMapboxAccessibility() {
+	// Placeholder: Add logic to reset map accessibility state
+}
+
+/**
+ * Reset all accessibility tools and settings to default values.
+ */
+function resetSettings() {
+	resetFont();
+	resetTextStyle();
+	resetFilters();
+	resetLetterSpacing();
+	resetLineSpacing();
+	SpeechReset();
+	resetMapboxAccessibility();
+	resetAnimation();
+
+	document.querySelectorAll(".tool-card.active").forEach(card => {
+		card.classList.remove("active", "green");
+	});
+	state.activeTools.clear();
+
+}

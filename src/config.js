@@ -9,7 +9,7 @@
 export const API_CONFIG = Object.freeze({
   BASE_URL: "https://mapsapi.kkia.sa/api/public/v1/",
   ACCESS_TOKEN:"pk.eyJ1Ijoibm1hY2NvdW50cyIsImEiOiJja2xhazRobjgzbDkxMm9xb2d3YmQ3d2s2In0.wGFavxo8mpa7OI_lEhYUow",
-  MAPBOX_STYLE: "mapbox://styles/mapbox/streets-v11",
+  MAPBOX_STYLE: "mapbox://styles/nmaccounts/cly43jit8008c01qvcocv9w6k",
   CLIENT_ID: "pqXhZPUYSu4WS7I93slT13ngFhUChqM-URiH0YaPh74",
   CLIENT_SECRET: "OODWYKVd_Lt3pfPTAXvPiQd3MkaKPi-YSFwd6W4knI8",
 });

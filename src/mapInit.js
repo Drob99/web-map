@@ -15,13 +15,18 @@ import { API_CONFIG } from "./config.js";
  * @param {string} [options.navPosition='bottom-right'] - Navigation control position.
  * @returns {mapboxgl.Map} The initialized Mapbox map instance.
  */
+
+
+
 export function initMap(
   containerId,
   {
     accessToken = API_CONFIG.ACCESS_TOKEN,
     style = API_CONFIG.MAPBOX_STYLE,
-    center = [-74.5, 40],
+    center = [46.711762437094904, 24.94216603094368],
     zoom = 9,
+    bearing = 61.599999999998886,
+    pitch = 56.5,
     navPosition = "bottom-right",
   } = {}
 ) {
@@ -44,6 +49,8 @@ export function initMap(
     style,
     center,
     zoom,
+    bearing,
+    pitch
   });
 
   // Add navigation controls

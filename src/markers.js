@@ -38,8 +38,6 @@ function handleMapClick(e) {
     airportMenu.expandMenu();
     airportMenu.showDirectionsView(feature);
     airportMenu.setCurrentLocation(feature);
-    console.log("airportMenu");
-    console.log("LOCATION ",airportMenu.currentLocation);
     document.getElementById("menuArrow").style.display = "none";
     toPolygonId = feature.id;
     toLng = coords[0];
@@ -51,9 +49,27 @@ function handleMapClick(e) {
       .addTo(map);
     if (state.routeEnabled) {
       clearRoute();
+      const routeSummary = document.getElementById('routeSummary');
+      routeSummary.style.display = 'none';
+
+      const destinationInput = document.getElementById('destinationInput');
+      if (destinationInput) {
+          destinationInput.value = "";
+      }
+
+        const departureInput = document.getElementById('departureInput');
+      if (departureInput) {
+          departureInput.value = "";
+      }
+      
       airportMenu.endNavigation();
       airportMenu.showCategoriesView();
       airportMenu.clearLocations();
+
+      const menuArrow = document.getElementById('menuArrow');
+      if (menuArrow) {
+          menuArrow.style.display = 'flex';
+      }
     }
 
   } else if (!fromMarker) {
@@ -157,12 +173,12 @@ export function resetMarkers() {
  * @param {number} lng - Longitude.
  * @param {number} lat - Latitude.
  */
-function flyToPointA(lng, lat) {
+export function flyToPointA(lng, lat) {
   map.flyTo({
     center: [lng, lat],
     bearing: map.getBearing(),
     pitch: 0,
-    zoom: 19.343589520103954,
+    zoom: 20.343589520103954,
     duration: 4000,
     essential: true,
   });

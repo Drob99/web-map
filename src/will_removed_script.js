@@ -29,6 +29,13 @@
         console.error('Failed to load route:', err);
     });
 
+     import('/src/markers.js').then(markers => {
+        console.log('markers loaded:', markers);
+        window.markers = markers;
+    }).catch(err => {
+        console.error('Failed to load markers:', err);
+    });
+
 
     const toggle = document.getElementById('legendToggle');
     const panel = document.getElementById('legendPanel');
@@ -37,6 +44,26 @@
         panel.classList.toggle('show');
     });
 
+    const TerminalsDropdownListBtn = document.getElementById('TerminalsDropdownListBtn');
+    TerminalsDropdownListBtn.addEventListener('click', () => {
+        toggleDropdown();
+    });
+
+    const dropdownList = document.getElementById("dropdownList");
+    const dropdownSubtitle = document.querySelector(".dropdown-subtitle");
+    const options = dropdownList.querySelectorAll(".dropdown-option");
+    options.forEach(option => {
+        option.addEventListener("click", function () {
+        const selectedTerminal = option.getAttribute("data-terminal-id");
+        dropdownSubtitle.textContent = selectedTerminal;
+
+        // Hide the dropdown list after selection
+        dropdownList.classList.remove("show");
+
+        // Optional: log or use the value
+        console.log("Selected terminal:", selectedTerminal);
+        });
+    });
     function toggleDropdown() {
         const list = document.getElementById('dropdownList');
         list.classList.toggle('show');
@@ -50,6 +77,7 @@
             list.classList.remove('show');
         }
     });
+
     class AirportMenuComponent {
         constructor() {
             this.menuContainer = document.getElementById('menuContainer');
@@ -224,6 +252,7 @@
                     this.showSubcategoriesView(this.currentSubcategory);
                     }else{
                         this.showCategoriesView();
+                        this.isExpanded = false;
                         document.getElementById("menuArrow").style.display = "flex";
                     }
                 });
@@ -423,6 +452,7 @@
                     this.menuContainer.style.maxHeight = '250px';
                 }
             }
+            this.expandMenu();
         }
 
         // Auto-expand menu when clicking categories, subcategories, or locations
@@ -736,7 +766,7 @@
                 backBtn.removeEventListener('click', this.handleBackClick); // Remove old listener
                 this.handleBackClick = () => {
                     routeSummary.style.display = 'none';
-                     const departureInput = document.getElementById('departureInput');
+                    const departureInput = document.getElementById('departureInput');
                     if (departureInput) {
                         departureInput.value = "";
                     }
@@ -1410,6 +1440,7 @@
             this.selectedDeparture = departureLocation;
             const departureInput = document.getElementById('departureInput');
              if (departureInput) {
+                console.log("departureLocation : ",departureLocation.properties.title);
                 departureInput.value = departureLocation.properties.title;
                 departureInput.classList.add('filled');
             }
@@ -1665,7 +1696,10 @@
             console.log("location test:", location.properties.title);
             } else {
             console.warn("location is null or does not have properties:", location);
-            }            
+            }  
+             const [fromLng, fromLat] = parseCenter(location.properties.center);
+            markers.flyToPointA(fromLng , fromLat);  
+            mapc.switchFloorByNo(location.properties.level)        
             const amenities = [];
             this.locationInfo.innerHTML = `
                 <div class="location-title">${location.properties.title}</div>
