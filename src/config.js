@@ -110,6 +110,7 @@ export const state = {
   toLevel : null,
   toPoiName : null,
   fromPolygonId : null,
+  selectedTerminal : null,
   toPolygonId : null,
   font : false? ['Arial Unicode MS Regular']: ['Arial Unicode MS Regular'],
   allPoiGeojson: {

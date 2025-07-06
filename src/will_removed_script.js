@@ -61,7 +61,15 @@
         dropdownList.classList.remove("show");
 
         // Optional: log or use the value
-        console.log("Selected terminal:", selectedTerminal);
+        //console.log("Selected terminal:", selectedTerminal);
+
+        if(selectedTerminal == "All"){
+            cfg.state.selectedTerminal = null
+        }else{
+            cfg.state.selectedTerminal = selectedTerminal
+            mapc.flyToTerminal(selectedTerminal);
+        }
+
         });
     });
     function toggleDropdown() {
@@ -1321,10 +1329,22 @@
             let allLocations = [];
 
             cfg.state.allPoiGeojson.features.forEach((feature) => {
-                if (feature.properties.title.toLowerCase().includes(poiName.toLowerCase())) {
-                    allLocations.push(feature);
-                }
+            const { title = '', location } = feature.properties;
+
+            const matchesPoiName = title.toLowerCase().includes(poiName.toLowerCase());
+            const matchesTerminal = !cfg.state.selectedTerminal || location === cfg.state.selectedTerminal;
+
+            if (matchesPoiName && matchesTerminal) {
+                allLocations.push(feature);
+            }
             });
+
+            if(allLocations.length < 1)
+            {
+                document.getElementById("NoResultsFound").style.display = "block";
+            }else{
+                document.getElementById("NoResultsFound").style.display = "none";
+            }
 
             this.locationsList.innerHTML = '';
             allLocations.sort((a, b) => a.properties.title.localeCompare(b.properties.title, undefined, { sensitivity: 'base' }));
@@ -1361,9 +1381,14 @@
             let allLocations = [];
 
             cfg.state.allPoiGeojson.features.forEach((feature) => {
-                if (feature.properties.title.toLowerCase().includes(poiName.toLowerCase())) {
-                    allLocations.push(feature);
-                }
+            const { title = '', location } = feature.properties;
+
+            const matchesPoiName = title.toLowerCase().includes(poiName.toLowerCase());
+            const matchesTerminal = !cfg.state.selectedTerminal || location === cfg.state.selectedTerminal;
+
+            if (matchesPoiName && matchesTerminal) {
+                allLocations.push(feature);
+            }
             });
 
             popularLocationsList.innerHTML = '';
@@ -1402,7 +1427,10 @@
             let allLocations = [];
 
             cfg.state.allPoiGeojson.features.forEach((feature) => {
-                    allLocations.push(feature);
+            const location = feature.properties.location;
+            if (!cfg.state.selectedTerminal || location === cfg.state.selectedTerminal) {
+                allLocations.push(feature);
+            }
             });
 
             popularLocationsList.innerHTML = '';
@@ -1526,13 +1554,28 @@
 
             var subcategories = ["All"];
             let found = false;
+            // ALL
+            // cfg.state.allPoiGeojson.features.forEach((feature) => {
+            //     if (feature.properties.category_id == clickedCategoryId) {
+            //         if (feature.properties.subcategories.length > 0) {
+            //             subcategories.push(...feature.properties.subcategories);
+            //             found = true;
+            //         }
+            //     }
+            // });
 
+            // BY TERMINALS
             cfg.state.allPoiGeojson.features.forEach((feature) => {
-                if (feature.properties.category_id == clickedCategoryId) {
+                const { category_id, location } = feature.properties;
+
+                const matchesCategory = category_id === clickedCategoryId;
+                const matchesTerminal = !cfg.state.selectedTerminal || location === cfg.state.selectedTerminal;
+
+                if (matchesCategory && matchesTerminal) {
                     if (feature.properties.subcategories.length > 0) {
-                        subcategories.push(...feature.properties.subcategories);
-                        found = true;
-                    }
+                         subcategories.push(...feature.properties.subcategories);
+                         found = true;
+                     }
                 }
             });
 
@@ -1616,10 +1659,24 @@
             // }
 
             cfg.state.allPoiGeojson.features.forEach((feature) => {
-                if (feature.properties.subcategories.includes(subcategoryName)) {
-                    locations.push(feature);
-                }
+            const { subcategories = [], location } = feature.properties;
+
+            const matchesSubcategory = subcategories.includes(subcategoryName);
+            const matchesTerminal = !cfg.state.selectedTerminal || location === cfg.state.selectedTerminal;
+
+            if (matchesSubcategory && matchesTerminal) {
+                locations.push(feature);
+            }
             });
+
+            if(locations.length < 1)
+            {
+                document.getElementById("NoResultsFound").style.display = "block";
+            }else
+            {
+                document.getElementById("NoResultsFound").style.display = "none";
+            }
+
             this.locationsList.innerHTML = '';
             locations.sort((a, b) => a.properties.title.localeCompare(b.properties.title, undefined, { sensitivity: 'base' }));
             locations.forEach(location => {
@@ -1653,11 +1710,23 @@
         populateLocationsByID(categoryID) {
 
             let locations = [];
+
             cfg.state.allPoiGeojson.features.forEach((feature) => {
-                if (feature.properties.category_id == categoryID) {
-                    locations.push(feature);
-                }
+            const { category_id, location } = feature.properties;
+
+            const matchesCategory = category_id === categoryID;
+            const matchesTerminal = !cfg.state.selectedTerminal || location === cfg.state.selectedTerminal;
+
+            if (matchesCategory && matchesTerminal) {
+                locations.push(feature);
+            }
             });
+            if(locations.length < 1)
+            {
+                document.getElementById("NoResultsFound").style.display = "block";
+            }else{
+                document.getElementById("NoResultsFound").style.display = "none";
+            }
 
             this.locationsList.innerHTML = '';
             locations.sort((a, b) => a.properties.title.localeCompare(b.properties.title, undefined, { sensitivity: 'base' }));

@@ -270,7 +270,7 @@ export async function routeLevel() {
                     "line-cap": "round",
                 },
                 paint: {
-                    "line-color": "#0099EA",
+                    "line-color": "#319d8e",
                     "line-width": 15,
                 },
             }),
@@ -288,7 +288,7 @@ export async function routeLevel() {
                     "line-cap": "round",
                 },
                 paint: {
-                    "line-color": "#40B3EF",
+                    "line-color": "#47c0bb",
                     "line-width": 9,
                     //"line-pattern": "fast-forward3.png"
                 },
@@ -802,3 +802,25 @@ export function switchToCurrentFloor() {
 // Expose globally
 window.clearRoute = clearRoute;
 window.enterNavigationMode = enterNavigationMode;
+
+
+const terminalCoordinates = {
+			"Terminal 1": [46.70064644369654, 24.96375697186936],
+			"Terminal 2": [46.70230607041714, 24.961049422036496],
+			"Terminal 3": [46.70398297267573, 24.958379976922643],
+			"Terminal 4": [46.70563191853262, 24.95580670497904],
+			"Terminal 5": [46.71130150749923, 24.941989621592413],
+		};
+
+export function flyToTerminal(selectedValue) {
+  if (terminalCoordinates[selectedValue]) {
+    map.flyTo({
+      center: terminalCoordinates[selectedValue],
+      pitch: 56.5,
+      bearing: 61.599,
+      zoom: 18.564898916998903,
+      duration: 3000,
+      essential: true,
+    });
+  }
+}
