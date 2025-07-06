@@ -83,7 +83,7 @@ function setupBackButtons() {
     const locationsBackBtn = document.getElementById('locationsBackBtn');
     if (locationsBackBtn) {
         locationsBackBtn.addEventListener('click', () => {
-            navigateBack();
+            //navigateBack();
         });
     }
 
@@ -91,17 +91,17 @@ function setupBackButtons() {
     const locationDetailsBackBtn = document.getElementById('locationDetailsBackBtn');
     if (locationDetailsBackBtn) {
         locationDetailsBackBtn.addEventListener('click', () => {
-            navigateBack();
+            //navigateBack();
         });
     }
 
     // Directions back button
-    const directionsBackBtn = document.getElementById('directionsBackBtn');
-    if (directionsBackBtn) {
-        directionsBackBtn.addEventListener('click', () => {
-            navigateBack();
-        });
-    }
+    // const directionsBackBtn = document.getElementById('directionsBackBtn');
+    // if (directionsBackBtn) {
+    //     directionsBackBtn.addEventListener('click', () => {
+    //         //navigateBack();
+    //     });
+    // }
 }
 
 /**

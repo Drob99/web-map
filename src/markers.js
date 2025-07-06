@@ -6,6 +6,9 @@ import { drawPathToPoi } from './data/routes.js';
 import { clearRoute, routeEnabled } from './mapController.js';
 import { map } from './mapInit.js';
 import { state } from './config.js';
+
+
+
 // Marker state
 let fromMarker = null;
 let toMarker = null;
@@ -13,6 +16,7 @@ let fromPolygonId = null;
 let toPolygonId = null;
 let fromLng, fromLat, fromLevel, fromPoiName;
 let toLng, toLat, toLevel, toPoiName;
+const airportMenu = new window.AirportMenuComponent;
 
 /**
  * Sets up click handler on the 'polygons' layer.
@@ -29,39 +33,59 @@ function handleMapClick(e) {
   const feature = e.features[0];
   const coords = turf.centroid(feature).geometry.coordinates;
   const props = feature.properties;
-  
-  if (!fromMarker) {
+
+  if (!toMarker) {
+    airportMenu.expandMenu();
+    airportMenu.showDirectionsView(feature);
+    airportMenu.setCurrentLocation(feature);
+    console.log("airportMenu");
+    console.log("LOCATION ",airportMenu.currentLocation);
+    document.getElementById("menuArrow").style.display = "none";
+    toPolygonId = feature.id;
+    toLng = coords[0];
+    toLat = coords[1];
+    toLevel = props.level || 0;
+    toPoiName = props.title || "Point B";
+    toMarker = new mapboxgl.Marker(createMarkerEl("B", "#8B8ACC"))
+      .setLngLat([coords[0], coords[1]])
+      .addTo(map);
+    if (state.routeEnabled) {
+      clearRoute();
+      airportMenu.endNavigation();
+      airportMenu.showCategoriesView();
+      airportMenu.clearLocations();
+    }
+
+  } else if (!fromMarker) {
+    if (feature.id === toPolygonId) {
+      // alert("Please select a different polygon for source (A).");
+      return;
+    }
+
     fromPolygonId = feature.id;
     fromLng = coords[0];
     fromLat = coords[1];
     fromLevel = props.level || 0;
     fromPoiName = props.title || "Point A";
-    fromMarker = new mapboxgl.Marker(createMarkerEl("A", "#3BB3D0")).setLngLat([coords[0], coords[1]]).addTo(map);
+    fromMarker = new mapboxgl.Marker(createMarkerEl("A", "#3BB3D0"))
+      .setLngLat([coords[0], coords[1]])
+      .addTo(map);
+
     if (state.routeEnabled) {
-        clearRoute();
+     clearRoute();
+      airportMenu.endNavigation();
+      airportMenu.showCategoriesView();
+      airportMenu.clearLocations();
     }
-  } else if (!toMarker) {
-    if (feature.id === fromPolygonId) {
-      //alert("Please select a different polygon for destination (B).");
-      return;
-    }
-    toPolygonId = feature.id;
-    if (state.routeEnabled) {
-      clearRoute();
-    }
-    toLng = coords[0];
-    toLat = coords[1];
-    toLevel = props.level || 0;
-    toPoiName = props.title || "Point B";
-    toMarker = new mapboxgl.Marker(createMarkerEl("B", "#8B8ACC")).setLngLat([coords[0], coords[1]]).addTo(map);
-    fromLng, fromLat, fromLevel, fromPoiName
-    drawPathToPoi(
-      fromPoiName, fromLng, fromLat, fromLevel,
-      toPoiName, toLng, toLat, toLevel
-    );
+    document.getElementById("menuArrow").style.display = "none";
+    airportMenu.selectDepartureLocation(feature)
+    // drawPathToPoi(
+    //   fromPoiName, fromLng, fromLat, fromLevel,
+    //   toPoiName, toLng, toLat, toLevel
+    // );
 
   } else {
-    console.log("REST MARKERS");
+    console.log("RESET MARKERS");
     resetMarkers();
   }
 }
@@ -118,7 +142,7 @@ function placeToMarker(id, [lng, lat], level, title) {
 export function resetMarkers() {
   if (fromMarker) fromMarker.remove();
   if (toMarker) toMarker.remove();
-  
+
   fromMarker = null;
   toMarker = null;
   fromPolygonId = null;

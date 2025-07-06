@@ -212,6 +212,7 @@
                         this.showSubcategoriesView(this.currentCategory);
                     } else {
                         this.showCategoriesView();
+                        document.getElementById("menuArrow").style.display = "flex";
                     }
                 });
             }
@@ -219,8 +220,12 @@
             if (this.locationDetailsBackBtn) {
                 this.locationDetailsBackBtn.addEventListener('click', (e) => {
                     e.preventDefault();
-
+                    if (this.currentSubcategory != null) {
                     this.showSubcategoriesView(this.currentSubcategory);
+                    }else{
+                        this.showCategoriesView();
+                        document.getElementById("menuArrow").style.display = "flex";
+                    }
                 });
             }
 
@@ -231,8 +236,9 @@
                     const destinationContainer = document.getElementsByClassName("destination-container")[0];
                     departureContainer.style.display = "block";
                     destinationContainer.style.display = "block";
-                     mapc.clearRoute();
+                    console.log("ENDED NAVIGATION" ,this.currentLocation );
                     this.showLocationDetailsView(this.currentLocation);
+                    mapc.clearRoute();
                 });
             }
 
@@ -250,12 +256,12 @@
                 });
             }
 
-            if (this.endNavigationBtn) {
-                this.endNavigationBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    this.endNavigation();
-                });
-            }
+            // if (this.endNavigationBtn) {
+            //     this.endNavigationBtn.addEventListener('click', (e) => {
+            //         e.preventDefault();
+            //         this.endNavigation();
+            //     });
+            // }
 
             // New directions interface event handlers
             const departureInput = document.getElementById('departureInput');
@@ -275,6 +281,17 @@
             }
         }
 
+        setCurrentLocation(location)
+        {
+            airportMenu.currentLocation = location;
+        }
+
+        clearLocations()
+        {
+            airportMenu.departureLocation = null;
+            airportMenu.currentLocation = null;
+        }
+
         setupMenuItemClicks() {
             const menuItems = document.querySelectorAll('.category-item');
             menuItems.forEach((item, index) => {
@@ -292,11 +309,33 @@
         setupSearchInteractions() {
             if (this.searchInput) {
                 this.searchInput.addEventListener('focus', () => {
-                    //console.log('Search input focused');
+                    console.log('Search input changed:', e.target.value);
+                     const query = e.target.value.trim();
+                    if (query.length > 0) {
+                       this.currentSubcategory = null;
+                       this.categoryItem = null;
+                       this.populateLocationSearch(query);
+                       this.expandMenu();
+                       document.getElementById("menuArrow").style.display = "none";
+                    } else {
+                        this.showCategoriesView(); 
+                        document.getElementById("menuArrow").style.display = "flex";
+                    }
                 });
 
                 this.searchInput.addEventListener('input', (e) => {
                     console.log('Search input changed:', e.target.value);
+                     const query = e.target.value.trim();
+                    if (query.length > 0) {
+                       this.currentSubcategory = null;
+                       this.categoryItem = null;
+                       this.populateLocationSearch(query);
+                       this.expandMenu();
+                       document.getElementById("menuArrow").style.display = "none";
+                    } else {
+                        this.showCategoriesView(); 
+                        document.getElementById("menuArrow").style.display = "flex";
+                    }
                 });
             }
         }
@@ -449,9 +488,10 @@
         }
 
         showLocationDetailsView(location) {
-            // console.log('Showing location details view for', location);
+            console.log('Showing location details view for', location);
             this.currentView = 'location-details';
             this.currentLocation = location;
+            console.log("showLocationDetailsView :",this.currentLocation)
 
             // Auto-expand menu
             this.expandMenu();
@@ -469,7 +509,6 @@
         showDirectionsView(location) {
             this.currentView = 'directions';
             this.currentLocation = location;
-
             // Set destination
             const destinationText = document.getElementById('destinationInput');
             if (destinationText && location) {
@@ -613,16 +652,18 @@
             if (accessibilityToggle) accessibilityToggle.style.display = 'block';
             if (optionsMenu) optionsMenu.style.display = 'block';
 
+            const [fromLng, fromLat] = parseCenter(departureLocation.properties.center);
+            const [toLng, toLat] = parseCenter(this.currentLocation.properties.center);
 
             route.drawPathToPoi(
-                departureLocation.properties.title,
-                parseFloat(departureLocation.properties.center[0]),
-                parseFloat(departureLocation.properties.center[1]),
-                departureLocation.properties.level,
-                this.currentLocation.properties.title,
-                parseFloat(this.currentLocation.properties.center[0]),
-                parseFloat(this.currentLocation.properties.center[1]),
-                this.currentLocation.properties.level
+            departureLocation.properties.title,
+            fromLng,
+            fromLat,
+            departureLocation.properties.level,
+            this.currentLocation.properties.title,
+            toLng,
+            toLat,
+            this.currentLocation.properties.level
             );
             // Replace departure input with selected departure display
             // const departureContainer = document.querySelector('.destination-container');
@@ -676,7 +717,7 @@
                  endroutebtn.removeEventListener('click', this.handleEndRouteClick); // Remove old listener
                     this.handleEndRouteClick = () => {
                        mapc.clearRoute();
-                    document.getElementById("directionsBackBtn").click();
+                       document.getElementById("directionsBackBtn").click();
                     };
                     endroutebtn.addEventListener('click', this.handleEndRouteClick);
             }
@@ -1243,6 +1284,45 @@
         }
 
 
+
+        populateLocationsByName(poiName) {
+
+            // Get all locations from airport data if available, otherwise use legacy data
+            let allLocations = [];
+
+            cfg.state.allPoiGeojson.features.forEach((feature) => {
+                if (feature.properties.title.toLowerCase().includes(poiName.toLowerCase())) {
+                    allLocations.push(feature);
+                }
+            });
+
+            this.locationsList.innerHTML = '';
+            allLocations.sort((a, b) => a.properties.title.localeCompare(b.properties.title, undefined, { sensitivity: 'base' }));
+            allLocations.forEach(location => {
+                var icon = location?.properties?.iconUrl
+                    ? location.properties.iconUrl
+                    : "./src/images/missingpoi.png";
+                const item = document.createElement('div');
+                item.className = 'location-item';
+                item.innerHTML = `
+                    <div class="location-icon">
+                        <img style="width: 50px; border-radius: 5px;" src="${icon}" />
+                    </div>
+                    <div class="location-details">
+                        <div class="location-name">${location.properties.title}</div>
+                        <div class="location-address">${location.properties.location} - Level ${location.properties.level}</div>
+                    </div>
+                `;
+
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.showLocationDetailsView(location);
+                });
+
+                this.locationsList.appendChild(item);
+            });
+        }
+
         populatePopularLocationsByName(poiName) {
             const popularLocationsList = document.getElementById('popularLocationsList');
             if (!popularLocationsList) return;
@@ -1475,6 +1555,19 @@
         }
 
 
+        populateLocationSearch(query) {
+
+                this.populateLocationsByName(query)
+                if (this.categoriesSection) this.categoriesSection.style.display = 'none';
+                if (this.subcategoriesView) this.subcategoriesView.style.display = 'none';
+                if (this.locationsView) this.locationsView.style.display = 'block';
+                if (this.locationDetailsView) this.locationDetailsView.style.display = 'none';
+                if (this.directionsView) this.directionsView.style.display = 'none';
+                if (this.navigationView) this.navigationView.style.display = 'none';
+        }
+        
+
+
 
         populateLocations(subcategoryName) {
 
@@ -1525,6 +1618,7 @@
         }
 
 
+
         populateLocationsByID(categoryID) {
 
             let locations = [];
@@ -1563,8 +1657,16 @@
 
         populateLocationDetails(location) {
             if (!this.locationInfo) return;
-            const amenities = getEnglishOnly(location.properties.subcategories);
-            amenities.push(this.categoryItem);
+            // const amenities = getEnglishOnly(location.properties.subcategories);
+            // if(this.categoryItem != null){
+            //     amenities.push(this.categoryItem);
+            // }
+            if (location && location.properties) {
+            console.log("location test:", location.properties.title);
+            } else {
+            console.warn("location is null or does not have properties:", location);
+            }            
+            const amenities = [];
             this.locationInfo.innerHTML = `
                 <div class="location-title">${location.properties.title}</div>
                 <div class="location-subtitle">${location.properties.location}</div>
@@ -1818,4 +1920,22 @@ function isItEnglish(text) {
 function getEnglishOnly(arr) {
     const englishRegex = /^[\u0000-\u007F]+$/; // Matches only basic Latin characters
     return arr.filter(item => englishRegex.test(item));
+}
+
+function parseCenter(center) {
+  if (typeof center === 'string') {
+    try {
+      center = JSON.parse(center);
+    } catch (e) {
+      console.error('Invalid center format:', center);
+      return [0, 0]; // fallback default
+    }
+  }
+
+  if (Array.isArray(center) && center.length === 2) {
+    return [parseFloat(center[0]), parseFloat(center[1])];
+  }
+
+  console.error('Invalid center format:', center);
+  return [0, 0]; // fallback default
 }

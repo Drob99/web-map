@@ -137,7 +137,7 @@
     font-size: 17px;
     font-weight: bold;
     color: #333;
-    border-bottom: 1px solid #f0f0f0;
+    /* border-bottom: 1px solid #f0f0f0; */
     gap: 8px; /* Space between back icon and text */
 }
 
@@ -202,7 +202,7 @@
     font-size: 15px;
     color: #555;
     cursor: pointer;
-    border-bottom: 1px solid #f0f0f0;
+    /* border-bottom: 1px solid #f0f0f0; */
     transition: background 0.2s, transform 0.1s;
 }
 
@@ -439,7 +439,7 @@
      background: none;
      border: none;
      cursor: pointer;
-     padding: 16px;
+     padding: 5px;
      margin-right: 8px;
      border-radius: 4px;
      transition: background-color 0.2s ease;
@@ -450,7 +450,7 @@
  }
 
  .view-title {
-     font-size: 16px;
+     font-size: 12px;
      font-weight: 600;
      color: #333;
  }
@@ -557,7 +557,7 @@
  /* Location Details View */
  .location-details-view {
      display: none;
-     padding: 16px;
+     padding: 5px 16px;
      /* Ensure consistent layout when view is shown */
      position: relative;
      width: 100%;
@@ -654,8 +654,8 @@
      display: flex;
      align-items: center;
      justify-content: space-between;
-     padding: 4px 4px 4px 4px;
-     border-bottom: 1px solid #f0f0f0;
+     padding: 0px 4px 0px 4px;
+     /* border-bottom: 1px solid #f0f0f0; */
  }
 
  .directions-header .back-button {
@@ -668,7 +668,7 @@
  }
 
  .directions-header .view-title {
-     font-size: 18px;
+     font-size: 12px;
      font-weight: 600;
      color: #333;
      flex: 1;
@@ -809,7 +809,7 @@
      align-items: center;
      padding: 12px 16px;
      cursor: pointer;
-     border-bottom: 1px solid #f0f0f0;
+     /* border-bottom: 1px solid #f0f0f0; */
  }
 
  .departure-result-item:last-child {
@@ -849,7 +849,7 @@
  }
 
  .route-summary {
-     padding: 16px;
+     padding: 0px 16px;
  }
 
  .add-destination {
@@ -874,7 +874,8 @@
  .time-label {
      font-size: 12px;
      color: #666;
-     margin-bottom: 4px;
+     margin-bottom: 0px;
+     margin-top: 5px;
  }
 
  .time-value {
@@ -897,7 +898,7 @@
      align-items: center;
      justify-content: center;
      gap: 8px;
-     margin: 16px 0;
+     margin: 10px 0;
  }
 
  .steps-button:hover {
@@ -1011,7 +1012,7 @@
      padding: 12px 0;
      cursor: pointer;
      transition: all 0.2s ease;
-     border-bottom: 1px solid #f0f0f0;
+     /* border-bottom: 1px solid #f0f0f0; */
  }
 
  .popular-location-item:last-child {
@@ -2086,6 +2087,11 @@
      border-radius: 0 6px 6px 0;
      cursor: pointer;
      z-index: 1000;
+     user-select: none;          /* Standard */
+     -webkit-user-select: none;  /* Chrome/Safari */
+     -moz-user-select: none;     /* Firefox */
+     -ms-user-select: none;      /* IE/Edge */
+     cursor: pointer;            /* Optional: makes it feel clickable */
  }
 
  /* Legend Container */
@@ -2331,7 +2337,7 @@
 .back-button {
     background: none;
     border: none;
-    font-size: 24px;
+    font-size: 0px;
     cursor: pointer;
     color: #333;
     margin-right: 10px;
