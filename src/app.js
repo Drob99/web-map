@@ -68,16 +68,13 @@ export default class App {
     this.initUI();
     this.initMapHandlers();
 
-    // 3) Start animations
-    this.initArrowAnimation();
-
-    // 4) Display the current floor
+    // 3) Display the current floor
     this.displayFloor();
 
-    // 5) Set up language change listener for the map
+    // 4) Set up language change listener for the map
     setupMapLanguageListener();
 
-    // 6) Hide splash screen *now* that both map + data are ready
+    // 5) Hide splash screen *now* that both map + data are ready
     this.hideSplash();
   }
 }
@@ -89,7 +86,6 @@ const app = new App(
   {
     authenticate: authenticate,
     initUI,
-    initArrowAnimation: setupArrowAnimation,
     displayFloor: switchFloorByNo,
     initMapHandlers: setupMapEventHandlers,
     hideSplash: screensaver,
