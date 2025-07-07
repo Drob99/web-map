@@ -11,7 +11,7 @@ import {
   routeLevel,
   switchFloorByNo
 } from "../mapController.js";
-import { initializeAnimation, initializeArrowsSourceAndLayer, startAnimation, stopAnimation } from "../animation/arrowAnimation.js";
+import { initializeAnimation, initializeArrowsSourceAndLayer, startAnimation, setupArrowAnimation,stopAnimation } from "../animation/arrowAnimation.js";
 import { map } from "../mapInit.js";
 import { updateJourneyInfo } from "../mapController.js";
 

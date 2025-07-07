@@ -1,5 +1,6 @@
 
 // Airport Menu Component - Interactive Functionality
+
 (function () {
     'use strict';
 
@@ -35,6 +36,18 @@
     }).catch(err => {
         console.error('Failed to load markers:', err);
     });
+
+
+      import('/src/i18n/mapTranslator.js').then(mapTranslator => {
+        console.log('mark map Translatorers loaded:', mapTranslator);
+            console.log('mapTranslatorModule:', mapTranslator);
+    console.log('mapTranslatorModule.mapTranslator:', mapTranslator.mapTranslator);
+
+    window.mapTranslator = mapTranslator.mapTranslator;
+    }).catch(err => {
+        console.error('Failed to load mapTranslator:', err);
+    });
+
 
 
     const toggle = document.getElementById('legendToggle');
@@ -257,7 +270,9 @@
                 this.locationDetailsBackBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     if (this.currentSubcategory != null) {
-                    this.showSubcategoriesView(this.currentSubcategory);
+                        console.error("this.currentSubcategory : ", this.currentSubcategory);
+                        this.showLocationsView(this.currentSubcategory);
+                        document.getElementById("menuArrow").style.display = "none";
                     }else{
                         this.showCategoriesView();
                         this.isExpanded = false;
@@ -305,7 +320,7 @@
             if (departureInput) {
                 departureInput.addEventListener('click', (e) => {
                     e.preventDefault();
-                    this.showPopularLocationsView();
+                    //this.showPopularLocationsView();
                 });
             }
 
@@ -550,7 +565,7 @@
             // Set destination
             const destinationText = document.getElementById('destinationInput');
             if (destinationText && location) {
-                destinationText.value = location.properties.title || 'Selected Location';
+                destinationText.value = getPOITitleByLang(location.properties , cfg.state.language) || 'Selected Location';
                 destinationText.disabled = true;
             }
 
@@ -1039,11 +1054,10 @@
                 departureHeader.className = 'location-header';
                 departureHeader.innerHTML = `
             <div class="location-dot departure"></div>
-            <div class="location-text">${this.selectedDeparture.properties.title}</div>
+            <div class="location-text">${getPOITitleByLang(this.selectedDeparture.properties , cfg.state.language)}</div>
         `;
                 navigationStepsList.appendChild(departureHeader);
             }
-
             // Add each step with clean design and timeline dots
             instructions.forEach((step, index) => {
                 const stepElement = document.createElement('div');
@@ -1084,7 +1098,7 @@
                 destinationFooter.className = 'location-header';
                 destinationFooter.innerHTML = `
             <div class="location-dot destination"></div>
-            <div class="location-text">${this.currentLocation.properties.title}</div>
+            <div class="location-text">${getPOITitleByLang(this.currentLocation.properties , cfg.state.language)}</div>
         `;
                 navigationStepsList.appendChild(destinationFooter);
             }
@@ -1329,12 +1343,14 @@
             let allLocations = [];
 
             cfg.state.allPoiGeojson.features.forEach((feature) => {
+            feature.properties = window.mapTranslator.translatePOIProperties(feature);
             const { title = '', location } = feature.properties;
 
-            const matchesPoiName = title.toLowerCase().includes(poiName.toLowerCase());
+            const matchesPoiName = getPOITitleByLang(feature.properties , cfg.state.language).toLowerCase().includes(poiName.toLowerCase());
             const matchesTerminal = !cfg.state.selectedTerminal || location === cfg.state.selectedTerminal;
 
             if (matchesPoiName && matchesTerminal) {
+                
                 allLocations.push(feature);
             }
             });
@@ -1347,11 +1363,15 @@
             }
 
             this.locationsList.innerHTML = '';
-            allLocations.sort((a, b) => a.properties.title.localeCompare(b.properties.title, undefined, { sensitivity: 'base' }));
+            sortLocationsByLang(allLocations, cfg.state.language);
             allLocations.forEach(location => {
                 var icon = location?.properties?.iconUrl
                     ? location.properties.iconUrl
                     : "./src/images/missingpoi.png";
+                var title = getPOITitleByLang(location.properties , cfg.state.language);
+                var language = cfg.state.language
+                var poiTerminalLocation = cfg.state.terminalTranslations[language][location?.properties.location];
+                var poiLevel = cfg.state.floorsNames[language][location.properties.level];
                 const item = document.createElement('div');
                 item.className = 'location-item';
                 item.innerHTML = `
@@ -1359,8 +1379,8 @@
                         <img style="width: 40px; border-radius: 5px;" src="${icon}" />
                     </div>
                     <div class="location-details">
-                        <div class="location-name">${location.properties.title}</div>
-                        <div class="location-address">${location.properties.location} - Level ${location.properties.level}</div>
+                        <div class="location-name">${title}</div>
+                        <div class="location-address">${poiTerminalLocation} - ${poiLevel}</div>
                     </div>
                 `;
 
@@ -1381,9 +1401,10 @@
             let allLocations = [];
 
             cfg.state.allPoiGeojson.features.forEach((feature) => {
+            feature.properties = window.mapTranslator.translatePOIProperties(feature);
             const { title = '', location } = feature.properties;
 
-            const matchesPoiName = title.toLowerCase().includes(poiName.toLowerCase());
+            const matchesPoiName = getPOITitleByLang(feature.properties , cfg.state.language).toLowerCase().includes(poiName.toLowerCase());
             const matchesTerminal = !cfg.state.selectedTerminal || location === cfg.state.selectedTerminal;
 
             if (matchesPoiName && matchesTerminal) {
@@ -1392,12 +1413,15 @@
             });
 
             popularLocationsList.innerHTML = '';
+            sortLocationsByLang(allLocations, cfg.state.language);
 
             allLocations.forEach(location => {
                 var icon = location?.properties?.iconUrl
                 ? location.properties.iconUrl
                 : "./src/images/missingpoi.png";
-
+                var title = getPOITitleByLang(location.properties , cfg.state.language);
+                 var language = cfg.state.language
+                var poiTerminalLocation = cfg.state.terminalTranslations[language][location.properties.location];
                 const item = document.createElement('div');
                 item.className = 'location-item';
                 item.innerHTML = `
@@ -1405,8 +1429,8 @@
                         <img style="width: 40px;" border-radius: 5px; src="${icon}" />
                     </div>
                     <div class="location-details">
-                        <div class="location-name">${location.properties.title}</div>
-                        <div class="location-address">${location.properties.location}</div>
+                        <div class="location-name">${title}</div>
+                        <div class="location-address">${poiTerminalLocation}</div>
                     </div>
                 `;
 
@@ -1427,19 +1451,23 @@
             let allLocations = [];
 
             cfg.state.allPoiGeojson.features.forEach((feature) => {
-            const location = feature.properties.location;
+            // const location = feature.properties.location;
             if (!cfg.state.selectedTerminal || location === cfg.state.selectedTerminal) {
+                feature.properties = window.mapTranslator.translatePOIProperties(feature);
                 allLocations.push(feature);
             }
             });
 
             popularLocationsList.innerHTML = '';
+            sortLocationsByLang(allLocations, cfg.state.language);
 
             allLocations.forEach(location => {
                 var icon = location?.properties?.iconUrl
                 ? location.properties.iconUrl
                 : "./src/images/missingpoi.png";
-
+                var title = getPOITitleByLang(location.properties , cfg.state.language);
+                var language = cfg.state.language
+                var poiTerminalLocation = cfg.state.terminalTranslations[language][location.properties.location];
                 const item = document.createElement('div');
                 item.className = 'location-item';
                 item.innerHTML = `
@@ -1447,8 +1475,8 @@
                         <img style="width: 40px;" border-radius: 5px; src="${icon}" />
                     </div>
                     <div class="location-details">
-                        <div class="location-name">${location.properties.title}</div>
-                        <div class="location-address">${location.properties.location}</div>
+                        <div class="location-name">${title}</div>
+                        <div class="location-address">${poiTerminalLocation}</div>
                     </div>
                 `;
 
@@ -1468,14 +1496,13 @@
             this.selectedDeparture = departureLocation;
             const departureInput = document.getElementById('departureInput');
              if (departureInput) {
-                console.log("departureLocation : ",departureLocation.properties.title);
-                departureInput.value = departureLocation.properties.title;
+                departureInput.value = getPOITitleByLang(departureLocation.properties , cfg.state.language);
                 departureInput.classList.add('filled');
             }
 
             const destinationInput = document.getElementById('destinationInput');
              if (destinationInput) {
-                destinationInput.value = this.currentLocation.properties.title;
+                destinationInput.value = getPOITitleByLang(this.currentLocation.properties , cfg.state.language);
                 destinationInput.classList.add('filled');
             }
 
@@ -1524,7 +1551,7 @@
             if (popularView) popularView.style.display = 'none';
         }
 
-                showLocationsView(subcategoryName) {
+            showLocationsView(subcategoryName) {
             //console.log('Showing locations view for', subcategoryName);
             this.currentView = 'locations';
             this.currentSubcategory = subcategoryName;
@@ -1544,16 +1571,17 @@
 
         populateSubcategories(categoryName) {
             var clickedCategoryId;
-
+            var language = cfg.state.language;
             for (var t = 0; t < cfg.state.categoryObject.building_poi_categories.length; t++) {
-                if (cfg.state.categoryObject.building_poi_categories[t].name === categoryName) {
+                if (
+                    cfg.state.categoryObject.building_poi_categories[t].name === 
+                    cfg.state.reversedCategoryTranslations[language][categoryName]
+                ) {
                     clickedCategoryId = cfg.state.categoryObject.building_poi_categories[t].id;
                     break;
                 }
             }
 
-            var subcategories = ["All"];
-            let found = false;
             // ALL
             // cfg.state.allPoiGeojson.features.forEach((feature) => {
             //     if (feature.properties.category_id == clickedCategoryId) {
@@ -1565,19 +1593,43 @@
             // });
 
             // BY TERMINALS
-            cfg.state.allPoiGeojson.features.forEach((feature) => {
-                const { category_id, location } = feature.properties;
+
+                const subcategoryMap = {
+                EN: "All",
+                AR: "الكل",
+                ZN: "全部"
+                };
+
+                // Start with the translated "All"
+                let subcategories = [subcategoryMap[cfg.state.language] || "All"];
+                let found = false;
+
+                // Collect subcategories
+                cfg.state.allPoiGeojson.features.forEach((feature) => {
+                const { category_id, location, subcategories: featureSubcategories } = feature.properties;
 
                 const matchesCategory = category_id === clickedCategoryId;
                 const matchesTerminal = !cfg.state.selectedTerminal || location === cfg.state.selectedTerminal;
 
-                if (matchesCategory && matchesTerminal) {
-                    if (feature.properties.subcategories.length > 0) {
-                         subcategories.push(...feature.properties.subcategories);
-                         found = true;
-                     }
+                if (matchesCategory && matchesTerminal && featureSubcategories.length > 0) {
+                    subcategories.push(...featureSubcategories);
+                    found = true;
                 }
-            });
+                });
+
+                // Remove duplicates (preserving the first "All") and sort the rest
+                const uniqueSubcategories = [...new Set(subcategories)];
+
+                // Get "All" value and rest separately
+                const allValue = subcategoryMap[cfg.state.language] || "All";
+                const sortedSubcategories = [
+                allValue,
+                ...uniqueSubcategories
+                    .filter(sc => sc !== allValue)
+                    .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
+                ];
+
+                subcategories = sortedSubcategories;
 
             // If no subcategories were found, remove "All"
             if (!found) {
@@ -1587,7 +1639,7 @@
 
             } else {
                 subcategories = [...new Set(subcategories)];
-                subcategories.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+                //subcategories.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
                 this.subcategoriesList.innerHTML = '';
                 subcategories.forEach(subcategory => {
                     if (cfg.state.language === "EN") {
@@ -1606,7 +1658,7 @@
 
                     item.addEventListener('click', (e) => {
                         e.preventDefault();
-                        if (subcategory != "All") {
+                        if (subcategory != "All" && subcategory != "الكل" && subcategory != "All") {
                             this.showLocationsView(subcategory);
                         } else {
                             subcategories = [];
@@ -1657,7 +1709,7 @@
             // if (locations.length === 0) {
             //     locations = this.locationsData[subcategoryName] || [];
             // }
-
+            var language = cfg.state.language
             cfg.state.allPoiGeojson.features.forEach((feature) => {
             const { subcategories = [], location } = feature.properties;
 
@@ -1665,6 +1717,7 @@
             const matchesTerminal = !cfg.state.selectedTerminal || location === cfg.state.selectedTerminal;
 
             if (matchesSubcategory && matchesTerminal) {
+                feature.properties = window.mapTranslator.translatePOIProperties(feature);
                 locations.push(feature);
             }
             });
@@ -1678,11 +1731,18 @@
             }
 
             this.locationsList.innerHTML = '';
-            locations.sort((a, b) => a.properties.title.localeCompare(b.properties.title, undefined, { sensitivity: 'base' }));
+            
+            sortLocationsByLang(locations, language); // Sorts by Arabic title
+
             locations.forEach(location => {
                 var icon = location?.properties?.iconUrl
                     ? location.properties.iconUrl
                     : "./src/images/missingpoi.png";
+               // var title = mapTranslator.getTranslatedPOIName(location.properties.title , cfg.state.language , location);
+                
+                var title = getPOITitleByLang(location.properties , language);
+                var poiTerminalLocation = cfg.state.terminalTranslations[language][location.properties.location];
+                var poiLevel = cfg.state.floorsNames[language][location.properties.level];
                 const item = document.createElement('div');
                 item.className = 'location-item';
                 item.innerHTML = `
@@ -1690,8 +1750,8 @@
                         <img style="width: 40px;" border-radius: 5px; src="${icon}" />
                     </div>
                     <div class="location-details">
-                        <div class="location-name">${location.properties.title}</div>
-                        <div class="location-address">${location.properties.location} - Level ${location.properties.level}</div>
+                        <div class="location-name">${title}</div>
+                        <div class="location-address">${poiTerminalLocation} - ${poiLevel}</div>
                     </div>
                 `;
 
@@ -1716,8 +1776,9 @@
 
             const matchesCategory = category_id === categoryID;
             const matchesTerminal = !cfg.state.selectedTerminal || location === cfg.state.selectedTerminal;
-
+            //workhere
             if (matchesCategory && matchesTerminal) {
+                feature.properties = window.mapTranslator.translatePOIProperties(feature);
                 locations.push(feature);
             }
             });
@@ -1729,11 +1790,17 @@
             }
 
             this.locationsList.innerHTML = '';
-            locations.sort((a, b) => a.properties.title.localeCompare(b.properties.title, undefined, { sensitivity: 'base' }));
+
+            sortLocationsByLang(locations, cfg.state.language);
             locations.forEach(location => {
                 var icon = location?.properties?.iconUrl
                     ? location.properties.iconUrl
                     : "./src/images/missingpoi.png";
+                var title = getPOITitleByLang(location.properties , cfg.state.language);
+                var language = cfg.state.language
+                var title = getPOITitleByLang(location.properties , language);
+                var poiTerminalLocation = cfg.state.terminalTranslations[language][location.properties.location];
+                var poiLevel = cfg.state.floorsNames[language][location.properties.level];
                 const item = document.createElement('div');
                 item.className = 'location-item';
                 item.innerHTML = `
@@ -1741,8 +1808,8 @@
                         <img style="width: 40px; border-radius: 5px;" src="${icon}" />
                     </div>
                     <div class="location-details">
-                        <div class="location-name">${location.properties.title}</div>
-                        <div class="location-address">${location.properties.location} - Level ${location.properties.level}</div>
+                        <div class="location-name">${title}</div>
+                        <div class="location-address">${poiTerminalLocation} - ${poiLevel}</div>
                     </div>
                 `;
 
@@ -1757,24 +1824,43 @@
 
         populateLocationDetails(location) {
             if (!this.locationInfo) return;
-            // const amenities = getEnglishOnly(location.properties.subcategories);
-            // if(this.categoryItem != null){
-            //     amenities.push(this.categoryItem);
-            // }
-            if (location && location.properties) {
-            console.log("location test:", location.properties.title);
-            } else {
-            console.warn("location is null or does not have properties:", location);
-            }  
-             const [fromLng, fromLat] = parseCenter(location.properties.center);
+            
+            var language = cfg.state.language;
+            var amenities = [];
+            console.log("CHECK : ",location?.properties);
+            if(language == "EN"){
+             amenities = getEnglishOnly(location?.properties?.subcategories);
+            }else if(language == "AR")
+            {
+             amenities = getArabicOnly(location?.properties?.subcategories);
+            }else if(language == "ZN")
+            {
+             amenities = getChineseOnly(location?.properties?.subcategories);
+            }
+
+            if(this.categoryItem != null){
+                amenities.push(this.categoryItem);
+            }
+
+            console.log("amenities size : "+amenities.length);
+            var display = "block";
+            if(amenities.length < 1)
+            {
+                display = "none";
+            }else{
+                display = "block";
+            }
+            var title = getPOITitleByLang(location?.properties , cfg.state.language);
+            const [fromLng, fromLat] = parseCenter(location?.properties.center);
+            var language = cfg.state.language
+            var poiTerminalLocation = cfg.state.terminalTranslations[language][location?.properties.location];
             markers.flyToPointA(fromLng , fromLat);  
-            mapc.switchFloorByNo(location.properties.level)        
-            const amenities = [];
+            mapc.switchFloorByNo(location?.properties.level);        
             this.locationInfo.innerHTML = `
-                <div class="location-title">${location.properties.title}</div>
-                <div class="location-subtitle">${location.properties.location}</div>
+                <div class="location-title">${title}</div>
+                <div class="location-subtitle">${poiTerminalLocation}</div>
                 
-                <div class="location-amenities">
+                <div class="location-amenities" style ="display : ${display}">
                     <div class="amenities-title">Categories</div>
                     <div class="amenities-list">
                         ${amenities.map(amenity => `<span class="amenity-tag">${amenity}</span>`).join('')}
@@ -2020,9 +2106,37 @@ function isItEnglish(text) {
 }
 
 
+function normalizeArray(input) {
+  if (typeof input === 'string') {
+    try {
+      const parsed = JSON.parse(input);
+      if (Array.isArray(parsed)) {
+        return parsed;
+      }
+    } catch (e) {
+      console.warn('Invalid JSON array string:', input);
+      return [];
+    }
+  }
+  return Array.isArray(input) ? input : [];
+}
+
 function getEnglishOnly(arr) {
-    const englishRegex = /^[\u0000-\u007F]+$/; // Matches only basic Latin characters
-    return arr.filter(item => englishRegex.test(item));
+  const items = normalizeArray(arr);
+  const englishRegex = /^[\u0000-\u007F]+$/;
+  return items.filter(item => englishRegex.test(item));
+}
+
+function getArabicOnly(arr) {
+  const items = normalizeArray(arr);
+  const arabicRegex = /^[\u0600-\u06FF\s]+$/;
+  return items.filter(item => arabicRegex.test(item));
+}
+
+function getChineseOnly(arr) {
+  const items = normalizeArray(arr);
+  const chineseRegex = /^[\u3400-\u4DBF\u4E00-\u9FFF\s]+$/;
+  return items.filter(item => chineseRegex.test(item));
 }
 
 function parseCenter(center) {
@@ -2041,4 +2155,30 @@ function parseCenter(center) {
 
   console.error('Invalid center format:', center);
   return [0, 0]; // fallback default
+}
+
+function getPOITitleByLang(poi, lang = 'EN') {
+    if (!poi) return '';
+
+    const normalizedLang = lang.toLowerCase(); // ✅ fix here
+    const key = `title_${normalizedLang}`;
+    const localizedTitle = poi[key];
+    if (localizedTitle && localizedTitle.trim()) {
+        return localizedTitle;
+    }
+
+    return poi.title || '';
+}
+
+function sortLocationsByLang(locations, lang = 'EN') {
+    const normalizedLang = lang.toLowerCase(); // Ensure key matches: title_en, title_ar, etc.
+    const key = `title_${normalizedLang}`;
+
+    locations.sort((a, b) => {
+        const titleA = a.properties[key] || '';
+        const titleB = b.properties[key] || '';
+        return titleA.localeCompare(titleB, undefined, { sensitivity: 'base' });
+    });
+
+    return locations;
 }

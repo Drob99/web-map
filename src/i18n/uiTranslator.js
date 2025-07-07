@@ -48,7 +48,7 @@ class UITranslator {
    * @private
    */
   updateCategoryLabels() {
-    const menuLabels = document.querySelectorAll(".menu-label");
+    const menuLabels = document.querySelectorAll(".category-label");
     menuLabels.forEach((label) => {
       const originalText =
         label.getAttribute("data-original") || label.textContent;
