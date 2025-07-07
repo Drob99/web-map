@@ -269,7 +269,9 @@ export function drawPathToPoi(
   enterNavigationMode(state.fullPathRoute);
 
   // Animate arrows
-  initializeArrowsSourceAndLayer(map);
-  initializeAnimation()
-  startAnimation();
+  setTimeout(() => {
+    initializeArrowsSourceAndLayer(map);
+    setupArrowAnimation(); // This creates the worker if needed
+    startAnimation(); // This will check if route exists before initializing
+  }, 100);
 }
