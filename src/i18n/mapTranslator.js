@@ -121,6 +121,7 @@ class MapTranslator {
     // For Chinese, use the translation system
     props.title_zn = getTranslatedPOIName(titleToTranslate, "ZN", feature);
 
+
     return props;
   }
 

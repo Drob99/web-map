@@ -64,7 +64,7 @@ export const numberTranslations = {
       Services: "Services",
       "Parking & Transportation": "Parking & Transportation",
       Baggage: "Baggage",
-      Checkin: "Check-in",
+      Checkin: "Checkin",
       "Check-in": "Check-in",
       "Self Services": "Self Services",
       "Banks - ATM - Exchange": "Banks - ATM - Exchange",
