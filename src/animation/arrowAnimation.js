@@ -5,6 +5,8 @@
 import { map } from '../mapInit.js';
 import { ANIMATION_CONFIG, state } from '../config.js';
 
+// Import turf for bearing calculations
+const turf = window.turf || {};
 
 let worker = null;
 let arrowAnimationState = [];
@@ -19,38 +21,40 @@ const arrowDataURL =
  * Initializes the web worker and computes arrow positions for the current route.
  */
 export function setupArrowAnimation() {
-  const workerCode = `
-    self.importScripts('https://unpkg.com/@turf/turf@6/turf.min.js');
-    self.onmessage = function(e) {
-      const { features, level, baseArrowsPerKm, minArrows, maxArrows, steps, animationSpeed } = e.data;
-      const animationState = [];
-      const matched = features.filter(f => f.properties?.level === level && f.geometry?.type === 'LineString');
-      matched.forEach(routeFeature => {
-        const line = turf.lineString(routeFeature.geometry.coordinates);
-        const lengthKm = turf.length(line, { units: 'kilometers' });
-        let arrowCount = Math.round(lengthKm * baseArrowsPerKm);
-        arrowCount = Math.min(Math.max(arrowCount, minArrows), maxArrows);
-        const totalSteps = Math.round(steps * (lengthKm / 0.1));
-        const arc = [];
-        for (let i = 0; i <= totalSteps; i++) {
-          arc.push(turf.along(line, (lengthKm * i) / totalSteps, { units: 'kilometers' }).geometry.coordinates);
-        }
-        const spacing = Math.max(1, Math.floor(arc.length / arrowCount));
-        const counters = Array.from({ length: arrowCount }, (_, i) => (i * spacing) % arc.length);
-        animationState.push({ arc, counters, arrowCount, animationSpeed });
-      });
-      self.postMessage({ animationState });
+  // Only create a new worker if one doesn't exist
+  if (!worker) {
+    const workerCode = `
+      self.importScripts('https://unpkg.com/@turf/turf@6/turf.min.js');
+      self.onmessage = function(e) {
+        const { features, level, baseArrowsPerKm, minArrows, maxArrows, steps, animationSpeed } = e.data;
+        const animationState = [];
+        const matched = features.filter(f => f.properties?.level === level && f.geometry?.type === 'LineString');
+        matched.forEach(routeFeature => {
+          const line = turf.lineString(routeFeature.geometry.coordinates);
+          const lengthKm = turf.length(line, { units: 'kilometers' });
+          let arrowCount = Math.round(lengthKm * baseArrowsPerKm);
+          arrowCount = Math.min(Math.max(arrowCount, minArrows), maxArrows);
+          const totalSteps = Math.round(steps * (lengthKm / 0.1));
+          const arc = [];
+          for (let i = 0; i <= totalSteps; i++) {
+            arc.push(turf.along(line, (lengthKm * i) / totalSteps, { units: 'kilometers' }).geometry.coordinates);
+          }
+          const spacing = Math.max(1, Math.floor(arc.length / arrowCount));
+          const counters = Array.from({ length: arrowCount }, (_, i) => (i * spacing) % arc.length);
+          animationState.push({ arc, counters, arrowCount, animationSpeed });
+        });
+        self.postMessage({ animationState });
+      };
+    `;
+    worker = new Worker(URL.createObjectURL(new Blob([workerCode], { type: 'application/javascript' })));
+    worker.onmessage = e => {
+      arrowAnimationState = e.data.animationState;
+      initializeArrowsSourceAndLayer();
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      animateArrows();
     };
-  `;
-  worker = new Worker(URL.createObjectURL(new Blob([workerCode], { type: 'application/javascript' })));
-  worker.onmessage = e => {
-    arrowAnimationState = e.data.animationState;
-    initializeArrowsSourceAndLayer();
-    if (animationFrameId) cancelAnimationFrame(animationFrameId);
-    animateArrows();
-  };
+  }
   startAnimation();
-  
 }
 
 /**
@@ -63,11 +67,17 @@ export function startAnimation() {
     const img = new Image();
     img.onload = () => {
       map.addImage('arrow-icon', img);
-      initializeAnimation();
+      // Only initialize if route exists
+      if (map.getSource('route_outline')) {
+        initializeAnimation();
+      }
     };
     img.src = arrowDataURL;
   } else {
-    initializeAnimation();
+    // Only initialize if route exists
+    if (map.getSource('route_outline')) {
+      initializeAnimation();
+    }
   }
 }
 
@@ -75,7 +85,20 @@ export function startAnimation() {
  * Sends route data to the worker and begins arrow animation frames.
  */
 export function initializeAnimation() {
-  const src = map.getSource('route_outline')._data;
+  // Ensure worker exists
+  if (!worker) {
+    setupArrowAnimation();
+    return; // setupArrowAnimation will call startAnimation which calls initializeAnimation
+  }
+  
+  // Check if route source exists before accessing it
+  const routeSource = map.getSource('route_outline');
+  if (!routeSource) {
+    //console.log('Route source not ready yet');
+    return;
+  }
+  
+  const src = routeSource._data;
   const features = src?.features;
   if (!Array.isArray(features) || !features.length) {
     //console.error('Invalid route data');
@@ -103,16 +126,56 @@ export function initializeAnimation() {
  * Animates arrows along the route by updating their positions each frame.
  */
 export function animateArrows() {
-  if (!isAnimating) return;
+  if (!isAnimating || !arrowAnimationState.length) return;
+  
+  // Update counters for each arrow in the animation state
+  arrowAnimationState.forEach(state => {
+    state.counters = state.counters.map(counter => {
+      // Increment counter by animation speed
+      const newCounter = counter + (state.animationSpeed || animationSpeed);
+      // Wrap around when reaching the end of the arc
+      return newCounter % state.arc.length;
+    });
+  });
+  
+  // Create features from the updated positions
   const features = arrowAnimationState.flatMap(({ arc, counters }) =>
-    counters.map((count, i) => {
+    counters.map((count) => {
       const coord = arc[Math.floor(count) % arc.length];
       const next = arc[(Math.floor(count) + 1) % arc.length];
-      const bearing = turf.bearing(turf.point(coord), turf.point(next));
-      return { type: 'Feature', geometry: { type: 'Point', coordinates: coord }, properties: { bearing } };
+      
+      // Check if turf is available
+      if (typeof turf !== 'undefined') {
+        const bearing = turf.bearing(turf.point(coord), turf.point(next));
+        return { 
+          type: 'Feature', 
+          geometry: { 
+            type: 'Point', 
+            coordinates: coord 
+          }, 
+          properties: { bearing } 
+        };
+      } else {
+        // Fallback bearing calculation if turf is not available
+        const bearing = Math.atan2(next[1] - coord[1], next[0] - coord[0]) * 180 / Math.PI;
+        return { 
+          type: 'Feature', 
+          geometry: { 
+            type: 'Point', 
+            coordinates: coord 
+          }, 
+          properties: { bearing } 
+        };
+      }
     })
   );
-  map.getSource('arrow-point').setData({ type: 'FeatureCollection', features });
+  
+  // Update the map source with new arrow positions
+  if (map.getSource('arrow-point')) {
+    map.getSource('arrow-point').setData({ type: 'FeatureCollection', features });
+  }
+  
+  // Request next animation frame
   animationFrameId = requestAnimationFrame(animateArrows);
 }
 
@@ -140,10 +203,9 @@ export function initializeArrowsSourceAndLayer() {
       },
     });
   }
-    setTimeout(() => {
-        map.moveLayer("arrow-layer");
-    }, 500);
-  
+  setTimeout(() => {
+    map.moveLayer("arrow-layer");
+  }, 500);
 }
 
 /**

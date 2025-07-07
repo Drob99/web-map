@@ -16,8 +16,8 @@ import { doorsLayer } from './doors.js';
 import { corridorsLayer } from './corridors.js';
 import { beLayer } from './be.js';
 import { gardenLayer } from './garden.js';
-import { showPoisByLevel, routeEnabled , routeLevel, elevatorGuide , addFromToMarkers} from '../mapController.js';
-import { setupArrowAnimation ,initializeArrowsSourceAndLayer , stopAnimation  } from '../animation/arrowAnimation.js';
+import { showPoisByLevel, routeEnabled, routeLevel, elevatorGuide, addFromToMarkers } from '../mapController.js';
+import { setupArrowAnimation, initializeArrowsSourceAndLayer, stopAnimation, startAnimation, initializeAnimation } from '../animation/arrowAnimation.js';
 import { removeRouteLayer } from '../mapController.js';
 
 /**
@@ -78,11 +78,10 @@ export async function layersLevel(sortedLayers) {
       if (!state.toggleableLayerIds.includes(toggleId)) {
         state.toggleableLayerIds.push(toggleId);
         if (!state.floorNameTitle.includes(floorNum)) {
-        
-        const label = floorNum === 0 ? 'G' : floorNum;
-        toggleLayer([toggleId], label);
-        state.floorNameTitle.push(floorNum);
-       }
+          const label = floorNum === 0 ? 'G' : floorNum;
+          toggleLayer([toggleId], label);
+          state.floorNameTitle.push(floorNum);
+        }
       }
     }
   } catch (err) {
@@ -147,21 +146,38 @@ export function toggleLayer(ids, name) {
     // Refresh POIs
     showPoisByLevel();
 
-    // If a route is active, redraw it and arrows
-    if (state.routeEnabled ) {
+    // If a route is active, redraw it and restart arrows
+    if (state.routeEnabled) {
+      // Stop current animation
+      stopAnimation();
+      
+      // Remove and redraw route
       removeRouteLayer();
-      //setupArrowAnimation();
       routeLevel();
       elevatorGuide();
+      
+      // Update markers
       addFromToMarkers(
         state.fromMarkerLocation,
         state.toMarkerLocation,
         state.fromMarkerLevel,
         state.toMarkerLevel
       );
-      stopAnimation();
-      initializeArrowsSourceAndLayer();
-      map.moveLayer("arrow-layer")
+      
+      // Restart arrow animation with a small delay to ensure route is ready
+      setTimeout(() => {
+        initializeArrowsSourceAndLayer();
+        
+        // Ensure arrow layer is at the top
+        if (map.getLayer("arrow-layer")) {
+          map.moveLayer("arrow-layer");
+        }
+        
+        // Setup worker if needed, then initialize and start animation
+        setupArrowAnimation(); // This will create worker if it doesn't exist
+        initializeAnimation();
+        startAnimation();
+      }, 100);
     }
   };
 
