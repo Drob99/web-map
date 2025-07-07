@@ -256,84 +256,90 @@ export async function routeLevel() {
   //     });
   //   }
   //);
-  map.addSource("route", {
-    type: "geojson",
-    data: smartRoute,
-  }),
-    map.addLayer({
-      id: "route",
-      type: "line",
-      source: "route",
-      filter: ["==", "level", state.levelRoutePoi.toString()],
-      layout: {
-        "line-join": "round",
-        "line-cap": "round",
-      },
-      paint: {
-        "line-color": "#319d8e",
-        "line-width": 15,
-      },
-    }),
-    map.addSource("route_outline", {
-      type: "geojson",
-      data: smartRoute,
-    }),
-    map.addLayer({
-      id: "route_outline",
-      type: "line",
-      filter: ["==", "level", state.levelRoutePoi.toString()],
-      source: "route_outline",
-      layout: {
-        "line-join": "round",
-        "line-cap": "round",
-      },
-      paint: {
-        "line-color": "#47c0bb",
-        "line-width": 9,
-        //"line-pattern": "fast-forward3.png"
-      },
-    }),
-    map.addSource("route_another", {
-      type: "geojson",
-      data: smartRoute,
-    }),
-    map.addLayer({
-      id: "route_another",
-      type: "line",
-      source: "route_another",
-      filter: ["!=", "level", state.levelRoutePoi.toString()],
-      layout: {
-        //visibility: "none",
-        "line-join": "round",
-        "line-cap": "round",
-      },
-      paint: {
-        "line-color": "#BBBBBB",
-        "line-width": 9,
-        "line-opacity": 0.4,
-        //"line-pattern": "fast-forward4.png"
-      },
-    }),
-    map.addSource("route_another_outline", {
-      type: "geojson",
-      data: smartRoute,
-    }),
-    map.addLayer({
-      id: "route_another_outline",
-      type: "line",
-      source: "route_another_outline",
-      filter: ["!=", "level", state.levelRoutePoi.toString()],
-      layout: {
-        //visibility: "none",
-        "line-join": "round",
-        "line-cap": "round",
-      },
-      paint: {
-        "line-color": "#A5A4A4",
-        "line-width": 15,
-        "line-opacity": 0.4,
-      },
-    });
+            map.addSource("route", {
+                type: "geojson",
+                data: smartRoute,
+            }),
+            map.addLayer({
+                id: "route",
+                type: "line",
+                source: "route",
+                filter: ["==", "level", state.levelRoutePoi.toString()],
+                layout: {
+                    "line-join": "round",
+                    "line-cap": "round",
+                },
+                paint: {
+                    "line-color": "#319d8e",
+                    "line-width": 15,
+                },
+            }),
+            map.addSource("route_outline", {
+                type: "geojson",
+                data: smartRoute,
+            }),
+            map.addLayer({
+                id: "route_outline",
+                type: "line",
+                filter: ["==", "level", state.levelRoutePoi.toString()],
+                source: "route_outline",
+                layout: {
+                    "line-join": "round",
+                    "line-cap": "round",
+                },
+                paint: {
+                    "line-color": "#47c0bb",
+                    "line-width": 9,
+                    //"line-pattern": "fast-forward3.png"
+                },
+            }),
+            map.addSource("route_another", {
+                type: "geojson",
+                data: smartRoute,
+            }),
+            map.addLayer({
+                id: "route_another",
+                type: "line",
+                source: "route_another",
+                filter: ["!=", "level", state.levelRoutePoi.toString()],
+                layout: {
+                    //visibility: "none",
+                    "line-join": "round",
+                    "line-cap": "round",
+                },
+                paint: {
+                    "line-color": "#BBBBBB",
+                    "line-width": 9,
+                    "line-opacity": 0.4,
+                    //"line-pattern": "fast-forward4.png"
+                },
+            }),
+            map.addSource("route_another_outline", {
+                type: "geojson",
+                data: smartRoute,
+            }),
+            map.addLayer({
+                id: "route_another_outline",
+                type: "line",
+                source: "route_another_outline",
+                filter: ["!=", "level", state.levelRoutePoi.toString()],
+                layout: {
+                    //visibility: "none",
+                    "line-join": "round",
+                    "line-cap": "round",
+                },
+                paint: {
+                    "line-color": "#A5A4A4",
+                    "line-width": 15,
+                    "line-opacity": 0.4,
+                },
+            }),
+
+
+  // Start arrow animation
+  initializeArrowsSourceAndLayer(map);
+  setupArrowAnimation();
+  startAnimation();
 }
 
 /**

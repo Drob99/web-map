@@ -763,7 +763,7 @@
             // Show journey breakdown
             const journeyBreakdown = document.querySelector('.journey-breakdown');
             if (journeyBreakdown) {
-                journeyBreakdown.style.display = 'flex';
+                journeyBreakdown.style.display = 'none';
             }
 
             // Store the selected departure
@@ -1356,7 +1356,7 @@
                 item.className = 'location-item';
                 item.innerHTML = `
                     <div class="location-icon">
-                        <img style="width: 50px; border-radius: 5px;" src="${icon}" />
+                        <img style="width: 40px; border-radius: 5px;" src="${icon}" />
                     </div>
                     <div class="location-details">
                         <div class="location-name">${location.properties.title}</div>
@@ -1402,7 +1402,7 @@
                 item.className = 'location-item';
                 item.innerHTML = `
                     <div class="location-icon">
-                        <img style="width: 50px;" border-radius: 5px; src="${icon}" />
+                        <img style="width: 40px;" border-radius: 5px; src="${icon}" />
                     </div>
                     <div class="location-details">
                         <div class="location-name">${location.properties.title}</div>
@@ -1444,7 +1444,7 @@
                 item.className = 'location-item';
                 item.innerHTML = `
                     <div class="location-icon">
-                        <img style="width: 50px;" border-radius: 5px; src="${icon}" />
+                        <img style="width: 40px;" border-radius: 5px; src="${icon}" />
                     </div>
                     <div class="location-details">
                         <div class="location-name">${location.properties.title}</div>
@@ -1687,7 +1687,7 @@
                 item.className = 'location-item';
                 item.innerHTML = `
                     <div class="location-icon">
-                        <img style="width: 50px;" border-radius: 5px; src="${icon}" />
+                        <img style="width: 40px;" border-radius: 5px; src="${icon}" />
                     </div>
                     <div class="location-details">
                         <div class="location-name">${location.properties.title}</div>
@@ -1738,7 +1738,7 @@
                 item.className = 'location-item';
                 item.innerHTML = `
                     <div class="location-icon">
-                        <img style="width: 50px; border-radius: 5px;" src="${icon}" />
+                        <img style="width: 40px; border-radius: 5px;" src="${icon}" />
                     </div>
                     <div class="location-details">
                         <div class="location-name">${location.properties.title}</div>

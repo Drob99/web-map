@@ -469,8 +469,35 @@
                 </div>
 
                 <div class="time-estimate">
-                    <div class="time-label">Time to destination</div>
-                    <div class="time-value">15 minutes</div>
+                    <div style="width: 33%;">
+                        <div class="time-label">Time</div>
+                        <!-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg> -->
+                        <div class="time-value">15 minutes</div>
+                    </div>
+                    <div style="width: 33%;">
+                        <div class="time-label">Distance</div>
+                        <!-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-route">
+                            <circle cx="6" cy="19" r="3"/>
+                            <path d="M19 12V6a2 2 0 0 0-2-2H8.5"/>
+                            <path d="M11 19H7a2 2 0 0 1-2-2V8.5"/>
+                            <circle cx="18" cy="5" r="3"/>
+                        </svg> -->
+                        <span class="time-value" id="step-distance"></span>
+                    </div>
+                    <div style="width: 33%;">
+                        <div class="time-label">Floor</div>
+                        <!-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-building-2">
+                            <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/>
+                            <path d="M10 6h4"/>
+                            <path d="M10 10h4"/>
+                            <path d="M10 14h4"/>
+                            <path d="M10 18h4"/>
+                        </svg> -->
+                        <span class="time-value" id="step-level">Termianl 5</span>
+                    </div>
                 </div>
                 <div class="Navigationbtncontrollers" >
                    <button class="steps-button" id="endRoutebtn" >
@@ -490,15 +517,24 @@
                 </div>
                 <div class="journey-breakdown">
                     <div class="journey-step">
-                        <span class="step-icon"><img style="width: 22px;" src="./src/images/time.png"></span>
+                        <span class="step-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
+                                <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/>
+                            </svg></span>
                         <span class="step-time" id="step-time"></span>
                     </div>
                     <div class="journey-step">
-                        <span class="step-icon"><img style="width: 22px;" src="./src/images/distance.png"></span>
+                        <span class="step-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M9 4a.5.5 0 0 0-.812-.39L5.825 5.5H3.5A.5.5 0 0 0 3 6v4a.5.5 0 0 0 .5.5h2.325l2.363 1.89A.5.5 0 0 0 9 12V4zM6.312 6.39 8 5.04v5.92L6.312 9.61A.5.5 0 0 0 6 9.5H4v-3h2a.5.5 0 0 0 .312-.11z"/>
+                                <path d="M0 12.5v-9A1.5 1.5 0 0 1 1.5 2h13A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5zM1.5 3a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-13z"/>
+                            </svg></span>
                         <span class="step-time" id="step-distance"></span>
                     </div>
                     <div class="journey-step">
-                        <span class="step-icon"><img style="width: 22px;" src="./src/images/terminal.png"></span>
+                        <span class="step-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M2 3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H2Zm0-1h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z"/>
+                                <path d="M5.5 10.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0Zm1.5 0a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0Zm1.5 0a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0Zm-5 3a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0Zm1.5 0a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0Zm1.5 0a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0Z"/>
+                            </svg></span>
                         <span class="step-time" id="step-level">Termianl 5</span>
                     </div>
                 </div>

@@ -16,8 +16,8 @@ import { doorsLayer } from './doors.js';
 import { corridorsLayer } from './corridors.js';
 import { beLayer } from './be.js';
 import { gardenLayer } from './garden.js';
-import { showPoisByLevel, routeEnabled, routeLevel, elevatorGuide, addFromToMarkers } from '../mapController.js';
-import { setupArrowAnimation, initializeArrowsSourceAndLayer, stopAnimation, startAnimation, initializeAnimation } from '../animation/arrowAnimation.js';
+import { showPoisByLevel, routeEnabled , routeLevel, elevatorGuide , addFromToMarkers} from '../mapController.js';
+import { setupArrowAnimation ,initializeArrowsSourceAndLayer , stopAnimation  } from '../animation/arrowAnimation.js';
 import { removeRouteLayer } from '../mapController.js';
 
 /**
@@ -78,10 +78,10 @@ export async function layersLevel(sortedLayers) {
       if (!state.toggleableLayerIds.includes(toggleId)) {
         state.toggleableLayerIds.push(toggleId);
         if (!state.floorNameTitle.includes(floorNum)) {
-          const label = floorNum === 0 ? 'G' : floorNum;
-          toggleLayer([toggleId], label);
-          state.floorNameTitle.push(floorNum);
-        }
+        const label = floorNum === 0 ? 'G' : floorNum;
+        toggleLayer([toggleId], label);
+        state.floorNameTitle.push(floorNum);
+       }
       }
     }
   } catch (err) {
@@ -97,89 +97,137 @@ export async function layersLevel(sortedLayers) {
  * @param {string[]} ids - Array containing single floor ID string.
  * @param {string|number} name - Display name for the floor toggle.
  */
-export function toggleLayer(ids, name) {
-  const link = document.createElement('a');
-  link.href = '#';
-  link.textContent = name;
+// Updated toggleLayer function to work with the modern floor menu
+  function toggleLayer(ids, name) {
+            const link = document.createElement('a');
+            link.href = '#';
+            link.textContent = name;
+            link.className = 'floor-item';
+            link.dataset.floor = name;
+            
+            // Create tooltip
+            const tooltip = document.createElement('span');
+            // tooltip.className = 'floor-tooltip';
+            // tooltip.textContent = getFloorDisplayName(name);
+            // link.appendChild(tooltip);
+            
+            // Determine current visibility
+            const firstId = `${ids[0]}/${name}`;
 
-  // Determine current visibility
-  const firstId = `${ids[0]}/${name}`;
-  const visible = map.getLayer(firstId)
-    && map.getLayoutProperty(firstId, 'visibility') === 'visible';
-  
-  if (visible) {
-    link.className = 'active';
-    map.on('mouseenter', ids, function (e) {
-      map.getCanvas().style.cursor = 'pointer';
-    });
-    map.on('mouseleave', ids, function (e) {
-      map.getCanvas().style.cursor = '';
-    });
-  }
+            const visible = map.getLayer(firstId) && 
+                           map.getLayoutProperty(firstId, 'visibility') === 'visible';
+            // console.log(ids);   
+            // console.log(firstId);               
+            // console.log(ids[0]);
+            // console.log(name);
+            // console.log(visible);
+            //  console.log(visible);
+            if (visible) {
+                link.classList.add('floor-active');
+                map.on('mouseenter', ids, function(e) {
+                    map.getCanvas().style.cursor = 'pointer';
+                });
+                map.on('mouseleave', ids, function(e) {
+                    map.getCanvas().style.cursor = '';
+                });
+                // Update active link class
+                const menu = document.getElementById('menu');
+                Array.from(menu.children).forEach(el => {
+                    el.classList.remove('floor-active');
+                });
+                this.classList.add('floor-active');
+            }
+            
+            
 
-  link.onclick = function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const floorNum = name === 'G' ? 0 : parseInt(name, 10);
-    state.levelRoutePoi = floorNum;
-
-    // Toggle this floor on, others off
-    for (const toggleId of state.toggleableLayerIds) {
-      const [, lvlStr] = toggleId.split('/');
-      const lvl = parseInt(lvlStr, 10);
-
-      for (const layerName of state.layerNames) {
-        const layerId = `${toggleId}/${layerName}`;
-        if (!map.getLayer(layerId)) continue;
-        const visibility = (lvl === floorNum) ? 'visible' : 'none';
-        map.setLayoutProperty(layerId, 'visibility', visibility);
-      }
-    }
-
-    // Update active link class
-    const menu = document.getElementById('menu');
-    Array.from(menu.children).forEach(el => {
-      el.className = (el === link) ? 'active' : '';
-    });
-
-    // Refresh POIs
-    showPoisByLevel();
-
-    // If a route is active, redraw it and restart arrows
-    if (state.routeEnabled) {
-      // Stop current animation
-      stopAnimation();
-      
-      // Remove and redraw route
-      removeRouteLayer();
-      routeLevel();
-      elevatorGuide();
-      
-      // Update markers
-      addFromToMarkers(
-        state.fromMarkerLocation,
-        state.toMarkerLocation,
-        state.fromMarkerLevel,
-        state.toMarkerLevel
-      );
-      
-      // Restart arrow animation with a small delay to ensure route is ready
-      setTimeout(() => {
-        initializeArrowsSourceAndLayer();
-        
-        // Ensure arrow layer is at the top
-        if (map.getLayer("arrow-layer")) {
-          map.moveLayer("arrow-layer");
+            link.onclick = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const floorNum = name === 'G' ? 0 : parseInt(name, 10);
+                state.levelRoutePoi = floorNum;
+                
+                // Toggle this floor on, others off
+                for (const toggleId of state.toggleableLayerIds) {
+                    const [, lvlStr] = toggleId.split('/');
+                    const lvl = parseInt(lvlStr, 10);
+                    
+                    for (const layerName of state.layerNames) {
+                        const layerId = `${toggleId}/${layerName}`;
+                        if (!map.getLayer(layerId)) continue;
+                        const visibility = (lvl === floorNum) ? 'visible' : 'none';
+                        map.setLayoutProperty(layerId, 'visibility', visibility);
+                    }
+                }
+                
+                // Update active link class
+                const menu = document.getElementById('menu');
+                Array.from(menu.children).forEach(el => {
+                    el.classList.remove('floor-active');
+                });
+                this.classList.add('floor-active');
+                
+              
+                // Refresh POIs
+                showPoisByLevel();
+                
+                // If a route is active, redraw it and restart arrows
+                if (state.routeEnabled) {
+                    // Stop current animation
+                    stopAnimation();
+                    
+                    // Remove and redraw route
+                    removeRouteLayer();
+                    routeLevel();
+                    elevatorGuide();
+                    
+                    // Update markers
+                    addFromToMarkers(
+                        state.fromMarkerLocation,
+                        state.toMarkerLocation,
+                        state.fromMarkerLevel,
+                        state.toMarkerLevel
+                    );
+                    
+                    // Restart arrow animation
+                    setTimeout(() => {
+                        initializeArrowsSourceAndLayer();
+                        
+                        // Ensure arrow layer is at the top
+                        if (map.getLayer("arrow-layer")) {
+                            // In a real implementation: map.moveLayer("arrow-layer");
+                        }
+                        
+                        // Setup worker if needed, then initialize and start animation
+                        setupArrowAnimation();
+                        initializeAnimation();
+                        startAnimation();
+                    }, 100);
+                }
+            };
+            
+            document.getElementById('menu').appendChild(link);
         }
         
-        // Setup worker if needed, then initialize and start animation
-        setupArrowAnimation(); // This will create worker if it doesn't exist
-        initializeAnimation();
-        startAnimation();
-      }, 100);
-    }
-  };
+        // Helper function to get display name for floors
+        function getFloorDisplayName(name) {
+            const floorNames = {
+                '3': '3rd Floor',
+                '2': 'Departure',
+                '1': 'Intermediate',
+                'G': 'Arrival',
+                '-1': 'Basment 1',
+                '-2': 'Basment 2',
 
-  document.getElementById('menu').appendChild(link);
-}
+            };
+            return floorNames[name] || `Floor ${name}`;
+        }
+        
+        // Demo: Add floors dynamically
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     // Simulate adding floors dynamically
+        //     setTimeout(() => {
+        //         toggleLayer([], 'B2');
+        //         toggleLayer([], 'B1');
+        //     }, 1000);
+        // });

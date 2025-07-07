@@ -159,6 +159,7 @@
 
 .header .back-button:hover {
     transform: scale(1.1);
+    color: #04615c;
 }
 
 /* Animation for language panel sliding down when shown */
@@ -447,6 +448,8 @@
 
  .back-button:hover {
      background-color: #f0f0f0;
+     color: #04615c;
+     transform: translateY(-1px);
  }
 
  .view-title {
@@ -469,14 +472,19 @@
      align-items: center;
      padding: 12px;
      background-color: #f8f9fa;
+     background-color: rgb(242, 242, 242);
      border-radius: 8px;
      cursor: pointer;
      transition: all 0.2s ease;
+     color: rgb(96, 96, 96);
  }
 
  .subcategory-item:hover {
      background-color: #e9ecef;
+     background-color: rgb(242, 242, 242);
      transform: translateY(-1px);
+     color: #04615c;
+     transform: scale(1) !important;
  }
 
  .subcategory-icon {
@@ -488,8 +496,11 @@
  .subcategory-label {
      font-size: 14px;
      font-weight: 500;
-     color: #04615c;
+     color: rgb(96, 96, 96);
  }
+  .subcategory-item:hover .subcategory-label {
+    color: #04615c;
+  }
 
  /* Locations View */
  .locations-view {
@@ -514,16 +525,20 @@
      align-items: center;
      padding: 10px;
      margin-bottom: 5px;
-     background-color: #f8f9fa;
+     background-color: rgb(242, 242, 242);
      border-radius: 8px;
      cursor: pointer;
      transition: all 0.2s ease;
  }
 
  .location-item:hover {
-     background-color: #e9ecef;
+     /* background-color: #e9ecef; */
      transform: translateY(-1px);
  }
+  .location-item:hover .location-name,
+    .location-item:hover .location-address {
+    color: #04615c;
+  }
 
  .location-icon {
      width: 40px;
@@ -623,12 +638,13 @@
  }
 
  .primary-button {
-     background-color: #04615c;
-     color: white;
+    background-color: rgb(242, 242, 242);
+    color: rgb(96, 96, 96);
  }
 
  .primary-button:hover {
-     background-color: #043d3a;
+     background-color: #04615c;
+     color: white;
  }
 
  .secondary-button {
@@ -873,37 +889,52 @@
  }
 
  .time-estimate {
-     margin: -5px 0;
+    display: flex;
+   margin: -5px 0;
+    /* background: #f8f9fa; */
+    border-radius: 8px;
+    padding: 0px;
+    text-align: center;
+    /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); */
  }
 
  .time-label {
-     font-size: 12px;
-     color: #666;
-     margin-bottom: 0px;
-     margin-top: 5px;
+    font-size: 12px;
+    color: #6c757d;
+    margin-bottom: 5px;
  }
 
+ #stepsButton:hover {
+    background-color: rgb(34, 102, 255); /* Change color on hover */
+    color: #ffffff; /* Change text color on hover */
+ }
+ #endRoutebtn:hover {
+    background-color: #F2003C; /* Change color on hover */
+    color: #ffffff; /* Change text color on hover */
+ }
  .time-value {
-     font-size: 16px;
-     font-weight: 600;
-     color: #333;
+    font-size: 13px;
+    font-weight: 700;
+    color: #2c3e50;
  }
 
  .steps-button {
-    width: 100%;
-    background-color: #04615c !important;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 8px;
-    font-size: 11px;
-    cursor: pointer;
+   flex: 1;
+    min-width: 140px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    margin: 8px 3px;
-    font-family: "Poppins";
+    gap: 10px;
+    padding: 8px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    color: #2c3e50;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 4% 1%;
  }
 
  .steps-button:hover {
@@ -911,13 +942,25 @@
  }
 
  .journey-breakdown {
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     gap: 16px;
-     margin-top: 16px;
+    flex: 1;
+    min-width: 44px;
+    display: none;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    padding: 20px 6px;
+    background: white;
+    border-radius: 10px;
+    /* box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); */
+    transition: all 0.3s ease;
+    /* border: 1px solid #eaeaea;*/
  }
-
+.journey-step:hover {
+    color: #04615c;
+    /* transform: translateY(-8px); */
+    /* box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    border-color: #4DA8DA; */
+}
  .journey-step {
      display: flex;
      align-items: center;
@@ -927,8 +970,35 @@
  }
 
  .step-icon {
-     font-size: 14px;
- }
+    width: 40px;
+    height: 40px;
+    background: rgb(242, 242, 242);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgb(96, 96, 96);
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+.journey-step:hover .step-icon {
+    /* background: #04615c; */
+    color: #04615c;
+    transform: scale(1.1);
+}
+.step-time {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #2c3e50;
+    text-align: center;
+}
+
+.step-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    text-align: center;
+    display: none;
+}
 
  .departure-search-icon {
      position: absolute;
@@ -1102,7 +1172,7 @@
      top: 40px;
      bottom: 40px;
      width: 2px;
-     height: 75%;
+     height: 95%;
      background: linear-gradient(to bottom, #878787f7 0%, #ddd 10%, #ddd 10%, #ddd 90%, #ddd 90%, #878787f7 100%);
      z-index: 11;
  }
@@ -1168,8 +1238,8 @@
  }
 
  .location-dot.departure {
-     background-color: #28a745;
-     color: #28a745;
+     background-color: #04615c;
+     color: #04615c;
  }
 
  .location-dot.destination {
@@ -1214,7 +1284,22 @@
      position: relative;
      z-index: 2;
      background: white;
+     transition: background-color 0.3s ease, color 0.3s ease;
  }
+
+.clean-step-item:hover .clean-step-text,
+.clean-step-item:hover .clean-step-time {
+    color: #04615c; /* Change text color */
+}
+
+.clean-step-item:hover::before {
+    background-color: #04615c; /* Change background color on hover */
+}
+
+.clean-step-item:hover .clean-step-icon {
+    background-color: #04615c; /* Change background color */
+    color: white; /* Change icon color */
+}
 
  /* Step Timeline Dot */
  .clean-step-item::before {
@@ -1231,20 +1316,23 @@
  }
 
  .clean-step-icon {
-     width: 40px;
-     height: 40px;
-     background-color: #e3e3e3;
-     border-radius: 10px;
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     margin-right: 12px;
-     margin-left: 16px;
-     /* Space for the timeline dot */
-     font-size: 24px;
-     color: #fff;
-     flex-shrink: 0;
-     margin-top: 0px;
+        width: 40px;
+    height: 40px;
+    background-color: #e3e3e3;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    margin-left: 16px;
+    font-size: 24px;
+    color: rgb(96, 96, 96);
+    flex-shrink: 0;
+    margin-top: 0px;
+ }
+ .clean-step-icon:hover {
+    background-color: #04615c;
+    color: white;
  }
 
  .clean-step-content {
@@ -1544,55 +1632,213 @@
  }
 
  /* Original map styles preserved */
- #menu {
-     font-family: 'Poppins';
-     inset-inline-start: 5px;
-     inset-inline-end: 5px;
-     flex-direction: column-reverse;
-     width: 35px;
-     position: absolute;
-     top: 50%;
-     transform: translateY(-50%);
-     border-radius: 5px;
-     box-shadow: 0 0 0 1.5px rgb(0 0 0 / 20%);
-     background: rgb(249, 249, 249);
- }
-
- #menu a {
-     box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
-     font-size: 18px;
-     color: #404040bf;
-     display: block;
-     margin: 0;
-     padding: 0;
-     background-color: #fff;
-     padding: 7px;
-     text-decoration: none;
-     text-align: center;
-     font-weight: 700;
-     margin: 4px 4px;
-     border-radius: 3px;
- }
-
- #menu a:last-child {
-     border: none;
- }
-
- #menu a:hover {
-     background-color: #f8f8f8;
-     color: #404040;
- }
-
- #menu a.active {
-     background-color: #04615c;
-     color: #fff;
-     display: flex;
-     flex-direction: column-reverse;
- }
-
- #menu a.active:hover {
-     background-color: #04615c;
- }
+.floor-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            position: relative;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .floor-header {
+            margin-bottom: 30px;
+        }
+        
+        .floor-header h1 {
+            font-size: 2.2rem;
+            color: #1a2a6c;
+            margin-bottom: 8px;
+        }
+        
+        .floor-header p {
+            font-size: 1.1rem;
+            color: #555;
+            font-weight: 400;
+        }
+        
+        /* Modern Floor Selector Styles */
+        #menu {
+    float: right;
+    font-family: 'Poppins', sans-serif;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 45px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(26, 42, 108, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+    padding: 12px 0;
+    margin: 22% 0.5%;
+    z-index: 10;
+    transition: transform 0.3s ease;
+        }
+        
+        #menu:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 15px 35px rgba(26, 42, 108, 0.25),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+        }
+        
+        #menu::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: white;
+            border-radius: 15px 15px 0 0;
+            z-index: -1;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        
+        .floor-item {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 35px;
+            width: 35px;
+            margin: 6px auto;
+            border-radius: 7px;
+            color: rgb(96, 96, 96);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 10px rgba(26, 42, 108, 0.1), inset 0 0 0 1px rgba(26, 42, 108, 0.05);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            z-index: 2;
+        }
+        
+        .floor-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 7px 15px rgba(26, 42, 108, 0.2),
+                inset 0 0 0 1px rgba(26, 42, 108, 0.1);
+            color: #1a2a6c;
+            background: rgba(255, 255, 255, 1);
+        }
+        
+        .floor-active {
+     background: #04615c;
+    color: white !important;
+    transform: scale(1.1);
+    box-shadow: 0 7px 15px rgba(26, 42, 108, 0.3), 0 0 0 2px rgba(255, 255, 255, 0.8) !important;
+        }
+        
+        .floor-active:hover {
+            background: #04615c;
+            transform: scale(1.12) !important;
+        }
+        
+        .floor-item::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 5px;
+            height: 5px;
+            background: #5a6ab0;
+            border-radius: 50%;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .floor-active::before {
+            opacity: 1;
+            top: -10px;
+            background: #ffd166;
+        }
+        
+        .floor-tooltip {
+            position: absolute;
+            /* left: 70px; */
+            right: 70px;
+            background: #04615c;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            white-space: nowrap;
+            opacity: 0;
+            transform: translateX(-10px);
+            pointer-events: none;
+            transition: all 0.4s ease;
+        }
+        
+        .floor-item:hover .floor-tooltip {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        /* Animation for floor indicator */
+        @keyframes floor-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(26, 42, 108, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(26, 42, 108, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(26, 42, 108, 0); }
+        }
+        
+        .floor-display {
+            text-align: center;
+            padding: 25px;
+            background: linear-gradient(135deg, #1a2a6c, #3a56c9);
+            border-radius: 15px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(26, 42, 108, 0.3);
+            margin-top: 30px;
+        }
+        
+        .floor-display h2 {
+            font-size: 1.2rem;
+            font-weight: 400;
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .floor-display .floor-number {
+            font-size: 3.5rem;
+            font-weight: 700;
+            padding: 20px;
+            border-radius: 50%;
+            width: 140px;
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 3px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .floor-display .floor-name {
+            font-size: 1.4rem;
+            font-weight: 500;
+            color: #ffd166;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 480px) {
+            .floor-container {
+                padding: 20px;
+            }
+            
+            .floor-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .floor-display .floor-number {
+                width: 120px;
+                height: 120px;
+                font-size: 3rem;
+            }
+        }
 
  .mapboxgl-ctrl.mapboxgl-ctrl-attrib {
      display: none;

@@ -34,32 +34,35 @@ export function generateNavigationInstructions(geojsonRoute) {
   let previousCoordinate = null;
 
   // Direction & turn icons
-  const directionIcons = {
-    N: "⬆️",
-    NE:"↗️",
-    E: "➡️",
-    SE:"↘️",
-    S: "⬇️",
-    SW:"↙️",
-    W: "⬅️",
-    NW: "↖️",
-  };
-  const turnIcons = {
-    left: "⬅️",               // normal left
-    right: "➡️",              // normal right
-    "slight-left": "↖️",      // more intuitive slight left
-    "slight-right": "↗️",     // slight right
-    "sharp-left": "↩️",       // sharp left turn
-    "sharp-right": "↪️",      // sharp right turn
-    "u-turn": "🔁",           // U-turn
-  };
-const floorIcons = {
-  up: "🛗⬆️",      // Elevator Up or 🔼
-  down: "🛗⬇️",    // Elevator Down or 🔽
+ const directionIcons = {
+  N: "↑",       // U+2191 (Bootstrap: bi-arrow-up)
+  NE: "↗",      // U+2197 (Bootstrap: bi-arrow-up-right)
+  E: "→",       // U+2192 (Bootstrap: bi-arrow-right)
+  SE: "↘",      // U+2198 (Bootstrap: bi-arrow-down-right)
+  S: "↓",       // U+2193 (Bootstrap: bi-arrow-down)
+  SW: "↙",      // U+2199 (Bootstrap: bi-arrow-down-left)
+  W: "←",       // U+2190 (Bootstrap: bi-arrow-left)
+  NW: "↖",      // U+2196 (Bootstrap: bi-arrow-up-left)
 };
+
+const turnIcons = {
+  left: "↰",            // U+21A2 (Bootstrap: bi-arrow-left-circle)
+  right: "↱",           // U+21A3 (Bootstrap: bi-arrow-right-circle)
+  "slight-left": "⬹",   // U+2B39 (Subtle left curve)
+  "slight-right": "⬺",  // U+2B3A (Subtle right curve)
+  "sharp-left": "↤",    // U+21A4 (Bootstrap: bi-arrow-90deg-left)
+  "sharp-right": "↦",   // U+21A6 (Bootstrap: bi-arrow-90deg-right)
+  "u-turn": "↶",        // U+21B6 (Bootstrap: bi-arrow-return-left)
+};
+
+const floorIcons = {
+  up: "⏶",      // U+23F6 (Bootstrap: bi-caret-up-fill)
+  down: "⏷",    // U+23F7 (Bootstrap: bi-caret-down-fill)
+};
+
 const startEndIcons = {
-  start: "🟢",          // Start (green circle)
-  destination: "🏁",    // Checkered flag (finish)
+  start: "●",       // U+25CF (Bootstrap: bi-record-circle)
+  destination: "⧁", // U+29C1 (Bootstrap: bi-flag-fill)
 };
 
   // Helpers
@@ -175,7 +178,7 @@ const startEndIcons = {
           const distSegment = calculateDistance(ptPrev, prev);
           instructions.push({
             text: `Continue ${formatDistance(distSegment)}`,
-            icon: directionIcons[lastDir],
+            icon: "↑",
             level: lvl,
             coordinates: [ptPrev, prev],
             distance: distSegment,
@@ -199,7 +202,7 @@ const startEndIcons = {
       if (i === coords.length - 1 && segDist > 0) {
         instructions.push({
           text: `Continue ${formatDistance(segDist)}`,
-          icon: directionIcons[dir],
+          icon: "↑",
           level: lvl,
           coordinates: [coords[segStartIdx], coord],
           distance: segDist,
