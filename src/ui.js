@@ -413,12 +413,14 @@ function toggleNearbyMenu() {
     }
 }
 
-
+var nearbyRestaurantList;
 document.addEventListener("DOMContentLoaded", function() {
     const languageButton = document.getElementById("languageToggleButton");
     const nearbyButton = document.getElementById("nearbyToggleButton");
     const languageBackButton = document.getElementById("languageBack");
     const nearbyBackButton = document.getElementById("nearbyBack");
+    const nearbySearchInput = document.getElementById("nearbySearchInput");
+    nearbyRestaurantList = document.getElementById("nearbyRestaurantList");
 
     if (languageButton) {
         languageButton.addEventListener("click", languageMenu);
@@ -435,118 +437,69 @@ document.addEventListener("DOMContentLoaded", function() {
     if (nearbyBackButton) {
         nearbyBackButton.addEventListener("click", toggleNearbyMenu);
     }
+
+    if(nearbySearchInput)
+    {
+      nearbySearchInput.addEventListener("input", function (e) {
+          const query = e.target.value.trim();
+          searchNearBy(query);
+      });
+    }
 });
-
- // Nearby Menu
- const nearbyRestaurants = [
-      {
-        name: "Somewhere Bujairi",
-        rating: "4.3",
-        reviews: "(2,642)",
-        price: "SAR 200+",
-        type: "Restaurant",
-        icon: "fa-utensils",
-        status: "Open",
-        hours: "Closes 12 AM",
-        tags: "Dine-in · Takeaway · No delivery",
-        image: "./src/images/missingpoi.png"
-      },
-      {
-        name: "Brunch & Cake Al Bujairi",
-        rating: "4.4",
-        reviews: "(2,880)",
-        price: "-",
-        type: "Brunch",
-        icon: "fa-coffee",
-        status: "Open",
-        hours: "Closes 11:45 PM",
-        tags: "Dine-in · Takeaway · No-contact delivery",
-        image: "./src/images/missingpoi.png"
-      },
-      {
-        name: "Bujairi Terrace",
-        rating: "4.6",
-        reviews: "(11,789)",
-        price: "-",
-        type: "Tourist attraction",
-        icon: "fa-map-marker-alt",
-        status: "Open",
-        hours: "Closes 12 AM",
-        tags: "Dine-in · Takeaway",
-        image: "./src/images/missingpoi.png"
-      },
-      {
-        name: "Dim Light Restaurant",
-        rating: "3.7",
-        reviews: "(3,981)",
-        price: "$$",
-        type: "Restaurant",
-        icon: "fa-utensils",
-        status: "Open 24 hours",
-        hours: "24/7",
-        tags: "Dine-in · Takeaway · No-contact delivery",
-        image: "./src/images/missingpoi.png"
-      },
-      {
-        name: "Sum+Things",
-        rating: "3.9",
-        reviews: "(2,072)",
-        price: "$$$",
-        type: "Restaurant",
-        icon: "fa-utensils",
-        status: "Closed",
-        hours: "Opens 5 PM",
-        tags: "Dine-in · Takeaway · No-contact delivery",
-        image: "./src/images/missingpoi.png"
-      },
-      {
-        name: "Cafe De L’ Esplanade",
-        rating: "3.6",
-        reviews: "(492)",
-        price: "SAR 200+",
-        type: "French",
-        icon: "fa-wine-glass-alt",
-        status: "Opens soon",
-        hours: "10 AM",
-        tags: "Dine-in · Takeaway",
-        image: "./src/images/missingpoi.png"
-      }
-    ];
-
-    const nearbyRestaurantList = document.getElementById("nearbyRestaurantList");
-
-    nearbyRestaurants.forEach(nearbyRestaurant => {
-      const nearbyCard = document.createElement("div");
-      nearbyCard.className = "nearby-restaurant-card";
-
-      const nearbyInfoDiv = document.createElement("div");
-      nearbyInfoDiv.className = "nearby-restaurant-info";
-
-      nearbyInfoDiv.innerHTML = `
-        <div class="nearby-restaurant-name">${nearbyRestaurant.name}</div>
-        <div class="nearby-rating">⭐ ${nearbyRestaurant.rating} ${nearbyRestaurant.reviews} · ${nearbyRestaurant.price}</div>
-        <div class="nearby-restaurant-type"><i class="fas ${nearbyRestaurant.icon}"></i> ${nearbyRestaurant.type}</div>
-        <div class="nearby-restaurant-status" style="color: ${nearbyRestaurant.status.includes('Open') ? 'green' : (nearbyRestaurant.status.includes('Closed') ? 'red' : '#fbbc05')}">${nearbyRestaurant.status}</div>
-        <div class="nearby-restaurant-hours">${nearbyRestaurant.hours}</div>
-        <div class="nearby-restaurant-tags">${nearbyRestaurant.tags}</div>
-      `;
-
-      const nearbyImg = document.createElement("img");
-      nearbyImg.src = nearbyRestaurant.image;
-      nearbyImg.className = "nearby-restaurant-image";
-
-      nearbyCard.appendChild(nearbyInfoDiv);
-      nearbyCard.appendChild(nearbyImg);
-
-      nearbyRestaurantList.appendChild(nearbyCard);
-    });
 
 // Menu navigation is now handled by the menu-navigation module
 // This code has been moved to menu-navigation.js for better organization
+function searchNearBy(query) {
+  // const nearbyRestaurantList = document.getElementById("nearbyRestaurantList");
 
+
+  let allLocations = [];
+    state.allPoiGeojson.features.forEach((feature) => {
+    feature.properties = mapTranslator.translatePOIProperties(feature);
+    const { title = '', location } = feature.properties;
+
+    const matchesPoiName = getPOITitleByLang(feature.properties, state.language).toLowerCase().includes(query.toLowerCase());
+
+    if (matchesPoiName) {
+
+      allLocations.push(feature);
+    }
+  });
+
+  nearbyRestaurantList.innerHTML = '';
+  allLocations.forEach(location => {
+    var icon = location?.properties?.iconUrl? location.properties.iconUrl: "./src/images/missingpoi.png";
+    var title = getPOITitleByLang(location.properties , cfg.state.language);
+    var language = state.language
+    var poiTerminalLocation = state.terminalTranslations[language][location?.properties.location];
+    var poiLevel = state.floorsNames[language][location.properties.level];
+    var workHours = "Open";
+    var hours = "24/7";
+    const nearbyCard = document.createElement("div");
+    nearbyCard.className = "nearby-restaurant-card";
+
+    const nearbyInfoDiv = document.createElement("div");
+    nearbyInfoDiv.className = "nearby-restaurant-info";
+
+    nearbyInfoDiv.innerHTML = `
+        <div class="nearby-restaurant-name">${title}</div>
+        <div class="nearby-restaurant-type">${poiTerminalLocation}</div>
+        <div class="nearby-restaurant-status" style="color: ${workHours.includes('Open') ? 'green' : (workHours.includes('Closed') ? 'red' : '#fbbc05')}">${workHours}</div>
+        <div class="nearby-restaurant-hours">${hours}</div>
+      `;
+
+    const nearbyImg = document.createElement("img");
+    nearbyImg.src = icon;
+    nearbyImg.className = "nearby-restaurant-image";
+
+    nearbyCard.appendChild(nearbyInfoDiv);
+    nearbyCard.appendChild(nearbyImg);
+
+    nearbyRestaurantList.appendChild(nearbyCard);
+  });
+}
 
 function initAccessabilty() {
-  console.log("XXXX - initAccessabilty")
    document.getElementById("closeBtn").addEventListener("click", closeMenu);
    document.getElementById("accessibilityBtn").addEventListener("click", toggleMenu);
    window.toggleCard = toggleCard;
