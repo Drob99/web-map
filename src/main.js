@@ -12,7 +12,45 @@ document.addEventListener('DOMContentLoaded', () => {
   // Application startup is handled in app.js's module scope on import
   // Initialize menu navigation system
   initMenuNavigation();
+    // Initial check to set the correct state
+  //toggleSearchSection();
 });
+//  // Function to toggle the visibility of the search section
+// function toggleSearchSection() {
+//   const categoriesSection = document.getElementById('categoriesSection');
+//   const searchSection = document.querySelector('.search-section');
+
+//   // Ensure the element exists before proceeding
+//   if (!categoriesSection || !searchSection) {
+//     console.error('Either #categoriesSection or .search-section is missing in the DOM.');
+//     return;
+//   }
+
+//   // Check the computed display value of #categoriesSection
+//   const categoryDisplay = window.getComputedStyle(categoriesSection).display;
+
+//   if (categoryDisplay === 'none') {
+//     // Hide the search section
+//     searchSection.style.setProperty('display', 'none', 'important');
+//   } else {
+//     // Show the search section
+//     searchSection.style.setProperty('display', 'block', 'important');
+//   }
+//   console.log('Computed display of #categoriesSection:', categoryDisplay);
+// console.log('Setting .search-section display to:', categoryDisplay === 'none' ? 'none' : 'block');
+// }
+
+// // Create a MutationObserver to watch for changes in #categoriesSection
+// const observer = new MutationObserver(() => {
+//   toggleSearchSection(); // Call the toggle function on changes
+// });
+
+// // Observe #categoriesSection for style attribute changes
+// observer.observe(document.getElementById('categoriesSection'), {
+//   attributes: true, // Look for attribute changes
+//   attributeFilter: ['style'] // Only react to style changes
+// });
+
 
 // Listen for language changes
 window.addEventListener('languageChanged', (event) => {

@@ -297,7 +297,7 @@
  }
 
  .search-input {
-     width: 69%;
+     width: 62%;
      padding: 12px 16px;
      border: 0px solid #ddd;
      border-radius: 40px;
@@ -433,7 +433,7 @@
  .view-header {
      display: flex;
      align-items: center;
-     margin-bottom: 0px;
+     margin-bottom: 10px;
  }
 
  .back-button {
@@ -447,13 +447,13 @@
  }
 
  .back-button:hover {
-     background-color: #f0f0f0;
+     /* background-color: #f0f0f0; */
      color: #04615c;
      transform: translateY(-1px);
  }
 
  .view-title {
-     font-size: 12px;
+     font-size: 20px;
      font-weight: 600;
      color: #333;
  }
@@ -505,7 +505,7 @@
  /* Locations View */
  .locations-view {
      display: none;
-     padding: 16px;
+     padding: 10px;
      /* Ensure consistent layout when view is shown */
      position: relative;
      width: 100%;
@@ -515,7 +515,7 @@
  .locations-list {
      display: flex;
      flex-direction: column;
-     gap: 12px;
+     gap: 9px;
      max-height: 375px;
      overflow-y: scroll;
  }
@@ -572,15 +572,57 @@
  /* Location Details View */
  .location-details-view {
      display: none;
-     padding: 5px 16px;
+     padding: 10px;
      /* Ensure consistent layout when view is shown */
      position: relative;
      width: 100%;
      box-sizing: border-box;
  }
 
+ .location-title-with-icon {
+  display: flex;
+  align-items: center;
+  /* margin-bottom: 12px;
+  gap: 12px; */
+}
+
+.location-icon-column {
+  flex: 0 0 40%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.location-icon-img {
+  width: 100%;
+  max-width: 75px;
+  height: auto;
+  object-fit: contain;
+}
+
+.location-text-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+}
+
+.location-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 4px;
+}
+
+.location-subtitle {
+  font-size: 14px;
+  color: #666;
+}
+
+
  .location-info {
-     margin-bottom: 20px;
+     /* margin-bottom: 20px; */
  }
 
  .location-title {
@@ -648,8 +690,8 @@
  }
 
  .secondary-button {
-     background-color: #f0f0f0;
-     color: #333;
+     /* background-color: #f0f0f0; */
+     color: #04615c;
  }
 
  .secondary-button:hover {
@@ -659,7 +701,7 @@
  /* Directions View */
  .directions-view {
      display: none;
-     padding: 0;
+     padding: 10px;
      /* Ensure consistent layout when view is shown */
      position: relative;
      width: 100%;
@@ -671,6 +713,7 @@
      align-items: center;
      justify-content: space-between;
      padding: 0px 4px 0px 4px;
+     margin-bottom: 10px;
      /* border-bottom: 1px solid #f0f0f0; */
  }
 
@@ -684,7 +727,7 @@
  }
 
  .directions-header .view-title {
-     font-size: 12px;
+     font-size: 20px;
      font-weight: 600;
      color: #333;
      flex: 1;
@@ -1081,7 +1124,7 @@
  .popular-locations-list {
      display: flex;
      flex-direction: column;
-     gap: 0;
+     gap: 9px;
      padding: 0 16px 16px 16px;
      overflow-y: auto;
      max-height: 225px;
@@ -2569,6 +2612,7 @@
     left: 0;
 }
 
+
 .loader-logo {
     position: absolute;
     top: 50%;
@@ -2650,8 +2694,9 @@
     align-items: center;
     padding: 15px;
     border-bottom: 1px solid #eee;
-    font-size: 18px;
-    font-weight: bold;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
 }
 
 #nearbyContainer {

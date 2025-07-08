@@ -41,7 +41,7 @@ class RTLStyleManager {
         
         [dir="rtl"] #languageToggleButton,
         [dir="rtl"] #nearbyToggleButton {
-          margin-left: 8px;
+          margin-left: 0px;
           margin-right: 0;
         }
         

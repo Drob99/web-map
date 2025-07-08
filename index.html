@@ -55,7 +55,10 @@
 
     <div class="language-panel">
         <div class="header">
-            <button class="back-button" id="languageBack"><i class="fa fa-arrow-left"></i></button>
+            <button class="back-button" id="languageBack"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5"></path>
+                        <path d="M12 19l-7-7 7-7"></path>
+                    </svg></button>
             Languages
         </div>
         <ul class="language-list" id="languageList">
@@ -121,7 +124,10 @@
     <!-- Nearby Menu Container -->
     <div class="menu-container" id="nearbyContainer">
         <div class="header">
-            <button class="back-button" id="nearbyBack"><i class="fa fa-arrow-left"></i></button>
+            <button class="back-button" id="nearbyBack"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5"></path>
+                        <path d="M12 19l-7-7 7-7"></path>
+                    </svg></i></button>
             Nearby Places
         </div>
         <!-- Search Section -->
@@ -140,7 +146,7 @@
     <!-- Airport Menu Component -->
     <div class="menu-container show desktop-expanded" id="menuContainer">
         <!-- Search Section -->
-        <div class="search-section">
+        <div id="searchSectionCategories" class="search-section">
             <input type="text" class="search-input" placeholder="Search" id="searchInput">
             <button id="languageToggleButton" style="vertical-align: middle; width: 45px; height: 45px; border-radius: 50px;    border: 0px solid #ddd;
     background: rgb(242, 242, 242);"><div class="category-icon"><svg xmlns="http://www.w3.org/2000/svg" width="23" height="40" fill="currentColor" class="bi bi-translate" viewBox="0 0 16 16">
@@ -503,17 +509,17 @@
                 <div class="Navigationbtncontrollers" >
                    <button class="steps-button" id="endRoutebtn" data-i18n ="End Route">
                     End Route
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <!-- <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M18 6L6 18"></path>
                         <path d="M6 6l12 12"></path>
-                    </svg>
+                    </svg> -->
                    </button>
 
                 <button class="steps-button" id="stepsButton" data-i18n ="Show Steps">
                     Show Steps
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <!-- <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M9 18l6-6-6-6"></path>
-                    </svg>
+                    </svg> -->
                 </button>
                 </div>
                 <div class="journey-breakdown">

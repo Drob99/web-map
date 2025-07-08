@@ -725,3 +725,4 @@ function resetSettings() {
 	state.activeTools.clear();
 
 }
+ 
