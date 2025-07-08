@@ -25,6 +25,7 @@ export function setupMapEventHandlers() {
   //map.on('click', 'polygons', handleMapClick);
 }
 map.on('click', 'polygons', handleMapClick);
+map.on('moveend', updateFloorMenu);
 /**
  * Handles map click to place or reset markers and start routing.
  * @param {Object} e - Mapbox event.
@@ -105,6 +106,112 @@ function handleMapClick(e) {
     resetMarkers();
   }
 }
+
+
+export function updateFloorMenu()
+{
+  const zoomLevel = map.getZoom();
+	const menu = document.getElementById('menu');
+	const floorItems = document.querySelectorAll('#menu a');
+
+	if (zoomLevel <= 16) {
+
+		floorItems.forEach(items => {
+			if (items.innerHTML === "S" || items.innerHTML === "A" || items.innerHTML === "D" || items.innerHTML === "M" || items.innerHTML === "I") {
+				items.style.display = 'none';
+			}
+			else {
+				items.style.display = 'flex'
+			}
+		});
+
+		return;
+	}
+
+	const mapCenter = map.getCenter();
+	const centerPoint = turf.point([mapCenter.lng, mapCenter.lat]);
+
+	let nearestPolygon = null;
+
+	// Check if the map center is inside any polygon
+	state.terminalsFloorsTitlesJson.features.forEach(feature => {
+		const polygon = turf.polygon(feature.geometry.coordinates);
+
+		// Check if the map center is inside the current polygon
+		if (turf.booleanPointInPolygon(centerPoint, polygon)) {
+			nearestPolygon = feature; // Store the polygon if it's the nearest one
+		}
+	});
+	if (!nearestPolygon) {
+		// If no polygon contains the center, hide all floor items
+		floorItems.forEach(items => {
+			if (items.innerHTML === "S" || items.innerHTML === "A" || items.innerHTML === "D" || items.innerHTML === "M" || items.innerHTML === "I") {
+				items.style.display = 'none';
+			}
+			else {
+				items.style.display = 'flex'
+			}
+		});
+		return;
+	}
+
+	if (nearestPolygon.properties.name == "TP2 Parking") {
+
+	}
+	else {
+
+	}
+	const nearestFloors = new Set();
+	const floorString = nearestPolygon.properties.floors;
+
+	if (floorString) {
+		try {
+			var floorArray = JSON.parse(floorString); // Convert string to array
+			floorArray = JSON.parse(floorArray); // Convert string to array
+
+			if (Array.isArray(floorArray) && floorArray.length > 0) {
+				floorArray.forEach(f => nearestFloors.add(String(f))); // Ensure string comparison
+			} else {
+				console.error("Invalid floor array:", floorArray);
+			}
+		} catch (e) {
+			console.error("Invalid floor data:", floorString, e);
+		}
+	}
+
+	// Show only nearest floors
+	floorItems.forEach(item => {
+		const floorName = item.innerText.replace('Floor ', '').trim();
+		item.style.display = nearestFloors.has(floorName) ? 'flex' : 'none';
+	});
+}
+
+
+export function loadTerminalsOutlines() {
+  // If data is already fetched, return it as a resolved Promise
+  if (state.terminalsFloorsTitlesJson) {
+    return Promise.resolve(state.terminalsFloorsTitlesJson);
+  }
+
+  // Fetch the JSON file (adjust path as needed)
+  return fetch('src/data/terminalsFloorstitle.json')
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`Failed to fetch terminals outlines: ${res.status}`);
+      }
+      return res.json();
+    })
+    .then(data => {
+      state.terminalsFloorsTitlesJson = data; // Store the result to avoid future fetches
+      return state.terminalsFloorsTitlesJson;
+    })
+    .catch(err => {
+      console.error('Error loading terminals outlines:', err);
+      throw err;
+    });
+}
+
+
 
 /**
  * Places the "A" marker at the clicked location.
@@ -208,3 +315,4 @@ function createMarkerEl(letter, bgColor) {
   `;
   return el.firstElementChild;
 }
+

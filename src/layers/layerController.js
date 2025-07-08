@@ -73,14 +73,23 @@ export async function layersLevel(sortedLayers) {
         }
       }
 
+      const floorLabelMap = {
+          0: 'G',
+          1: 'I',
+          2: 'D',
+          3: 'M',
+          '-1': 'S',
+      };
       // Add floor toggle if not present
       const toggleId = `${buildingId}/${floorNum}`;
       if (!state.toggleableLayerIds.includes(toggleId)) {
         state.toggleableLayerIds.push(toggleId);
         if (!state.floorNameTitle.includes(floorNum)) {
-        const label = floorNum === 0 ? 'G' : floorNum;
-        toggleLayer([toggleId], label);
-        state.floorNameTitle.push(floorNum);
+          const labels = [floorLabelMap[floorNum], floorNum].filter(Boolean);
+            labels.forEach(label => {
+            toggleLayer([toggleId + "/" + floorNum], label);
+            state.floorNameTitle.push(floorNum);
+          });
        }
       }
     }
@@ -144,7 +153,16 @@ export async function layersLevel(sortedLayers) {
                 e.preventDefault();
                 e.stopPropagation();
                 
-                const floorNum = name === 'G' ? 0 : parseInt(name, 10);
+                const nameToFloorMap = {
+                  'A': 0,
+                  'G': 0,
+                  'I': 1,
+                  'D': 2,
+                  'M': 3,
+                  'S': -1
+                };
+
+                const floorNum = nameToFloorMap.hasOwnProperty(name) ? nameToFloorMap[name] : parseInt(name, 10);
                 state.levelRoutePoi = floorNum;
                 
                 // Toggle this floor on, others off

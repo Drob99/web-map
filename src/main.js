@@ -6,12 +6,14 @@
 import './app.js';
 import { initUI, languageMenu } from './ui.js';
 import { initMenuNavigation } from './menu-navigation.js';
+import { loadTerminalsOutlines } from "./markers.js";
 
 // Ensure any DOM-dependent initialization happens after the document is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
   // Application startup is handled in app.js's module scope on import
   // Initialize menu navigation system
   initMenuNavigation();
+  loadTerminalsOutlines();
     // Initial check to set the correct state
   //toggleSearchSection();
 });

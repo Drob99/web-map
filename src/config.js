@@ -604,5 +604,6 @@ uiTranslationsMenu : {
     "Categories": "类别",
     "Start Directions": "开始导航"
 	},
-}
+},
+terminalsFloorsTitlesJson : null
 };
