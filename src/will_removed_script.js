@@ -114,6 +114,7 @@
 
             // Search elements
             this.searchInput = document.getElementById('searchInput');
+            this.searchSectionCategories = document.getElementById("searchSectionCategories");
 
             // Navigation elements
             this.subcategoriesBackBtn = document.getElementById('subcategoriesBackBtn');
@@ -291,6 +292,7 @@
                     console.log("ENDED NAVIGATION" ,this.currentLocation );
                     this.showLocationDetailsView(this.currentLocation);
                     mapc.clearRoute();
+                    document.getElementById("stepsButton").innerHTML = `Show Steps`;
                 });
             }
 
@@ -454,6 +456,7 @@
             this.currentView = 'categories';
 
             if (this.categoriesSection) this.categoriesSection.style.display = 'block';
+            if (this.searchSectionCategories) this.searchSectionCategories.style.display = 'block';
             if (this.subcategoriesView) this.subcategoriesView.style.display = 'none';
             if (this.locationsView) this.locationsView.style.display = 'none';
             if (this.locationDetailsView) this.locationDetailsView.style.display = 'none';
@@ -533,6 +536,7 @@
             this.populateLocationsByID(categoryID);
 
             if (this.categoriesSection) this.categoriesSection.style.display = 'none';
+            if (this.searchSectionCategories) this.searchSectionCategories.style.display = 'none';
             if (this.subcategoriesView) this.subcategoriesView.style.display = 'none';
             if (this.locationsView) this.locationsView.style.display = 'block';
             if (this.locationDetailsView) this.locationDetailsView.style.display = 'none';
@@ -552,6 +556,7 @@
             this.populateLocationDetails(location);
 
             if (this.categoriesSection) this.categoriesSection.style.display = 'none';
+            if (this.searchSectionCategories) this.searchSectionCategories.style.display = 'none';
             if (this.subcategoriesView) this.subcategoriesView.style.display = 'none';
             if (this.locationsView) this.locationsView.style.display = 'none';
             if (this.locationDetailsView) this.locationDetailsView.style.display = 'block';
@@ -585,6 +590,7 @@
             this.setupDepartureSearch();
 
             if (this.categoriesSection) this.categoriesSection.style.display = 'none';
+            if (this.searchSectionCategories) this.searchSectionCategories.style.display = 'none';
             if (this.subcategoriesView) this.subcategoriesView.style.display = 'none';
             if (this.locationsView) this.locationsView.style.display = 'none';
             if (this.locationDetailsView) this.locationDetailsView.style.display = 'none';
@@ -678,6 +684,7 @@
 
             // Hide other views
             if (this.categoriesSection) this.categoriesSection.style.display = 'none';
+            if (this.searchSectionCategories) this.searchSectionCategories.style.display = 'none';
             if (this.subcategoriesView) this.subcategoriesView.style.display = 'none';
             if (this.locationsView) this.locationsView.style.display = 'none';
             if (this.locationDetailsView) this.locationDetailsView.style.display = 'none';
@@ -904,13 +911,14 @@
             // Update the Steps button text to indicate it can close
             const stepsButton = document.getElementById('stepsButton');
             if (stepsButton) {
-                stepsButton.innerHTML = `
-            Hide Steps
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M18 6L6 18"></path>
-                <path d="M6 6l12 12"></path>
-            </svg>
-        `;
+        //         stepsButton.innerHTML = `
+        //     Hide Steps
+        //     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        //         <path d="M18 6L6 18"></path>
+        //         <path d="M6 6l12 12"></path>
+        //     </svg>
+        // `;
+                  stepsButton.innerHTML = `Hide Steps`;
                 stepsButton.style.background = '#4DA8DA !important'; // Red color for close
             }
 
@@ -958,12 +966,13 @@
             // Restore the Steps button text and color
             const stepsButton = document.getElementById('stepsButton');
             if (stepsButton) {
-                stepsButton.innerHTML = `
-            Steps
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M9 18l6-6-6-6"></path>
-            </svg>
-        `;
+        //         stepsButton.innerHTML = `
+        //     Steps
+        //     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        //         <path d="M9 18l6-6-6-6"></path>
+        //     </svg>
+        // `;
+            stepsButton.innerHTML = `Show Steps`;
                 stepsButton.style.background = '#4DA8DA !important'; // Blue color for steps
             }
         }
@@ -1150,12 +1159,13 @@
                 // Restore the Steps button
                 const stepsButton = document.getElementById('stepsButton');
                 if (stepsButton) {
-                    stepsButton.innerHTML = `
-                Steps
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M9 18l6-6-6-6"></path>
-                </svg>
-            `;
+            //         stepsButton.innerHTML = `
+            //     Steps
+            //     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            //         <path d="M9 18l6-6-6-6"></path>
+            //     </svg>
+            // `;
+                 stepsButton.innerHTML = `Show Steps`;
                     stepsButton.style.background = '#4DA8DA !important';
                 }
             }, 100);
@@ -1288,6 +1298,7 @@
             this.populateNavigation();
 
             if (this.categoriesSection) this.categoriesSection.style.display = 'none';
+            if (this.searchSectionCategories) this.searchSectionCategories.style.display = 'none';
             if (this.subcategoriesView) this.subcategoriesView.style.display = 'none';
             if (this.locationsView) this.locationsView.style.display = 'none';
             if (this.locationDetailsView) this.locationDetailsView.style.display = 'none';
@@ -1328,6 +1339,7 @@
             }
 
             if (this.categoriesSection) this.categoriesSection.style.display = 'none';
+            if (this.searchSectionCategories) this.searchSectionCategories.style.display = 'none';
             if (this.subcategoriesView) this.subcategoriesView.style.display = 'none';
             if (this.locationsView) this.locationsView.style.display = 'none';
             if (this.locationDetailsView) this.locationDetailsView.style.display = 'none';
@@ -1422,6 +1434,7 @@
                 var title = getPOITitleByLang(location.properties , cfg.state.language);
                  var language = cfg.state.language
                 var poiTerminalLocation = cfg.state.terminalTranslations[language][location.properties.location];
+                var level = cfg.state.floorsNames[language][location.properties.level];
                 const item = document.createElement('div');
                 item.className = 'location-item';
                 item.innerHTML = `
@@ -1430,7 +1443,7 @@
                     </div>
                     <div class="location-details">
                         <div class="location-name">${title}</div>
-                        <div class="location-address">${poiTerminalLocation}</div>
+                        <div class="location-address">${poiTerminalLocation} - ${level}</div>
                     </div>
                 `;
 
@@ -1540,6 +1553,7 @@
             }
 
             if (this.categoriesSection) this.categoriesSection.style.display = 'block';
+            if (this.searchSectionCategories) this.searchSectionCategories.style.display = 'block';
             if (this.subcategoriesView) this.subcategoriesView.style.display = 'none';
             if (this.locationsView) this.locationsView.style.display = 'none';
             if (this.locationDetailsView) this.locationDetailsView.style.display = 'none';
@@ -1562,6 +1576,7 @@
             this.populateLocations(subcategoryName);
 
             if (this.categoriesSection) this.categoriesSection.style.display = 'none';
+            if (this.searchSectionCategories) this.searchSectionCategories.style.display = 'none';
             if (this.subcategoriesView) this.subcategoriesView.style.display = 'none';
             if (this.locationsView) this.locationsView.style.display = 'block';
             if (this.locationDetailsView) this.locationDetailsView.style.display = 'none';
@@ -1672,6 +1687,7 @@
                 });
 
                 if (this.categoriesSection) this.categoriesSection.style.display = 'none';
+                if (this.searchSectionCategories) this.searchSectionCategories.style.display = 'none';
                 if (this.subcategoriesView) this.subcategoriesView.style.display = 'block';
                 if (this.locationsView) this.locationsView.style.display = 'none';
                 if (this.locationDetailsView) this.locationDetailsView.style.display = 'none';
@@ -1685,6 +1701,7 @@
 
                 this.populateLocationsByName(query)
                 if (this.categoriesSection) this.categoriesSection.style.display = 'none';
+                if (this.searchSectionCategories) this.searchSectionCategories.style.display = 'none';
                 if (this.subcategoriesView) this.subcategoriesView.style.display = 'none';
                 if (this.locationsView) this.locationsView.style.display = 'block';
                 if (this.locationDetailsView) this.locationDetailsView.style.display = 'none';
@@ -1853,24 +1870,37 @@
             var title = getPOITitleByLang(location?.properties , cfg.state.language);
             const [fromLng, fromLat] = parseCenter(location?.properties.center);
             var language = cfg.state.language
+            var icon = location?.properties?.iconUrl
+                ? location.properties.iconUrl
+                : "./src/images/missingpoi.png";
             var poiTerminalLocation = cfg.state.terminalTranslations[language][location?.properties.location];
             markers.flyToPointA(fromLng , fromLat);  
             mapc.switchFloorByNo(location?.properties.level);        
-            this.locationInfo.innerHTML = `
+           this.locationInfo.innerHTML = `
+            <div class="location-title-with-icon">
+                <div class="location-text-column">
                 <div class="location-title">${title}</div>
                 <div class="location-subtitle">${poiTerminalLocation}</div>
-                
-                <div class="location-amenities" style ="display : ${display}">
-                    <div class="amenities-title">Categories</div>
-                    <div class="amenities-list">
-                        ${amenities.map(amenity => `<span class="amenity-tag">${amenity}</span>`).join('')}
-                    </div>
                 </div>
-                
-                <div class="location-actions">
-                    <button class="action-button primary-button" onclick="airportMenu.showDirectionsView(airportMenu.currentLocation)">Start Directions</button>
+                <div class="location-icon-column">
+                <img src="${icon}" class="location-icon-img" alt="POI Icon" />
                 </div>
+            </div>
+
+            <div class="location-amenities" style="display: ${display};">
+                <div class="amenities-title">Categories</div>
+                <div class="amenities-list">
+                ${amenities.map(amenity => `<span class="amenity-tag">${amenity}</span>`).join('')}
+                </div>
+            </div>
+
+            <div class="location-actions">
+                <button class="action-button primary-button" onclick="airportMenu.showDirectionsView(airportMenu.currentLocation)">
+                Start Directions
+                </button>
+            </div>
             `;
+
         }
 
         populateDirections(location) {
