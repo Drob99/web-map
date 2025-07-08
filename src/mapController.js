@@ -378,6 +378,14 @@ export function clearRoute() {
 
   $("#from_location").val("").trigger("change");
   $("#to_location").val("").trigger("change");
+
+  // Remove play button
+  const playButton = document.getElementById("play-route-btn");
+  if (playButton) {
+    playButton.remove();
+  }
+
+  window.dispatchEvent(new CustomEvent("routeCleared"));
 }
 
 /**

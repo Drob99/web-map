@@ -11,6 +11,7 @@ import { switchFloorByNo } from "./mapController.js";
 import { API_CONFIG } from "./config.js";
 import { map } from "./mapInit.js";
 import { setupMapLanguageListener } from "./mapController.js";
+import { playbackControls } from "./navigation/navigationPlaybackControls.js";
 
 
 /**
@@ -66,6 +67,7 @@ export default class App {
 
     // 2) Initialize UI and map interactions
     this.initUI();
+    playbackControls.init();
     this.initMapHandlers();
 
     // 3) Display the current floor

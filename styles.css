@@ -2758,3 +2758,225 @@
 [dir="rtl"] .menu-header {
   font-family: 'Tahoma', sans-serif;
 }
+
+/* Navigation Playback Styles */
+.playback-controls {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    width: 400px;
+    z-index: 1000;
+    transition: opacity 0.3s ease;
+  }
+  
+  .playback-controls.hidden {
+    display: none;
+  }
+  
+  .playback-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .playback-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .playback-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #666;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .playback-close:hover {
+    color: #333;
+  }
+  
+  .playback-body {
+    padding: 20px;
+  }
+  
+  .playback-progress {
+    margin-bottom: 20px;
+  }
+  
+  .playback-progress-bar {
+    height: 6px;
+    background: #e0e0e0;
+    border-radius: 3px;
+    cursor: pointer;
+    position: relative;
+    margin-bottom: 8px;
+  }
+  
+  .playback-progress-fill {
+    height: 100%;
+    background: #007AFF;
+    border-radius: 3px;
+    width: 0;
+    transition: width 0.1s linear;
+  }
+  
+  .playback-time {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #666;
+  }
+  
+  .playback-controls-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+  
+  .playback-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: #007AFF;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .playback-btn:hover {
+    background: #0056b3;
+    transform: scale(1.05);
+  }
+  
+  .playback-btn.hidden {
+    display: none;
+  }
+  
+  .stop-btn {
+    background: #dc3545;
+  }
+  
+  .stop-btn:hover {
+    background: #c82333;
+  }
+  
+  .playback-speed {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .playback-speed label {
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .speed-select {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  .playback-floor-info {
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .current-floor {
+    font-weight: 600;
+    color: #007AFF;
+  }
+  
+  /* Step highlighting for clean-step-item elements */
+  .clean-step-item {
+    transition: all 0.3s ease;
+    position: relative;
+  }
+  
+  .clean-step-item.current-step {
+    background: rgba(0, 122, 255, 0.1) !important;
+    border-left: 4px solid #007AFF !important;
+    padding-left: 16px !important;
+  }
+  
+  .clean-step-item.current-step::before {
+    background-color: #007AFF !important;
+    width: 12px !important;
+    height: 12px !important;
+    left: -2px !important;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  
+  .clean-step-item.completed-step {
+    opacity: 0.7;
+  }
+  
+  .clean-step-item.completed-step::before {
+    background-color: #28a745 !important;
+  }
+  
+  .clean-step-item.completed-step .clean-step-icon {
+    background-color: #28a745 !important;
+  }
+  
+  .clean-step-item.current-step .clean-step-icon {
+    background-color: #007AFF !important;
+    animation: iconPulse 1.5s ease-in-out infinite;
+  }
+  
+  /* Step highlighting for instruction elements (fallback) */
+  #instructions > li.instruction {
+    transition: all 0.3s ease;
+    position: relative;
+  }
+  
+  #instructions > li.instruction.current-step {
+    background: rgba(0, 122, 255, 0.1);
+    border-left: 4px solid #007AFF;
+    padding-left: 16px;
+  }
+  
+  #instructions > li.instruction.completed-step {
+    opacity: 0.7;
+  }
+  
+  /* Pulse animations */
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.2); }
+  }
+  
+  @keyframes iconPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  
+  /* Mobile responsiveness */
+  @media (max-width: 480px) {
+    .playback-controls {
+      width: 95%;
+      max-width: 400px;
+    }
+  }
