@@ -14,6 +14,7 @@ import {
 import { initializeAnimation, initializeArrowsSourceAndLayer, startAnimation, stopAnimation, setupArrowAnimation } from "../animation/arrowAnimation.js";
 import { map } from "../mapInit.js";
 import { updateJourneyInfo } from "../mapController.js";
+import { playbackControls } from "../navigation/navigationPlaybackControls.js";
 
 
 /**
@@ -195,8 +196,8 @@ export function drawPathToPoi(
     features: [
       {
         type: "Feature",
-        properties: {level: fromLevel},
-        geometry: { type: "LineString", coordinates: [] }
+        properties: { level: fromLevel },
+        geometry: { type: "LineString", coordinates: [] },
       },
     ],
   };
@@ -263,7 +264,12 @@ export function drawPathToPoi(
     state.fromMarkerLevel,
     state.toMarkerLevel
   );
-  updateJourneyInfo(state.globalName , state.globalDistance , state.globalTime , state.globalZLevel);
+  updateJourneyInfo(
+    state.globalName,
+    state.globalDistance,
+    state.globalTime,
+    state.globalZLevel
+  );
   // Render per-floor route and camera
   routeLevel();
   enterNavigationMode(state.fullPathRoute);
@@ -274,4 +280,43 @@ export function drawPathToPoi(
     setupArrowAnimation(); // This creates the worker if needed
     startAnimation(); // This will check if route exists before initializing
   }, 100);
+
+  // Add play button to navigation panel after route is drawn
+  setTimeout(() => {
+    const directionsPanel = document.querySelector(".directions-panel");
+    if (directionsPanel && !document.getElementById("play-route-btn")) {
+      const playButton = document.createElement("button");
+      playButton.id = "play-route-btn";
+      playButton.className = "play-route-button";
+      playButton.innerHTML = '<i class="fas fa-play"></i> Play Route';
+      playButton.style.cssText = `
+      width: 100%;
+      padding: 12px;
+      margin: 15px 0;
+      background: #007AFF;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    `;
+      playButton.addEventListener("click", () => {
+        playbackControls.show();
+      });
+
+      // Insert after route summary
+      const routeSummary = document.getElementById("routeSummary");
+      if (routeSummary) {
+        routeSummary.parentNode.insertBefore(
+          playButton,
+          routeSummary.nextSibling
+        );
+      }
+    }
+  }, 500);
 }
