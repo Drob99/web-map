@@ -589,5 +589,20 @@ floorsNames : {
 		2: "二楼",
 		3: "三楼",
 	},
+}, 
+
+uiTranslationsMenu : {
+	EN: {
+		  "Categories": "Categories",
+      "Start Directions" : "Start Directions"
+	},
+	AR: {
+     "Categories": "الفئات",
+     "Start Directions": "ابدأ التوجيه"
+	},
+	ZN: {
+    "Categories": "类别",
+    "Start Directions": "开始导航"
+	},
 }
 };

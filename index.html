@@ -27,7 +27,7 @@
 
 <body>
     <div id="map"></div>
-    <nav id="menu"></nav>
+    
     <div class="card">
         <!-- Starting point input -->
         <div class="location-input start">
@@ -75,39 +75,40 @@
         </div>
     </div>
 
-    <div id="legendToggle">Legend</div>
+    <div id="legendToggle" data-i18n ="Legend">Parkings</div>
     <div id="legendPanel">
-        <div class="legend-item"><span class="icon short"></span> ParkSHORT</div>
-        <div class="legend-item"><span class="icon intl"></span> ParkINTERNATIONAL</div>
-        <div class="legend-item"><span class="icon long"></span> ParkLONG</div>
-        <div class="legend-item"><span class="icon valet"></span> ParkVALET</div>
+        <div class="legend-item"><span class="icon short"></span><p data-i18n ="ParkSHORT">ParkSHORT</p></div>
+        <div class="legend-item"><span class="icon intl" ></span><p data-i18n ="ParkINTERNATIONAL">ParkINTERNATIONAL</p></div>
+        <div class="legend-item"><span class="icon long" ></span><p data-i18n ="ParkLONG">ParkLONG</p></div>
+        <div class="legend-item"><span class="icon valet"></span><p data-i18n ="ParkVALET">ParkVALET</p></div>
     </div>
 
     <div class="dropdown-container">
 
         <div class="dropdown" id="TerminalsDropdownListBtn">
             <div class="dropdown-content">
-                <div class="dropdown-title">KKIA</div>
-                <div class="dropdown-subtitle">Terminals</div>
+                <div class="dropdown-title" data-i18n ="KKIA">KKIA</div>
+                <div class="dropdown-subtitle" data-i18n ="Terminals">Terminals</div>
             </div>
             <div class="dropdown-arrow">&#9662;</div>
         </div>
         <div class="dropdown-arrow" id="accessibilityBtn" style="margin-left: 10px;border-radius: 12px"><img style="width: 25px;"
                 src="./src/images/disabled.png"></div>
         <div class="dropdown-list" id="dropdownList">
-            <div class="dropdown-option" data-terminal-id="All">All</div>
-            <div class="dropdown-option" data-terminal-id="Terminal 1">Terminal 1</div>
-            <div class="dropdown-option" data-terminal-id="Terminal 2">Terminal 2</div>
-            <div class="dropdown-option" data-terminal-id="Terminal 3">Terminal 3</div>
-            <div class="dropdown-option" data-terminal-id="Terminal 4">Terminal 4</div>
-            <div class="dropdown-option" data-terminal-id="Terminal 5">Terminal 5</div>
-            <div class="dropdown-option" data-terminal-id="Private Aviation">Private Aviation</div>
+            <div class="dropdown-option" data-terminal-id="All" data-i18n ="All">All</div>
+            <div class="dropdown-option" data-terminal-id="Terminal 1"  data-i18n ="Terminal 1">Terminal 1</div>
+            <div class="dropdown-option" data-terminal-id="Terminal 2"  data-i18n ="Terminal 2">Terminal 2</div>
+            <div class="dropdown-option" data-terminal-id="Terminal 3"  data-i18n ="Terminal 3">Terminal 3</div>
+            <div class="dropdown-option" data-terminal-id="Terminal 4"  data-i18n ="Terminal 4">Terminal 4</div>
+            <div class="dropdown-option" data-terminal-id="Terminal 5"  data-i18n ="Terminal 5">Terminal 5</div>
+            <div class="dropdown-option" data-terminal-id="Private Aviation"  data-i18n ="Private Aviation">Private Aviation</div>
             <!-- const terminalId = element.getAttribute("data-terminal-id"); // "T1" -->
         </div>
     </div>
 
     <div class="mapboxgl-ctrl-bottom-right">
-        <div class="mapboxgl-ctrl mapboxgl-ctrl-group" style="background-color: transparent;margin-bottom: 270%;">
+        <div class="mapboxgl-ctrl mapboxgl-ctrl-group" style="box-shadow: none; background-color: transparent;margin-bottom: 375%; width: 43px;">
+            <nav id="menu"></nav>
             <div id="currentlocation">
                 <button id="cur_btn"
                     style="color:#04615c ; background-color: white;border-radius: 5px;font-family: 'Poppins';font-weight: 700;"
@@ -130,7 +131,7 @@
         
         <!-- Categories Section -->
         <div style="max-height: 368px; overflow-y: auto;" class="categories-section" id="nearbyCategoriesSection">
-            <h3 class="section-title">Results</h3>
+            <h3 class="section-title" data-i18n ="Results">Results</h3>
             <div id="nearbyRestaurantList"></div>
         </div>
     </div>
@@ -152,7 +153,7 @@
 
         <!-- Categories Section -->
         <div class="categories-section hide-scrollbar" id="categoriesSection">
-            <h3 class="section-title" data-translate="Categories">Categories</h3>
+            <h3 class="section-title" data-translate="Categories" data-i18n ="Categories">Categories</h3>
 
             <div class="categories-grid">
                 <!-- Row 1 - Visible by default -->
@@ -357,7 +358,7 @@
                         <path d="M12 19l-7-7 7-7"></path>
                     </svg>
                 </button>
-                <h3 class="view-title" id="subcategoriesTitle">Subcategories</h3>
+                <h3 class="view-title" id="subcategoriesTitle" data-i18n ="Subcategories">Subcategories</h3>
             </div>
             <div class="subcategories-list hide-scrollbar" id="subcategoriesList">
                 <!-- Subcategories will be populated dynamically -->
@@ -373,9 +374,9 @@
                         <path d="M12 19l-7-7 7-7"></path>
                     </svg>
                 </button>
-                <h3 class="view-title" id="locationsTitle">Locations</h3>
+                <h3 class="view-title" id="locationsTitle" data-i18n ="Locations">Locations</h3>
             </div>
-            <div id="NoResultsFound" >No locations found matching your search</div>
+            <div id="NoResultsFound" data-i18n ="NoResultsFound">No locations found matching your search</div>
             <div class="locations-list hide-scrollbar" id="locationsList">
                 <!-- Locations will be populated dynamically -->
             </div>
@@ -390,7 +391,7 @@
                         <path d="M12 19l-7-7 7-7"></path>
                     </svg>
                 </button>
-                <h3 class="view-title" id="locationDetailsTitle">Location Details</h3>
+                <h3 class="view-title" id="locationDetailsTitle" data-i18n ="Location Details">Location Details</h3>
             </div>
             <div class="location-info" id="locationInfo">
                 <!-- Location details will be populated dynamically -->
@@ -406,9 +407,9 @@
                         <path d="M12 19l-7-7 7-7"></path>
                     </svg>
                 </button>
-                <h3 class="view-title">Directions</h3>
+                <h3 class="view-title" data-i18n ="Directions">Directions</h3>
                 <div class="header-options" style="display: none;">
-                    <span class="accessible-label">Accessible</span>
+                    <span class="accessible-label" data-i18n ="Accessible">Accessible</span>
                     <div class="toggle-switch">
                         <input type="checkbox" id="accessibleToggle">
                         <label for="accessibleToggle"></label>
@@ -418,12 +419,12 @@
             </div>
 
             <div class="departure-input-container">
-                <input type="text" class="departure-input" id="departureInput" placeholder="Choose Departure">
+                <input type="text" class="departure-input" id="departureInput" data-i18n="Choose Departure" data-i18n-attr="placeholder" placeholder="Choose Departure">
                 <div class="departure-results" id="departureResults" style="display: none;"></div>
             </div>
 
             <div class="destination-container">
-                <input type="text" class="departure-input" id="destinationInput" placeholder="Choose Destination">
+                <input type="text" class="departure-input" id="destinationInput" data-i18n="Choose Destination" data-i18n-attr="placeholder" placeholder="Choose Destination">
             </div>
 
             <div class="popular-locations-view" id="popularLocationsView">
@@ -452,7 +453,7 @@
                 </button>
             </div> -->
 
-            <div class="popular-section-title">
+            <div class="popular-section-title" data-i18n ="Most Popular">
                 Most Popular
                 <div class="refresh-icon">🔄</div>
             </div>
@@ -470,7 +471,7 @@
 
                 <div class="time-estimate">
                     <div style="width: 33%;">
-                        <div class="time-label">Time</div>
+                        <div class="time-label" data-i18n ="Time">Time</div>
                         <!-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock">
                             <circle cx="12" cy="12" r="10"/>
                             <polyline points="12 6 12 12 16 14"/>
@@ -478,7 +479,7 @@
                         <div class="time-value">15 minutes</div>
                     </div>
                     <div style="width: 33%;">
-                        <div class="time-label">Distance</div>
+                        <div class="time-label" data-i18n ="Distance">Distance</div>
                         <!-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-route">
                             <circle cx="6" cy="19" r="3"/>
                             <path d="M19 12V6a2 2 0 0 0-2-2H8.5"/>
@@ -488,7 +489,7 @@
                         <span class="time-value" id="step-distance"></span>
                     </div>
                     <div style="width: 33%;">
-                        <div class="time-label">Floor</div>
+                        <div class="time-label" data-i18n ="Floor">Floor</div>
                         <!-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-building-2">
                             <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/>
                             <path d="M10 6h4"/>
@@ -500,7 +501,7 @@
                     </div>
                 </div>
                 <div class="Navigationbtncontrollers" >
-                   <button class="steps-button" id="endRoutebtn" >
+                   <button class="steps-button" id="endRoutebtn" data-i18n ="End Route">
                     End Route
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M18 6L6 18"></path>
@@ -508,7 +509,7 @@
                     </svg>
                    </button>
 
-                <button class="steps-button" id="stepsButton" >
+                <button class="steps-button" id="stepsButton" data-i18n ="Show Steps">
                     Show Steps
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M9 18l6-6-6-6"></path>
@@ -547,7 +548,7 @@
         <!-- Navigation View -->
         <div class="navigation-view" id="navigationView">
             <div class="navigation-header">
-                <h3 class="view-title">Navigation</h3>
+                <h3 class="view-title" data-i18n ="Navigation">Navigation</h3>
             </div>
 
             <div class="navigation-steps-container">
@@ -557,7 +558,7 @@
             </div>
 
             <div class="navigation-actions">
-                <button class="end-navigation-btn" style="display: none;" id="endNavigationBtn">End Navigation</button>
+                <button class="end-navigation-btn" style="display: none;" id="endNavigationBtn" data-i18n ="End Navigation">End Navigation</button>
             </div>
         </div>
 
@@ -569,7 +570,7 @@
             <div class="location-input start">
                 <div class="label">A</div>
                 <select id="start" name="start">
-                    <option value="" disabled selected>Choose starting point</option>
+                    <option value="" disabled selected data-i18n ="Choose starting point">Choose starting point</option>
                 </select>
                 <button class="clear-btn" id="clear-start">✕</button>
             </div>
@@ -577,7 +578,7 @@
             <div class="location-input end">
                 <div class="label">B</div>
                 <select id="end" name="end">
-                    <option value="" disabled selected>Choose destination</option>
+                    <option value="" disabled selected data-i18n ="Choose destination">Choose destination</option>
                 </select>
                 <button class="clear-btn" id="clear-end">✕</button>
             </div>
@@ -596,56 +597,56 @@
             <div class="expandcollapse" id="toggle-details">
                 <i class="fa fa-chevron-down" id="toggle-icon"></i> Show Details
             </div>
-            <button id="endroute">End Route</button>
+            <button id="endroute" data-i18n ="End Navigation">End Route</button>
         </div>
     </div>
 
 
     <div class="popup-menu" id="sideMenu">
-		<div class="menu-header" id="menuHeader">
+		<div class="menu-header" id="menuHeader" data-i18n ="Mega Accessibility Pack">
 			Mega Accessibility Pack
 			<button id="closeBtn" class="close-button" >✖</button>
 		</div>
 		<div class="tools">
 			<div class="tool-card" onclick="toggleCard(this, 'readSpeaker')">
 				<i class="fas fa-volume-up"></i>
-				<span data-key="readSpeaker">Read Speaker</span>
+				<span data-key="readSpeaker" data-i18n ="Read Speaker">Read Speaker</span>
 			</div>
 			<div class="tool-card" onclick="toggleCard(this, 'contrast')">
 				<i class="fas fa-adjust"></i>
-				<span data-key="contrast">Contrast</span>
+				<span data-key="contrast" data-i18n ="Contrast">Contrast</span>
 			</div>
 			<div class="tool-card" onclick="toggleCard(this, 'cursor')">
 				<i class="fas fa-mouse-pointer"></i>
-				<span data-key="cursor">Cursor</span>
+				<span data-key="cursor" data-i18n ="Cursor">Cursor</span>
 			</div>
 			<div class="tool-card" onclick="toggleCard(this, 'simpleFont')">
 				<i class="fas fa-font"></i>
-				<span data-key="simpleFont">Simple Font</span>
+				<span data-key="simpleFont" data-i18n ="Simple Font">Simple Font</span>
 			</div>
 			<div class="tool-card" onclick="toggleCard(this, 'desaturation')">
 				<i class="fas fa-low-vision"></i>
-				<span data-key="desaturation">Desaturation</span>
+				<span data-key="desaturation" data-i18n ="Desaturation">Desaturation</span>
 			</div>
 			<div class="tool-card" onclick="toggleCard(this, 'letterSpacing')">
 				<i class="fas fa-text-width"></i>
-				<span data-key="letterSpacing">Letter Spacing</span>
+				<span data-key="letterSpacing" data-i18n ="Letter Spacing">Letter Spacing</span>
 			</div>
 			<div class="tool-card" onclick="toggleCard(this, 'lineSpacing')">
 				<i class="fas fa-align-left"></i>
-				<span data-key="lineSpacing">Line Spacing</span>
+				<span data-key="lineSpacing" data-i18n ="Line Spacing">Line Spacing</span>
 			</div>
 			<div class="tool-card" onclick="toggleCard(this, 'biggerText')">
 				<i class="fas fa-search-plus"></i>
-				<span data-key="biggerText">Bigger Text</span>
+				<span data-key="biggerText" data-i18n ="Bigger Text">Bigger Text</span>
 			</div>
 			<div class="tool-card" onclick="toggleCard(this, 'pauseAnimation')">
 				<i class="fas fa-pause-circle"></i>
-				<span data-key="pauseAnimation">Pause Animation</span>
+				<span data-key="pauseAnimation" data-i18n ="Pause Animation">Pause Animation</span>
 			</div>
 		</div>
 		<div class="reset-button" onclick="resetSettings()">
-			<span data-key="reset">Reset Settings</span>
+			<span data-key="reset" data-i18n ="Reset Settings">Reset Settings</span>
 		</div>
 	</div>
     <script type="module" src="./src/main.js"></script>

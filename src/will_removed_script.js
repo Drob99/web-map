@@ -1861,14 +1861,14 @@
                 <div class="location-subtitle">${poiTerminalLocation}</div>
                 
                 <div class="location-amenities" style ="display : ${display}">
-                    <div class="amenities-title">Categories</div>
+                    <div class="amenities-title" data-i18n ="Categories">${cfg.state.uiTranslationsMenu[language]["Categories"]}</div>
                     <div class="amenities-list">
                         ${amenities.map(amenity => `<span class="amenity-tag">${amenity}</span>`).join('')}
                     </div>
                 </div>
                 
                 <div class="location-actions">
-                    <button class="action-button primary-button" onclick="airportMenu.showDirectionsView(airportMenu.currentLocation)">Start Directions</button>
+                    <button class="action-button primary-button" onclick="airportMenu.showDirectionsView(airportMenu.currentLocation)">${cfg.state.uiTranslationsMenu[language]["Start Directions"]}</button>
                 </div>
             `;
         }

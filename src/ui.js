@@ -259,6 +259,7 @@ function selectLanguage(selectedEl, langCode) {
 
     // 4. Update other map layers if needed
     updateMapLayers(langCode);
+    loadLanguage(langCode)
 
     // 5. Hide language panel after successful change
     setTimeout(() => {
@@ -266,6 +267,49 @@ function selectLanguage(selectedEl, langCode) {
     }, 300);
   }
 }
+
+/**
+ * Loads and applies translations for the selected language.
+ * Supports both text content and HTML attributes (e.g., placeholder, title).
+ *
+ * @param {string} lang - The language code (e.g., 'en', 'ar', 'zh').
+ */
+function loadLanguage(lang) {
+  // Normalize the language code to lowercase (e.g., 'EN' -> 'en')
+  const langCode = lang.toLowerCase();
+
+  // Fetch the translation JSON file corresponding to the selected language
+  fetch(`src/i18n/locales/${langCode}.json`)
+    .then(res => res.json()) // Parse the JSON response
+    .then(translations => {
+      // Loop through all elements with a 'data-i18n' attribute
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");         // Translation key
+        const attr = el.getAttribute("data-i18n-attr");   // Optional target attribute (e.g., placeholder, title)
+
+        if (translations[key]) {
+          if (attr) {
+            // If a specific attribute is defined, set the translated value as that attribute
+            el.setAttribute(attr, translations[key]);
+          } else {
+            // Otherwise, replace the element's text content with the translated string
+            el.textContent = translations[key];
+          }
+        }
+      });
+
+      // Update the page's text direction: RTL for Arabic, LTR for others
+      document.documentElement.dir = (langCode === "ar") ? "rtl" : "ltr";
+
+      // Update the lang attribute on the <html> element for accessibility and SEO
+      document.documentElement.lang = langCode;
+    })
+    .catch(err => {
+      // Handle any errors that occur while loading or parsing the translation file
+      console.error(`Error loading ${langCode}.json:`, err);
+    });
+}
+
 
 /**
  * Complete POI translation update workflow
