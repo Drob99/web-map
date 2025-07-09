@@ -450,52 +450,64 @@ document.addEventListener("DOMContentLoaded", function() {
 // Menu navigation is now handled by the menu-navigation module
 // This code has been moved to menu-navigation.js for better organization
 function searchNearBy(query) {
-  // const nearbyRestaurantList = document.getElementById("nearbyRestaurantList");
-
+  // Combine the demo data with POI data
+  const demoRestaurants = [];
 
   let allLocations = [];
-    state.allPoiGeojson.features.forEach((feature) => {
+  state.allPoiGeojson.features.forEach((feature) => {
     feature.properties = mapTranslator.translatePOIProperties(feature);
     const { title = '', location } = feature.properties;
 
     const matchesPoiName = getPOITitleByLang(feature.properties, state.language).toLowerCase().includes(query.toLowerCase());
 
     if (matchesPoiName) {
-
       allLocations.push(feature);
     }
   });
 
-  nearbyRestaurantList.innerHTML = '';
+  // Combine POI locations with demo restaurants
+  let combinedResults = demoRestaurants.map(demo => ({
+    name: demo.name,
+    image: demo.image,
+    location: demo.location,
+  }));
+
   allLocations.forEach(location => {
-    var icon = location?.properties?.iconUrl? location.properties.iconUrl: "./src/images/missingpoi.png";
-    var title = getPOITitleByLang(location.properties , cfg.state.language);
-    var language = state.language
-    var poiTerminalLocation = state.terminalTranslations[language][location?.properties.location];
-    var poiLevel = state.floorsNames[language][location.properties.level];
-    var workHours = "Open";
-    var hours = "24/7";
-    const nearbyCard = document.createElement("div");
-    nearbyCard.className = "nearby-restaurant-card";
+    const title = getPOITitleByLang(location.properties, cfg.state.language);
+    const poiTerminalLocation = state.terminalTranslations[state.language][location?.properties.location] || "undefined";
+    const poiLevel = state.floorsNames[state.language][location.properties.level] || "Unknown Floor";
 
-    const nearbyInfoDiv = document.createElement("div");
-    nearbyInfoDiv.className = "nearby-restaurant-info";
+    combinedResults.push({
+      name: title,
+      image: location?.properties?.iconUrl || "./src/images/missingpoi.png",
+      location: `${poiTerminalLocation} - ${poiLevel}`,
+    });
+  });
 
-    nearbyInfoDiv.innerHTML = `
-        <div class="nearby-restaurant-name">${title}</div>
-        <div class="nearby-restaurant-type">${poiTerminalLocation}</div>
-        <div class="nearby-restaurant-status" style="color: ${workHours.includes('Open') ? 'green' : (workHours.includes('Closed') ? 'red' : '#fbbc05')}">${workHours}</div>
-        <div class="nearby-restaurant-hours">${hours}</div>
-      `;
+  // Rendering logic
+  const listContainer = document.getElementById("nearbyRestaurantList");
+  listContainer.innerHTML = combinedResults.length === 0
+    ? `<div style="text-align:center;color:#aaa;padding:28px 0 10px 0;">No results found</div>`
+    : "";
 
-    const nearbyImg = document.createElement("img");
-    nearbyImg.src = icon;
-    nearbyImg.className = "nearby-restaurant-image";
+  combinedResults.forEach((result) => {
+    const locationItem = document.createElement("div");
+    locationItem.className = "location-item";
 
-    nearbyCard.appendChild(nearbyInfoDiv);
-    nearbyCard.appendChild(nearbyImg);
+    const locationIcon = document.createElement("div");
+    locationIcon.className = "location-icon";
+    locationIcon.innerHTML = `<img style="width: 40px; border-radius: 5px;" src="${result.image}" alt="${result.name}">`;
 
-    nearbyRestaurantList.appendChild(nearbyCard);
+    const locationDetails = document.createElement("div");
+    locationDetails.className = "location-details";
+    locationDetails.innerHTML = `
+      <div class="location-name">${result.name}</div>
+      <div class="location-address">${result.location}</div>
+    `;
+
+    locationItem.appendChild(locationIcon);
+    locationItem.appendChild(locationDetails);
+    listContainer.appendChild(locationItem);
   });
 }
 

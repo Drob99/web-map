@@ -123,22 +123,54 @@
 
     <!-- Nearby Menu Container -->
     <div class="menu-container" id="nearbyContainer">
+        <!-- Header Section -->
         <div class="header">
-            <button class="back-button" id="nearbyBack"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M19 12H5"></path>
-                        <path d="M12 19l-7-7 7-7"></path>
-                    </svg></i></button>
+            <button class="back-button" id="nearbyBack">
+            <svg width="22" height="22" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+                <path d="M19 12H5"></path>
+                <path d="M12 19l-7-7 7-7"></path>
+            </svg>
+            </button>
             Nearby Places
         </div>
+
         <!-- Search Section -->
         <div class="search-section">
-            <input type="text" class="search-input" placeholder="restaurants" id="nearbySearchInput">
+            <input
+            type="text"
+            class="search-input-nearby"
+            placeholder="Search nearby places"
+            id="nearbySearchInput"
+            >
+            <button id="clearNearbySearch" class="clear-btn" tabindex="-1">&times;</button>
         </div>
-        
-        <!-- Categories Section -->
-        <div style="max-height: 368px; overflow-y: auto;" class="categories-section" id="nearbyCategoriesSection">
-            <h3 class="section-title" data-i18n ="Results">Results</h3>
-            <div id="nearbyRestaurantList"></div>
+
+        <!-- Filter Buttons -->
+        <div id="nearbyFilters" class="filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="open">Open Now</button>
+            <button class="filter-btn" data-filter="cafe">Cafes</button>
+            <button class="filter-btn" data-filter="fastfood">Fast Food</button>
+            <button class="filter-btn" data-filter="restaurant">Restaurants</button>
+        </div>
+
+        <!-- Sort Dropdown -->
+        <div id="nearbySortWrapper" class="sort-wrapper">
+            <label for="nearbySortSelect">Sort by:</label>
+            <select id="nearbySortSelect" class="sort-select">
+            <option value="distance">Distance</option>
+            <option value="rating">Rating</option>
+            <option value="open">Open Now</option>
+            <option value="name">A-Z</option>
+            </select>
+        </div>
+
+        <!-- Results Section -->
+        <div class="categories-section results-section" id="nearbyCategoriesSection">
+            <h3 class="section-title">Results</h3>
+            <div class="locations-list hide-scrollbar" id="nearbyRestaurantList">
+            <!-- Results will be dynamically rendered here -->
+            </div>
         </div>
     </div>
 
