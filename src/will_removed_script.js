@@ -1,6 +1,4 @@
 
-// Airport Menu Component - Interactive Functionality
-
 (function () {
     'use strict';
 
@@ -33,6 +31,13 @@
      import('/src/markers.js').then(markers => {
         console.log('markers loaded:', markers);
         window.markers = markers;
+    }).catch(err => {
+        console.error('Failed to load markers:', err);
+    });
+
+     import('/src/mapInit.js').then( mapInit => {
+        console.log('mapInit loaded:', mapInit);
+        window.mapInit = mapInit;
     }).catch(err => {
         console.error('Failed to load markers:', err);
     });
@@ -1051,9 +1056,8 @@
                 ];
             }
 
-            const instructions = navigation.generateNavigationInstructions(mapc.smartRoute);
+            const instructions = navigation.generateNavigationInstructions(mapc.smartRoute , cfg.state.language);
             console.log(instructions);
-
             // Clear existing steps
             navigationStepsList.innerHTML = '';
 
@@ -1085,7 +1089,7 @@
                 </div>
             `;
                 } else {
-                const distance = step?.distance ? navigation.formatDistanceImperial(step.distance) : null;
+                const distance = step?.distance ? navigation.formatDistanceImperial(step.distance , cfg.state.language) : null;
 
                 stepElement.innerHTML = `
                 <div class="clean-step-icon">${step.icon}</div>
@@ -1097,6 +1101,16 @@
                 </div>
                 `;
                 }
+
+                stepElement.addEventListener('click', () => {
+                    console.log(step.coordinates.length)
+                    if(step.coordinates.length > 1){
+                        this.highlightRouteSegment(window.mapInit.map, window.mapInit.map.getSource('route')._data, step.coordinates[0],step.coordinates[1],cfg.state.levelRoutePoi,mapc.switchFloorByNo, '#FFB534') 
+                    }else{
+                        markers.flyToPointA(step.coordinates[0][0], step.coordinates[0][1]);  
+                        this.highlightRouteSegment(window.mapInit.map, window.mapInit.map.getSource('route')._data, step.coordinates[0],step.coordinates[0],cfg.state.levelRoutePoi,mapc.switchFloorByNo, '#FFB534') 
+                    }
+                });
 
                 navigationStepsList.appendChild(stepElement);
             });
@@ -1115,6 +1129,162 @@
             // Apply timeline styling
             //this.applyTimelineStyles();
         }
+
+
+
+ highlightRouteSegment(map, geojsonData, startCoord, endCoord, levelRoutePoi, switchFloorByOn, highlightColor = '#FF0000') {
+    const startStr = startCoord.map(c => Number(c).toFixed(6)).join(',');
+    const endStr = endCoord.map(c => Number(c).toFixed(6)).join(',');
+
+    const currentKey = `${startStr}_${endStr}`;
+
+    // Toggle: remove highlight if user clicks again on the same instruction
+    if (cfg.state.lastHighlighted === currentKey) {
+        if (map.getLayer('highlight-segment-layer')) map.removeLayer('highlight-segment-layer');
+        if (map.getSource('highlight-segment')) map.removeSource('highlight-segment');
+        if (map.getLayer('highlight-dot-layer')) map.removeLayer('highlight-dot-layer');
+        if (map.getSource('highlight-dot')) map.removeSource('highlight-dot');
+        cfg.state.lastHighlighted = null;
+        return;
+    }
+
+    // Remove any existing highlights
+    if (map.getLayer('highlight-segment-layer')) map.removeLayer('highlight-segment-layer');
+    if (map.getSource('highlight-segment')) map.removeSource('highlight-segment');
+    if (map.getLayer('highlight-dot-layer')) map.removeLayer('highlight-dot-layer');
+    if (map.getSource('highlight-dot')) map.removeSource('highlight-dot');
+
+    cfg.state.lastHighlighted = currentKey;
+
+        if (startStr !== endStr) {
+        // Convert to numbers
+        const lng1 = Number(startCoord[0]);
+        const lat1 = Number(startCoord[1]);
+        const lng2 = Number(endCoord[0]);
+        const lat2 = Number(endCoord[1]);
+
+        // Calculate bearing
+        const point1 = turf.point([lng1, lat1]);
+        const point2 = turf.point([lng2, lat2]);
+        const bearing = turf.bearing(point1, point2);
+
+        // Midpoint
+        const center = [(lng1 + lng2) / 2, (lat1 + lat2) / 2];
+
+        map.flyTo({
+            center: center,
+            bearing: bearing,
+            zoom: map.getZoom(), // or custom zoom level
+            speed: 1.2,
+            pitch: 60,
+            duration: 3000
+        });
+        }
+    // === CASE: Same start and end => draw dot ===
+    if (startStr === endStr) {
+        const dotFeature = {
+            type: 'Feature',
+            geometry: {
+                type: 'Point',
+                coordinates: startCoord.map(Number)
+            }
+        };
+
+        map.addSource('highlight-dot', {
+            type: 'geojson',
+            data: dotFeature
+        });
+
+        map.addLayer({
+            id: 'highlight-dot-layer',
+            type: 'circle',
+            source: 'highlight-dot',
+            paint: {
+                'circle-radius': 8,
+                'circle-color': highlightColor,
+                'circle-stroke-width': 2,
+                'circle-stroke-color': '#ffffff'
+            }
+        });
+        map.moveLayer("arrow-layer")
+        return;
+    }
+
+    // === CASE: Find segment between points ===
+    let foundStart = false;
+    let foundEnd = false;
+    let segmentCoords = [];
+    let segmentLevel = null;
+
+    for (const feature of geojsonData.features || []) {
+        const coords = feature.geometry?.coordinates || [];
+        if (!coords.length) continue;
+
+        const featureLevel = parseInt(feature.properties?.level);
+
+        for (let i = 0; i < coords.length; i++) {
+            const pointStr = coords[i].map(c => Number(c).toFixed(6)).join(',');
+
+            if (!foundStart && pointStr === startStr) {
+                foundStart = true;
+                segmentLevel = featureLevel;
+                segmentCoords.push(coords[i].map(Number));
+                continue;
+            }
+
+            if (foundStart && !foundEnd) {
+                segmentCoords.push(coords[i].map(Number));
+                if (pointStr === endStr) {
+                    foundEnd = true;
+                    break;
+                }
+            }
+        }
+
+        if (foundEnd) break;
+    }
+
+    if (!foundStart || !foundEnd) {
+        console.warn("Start or end coordinate not found in the route.");
+        cfg.state.lastHighlighted = null;
+        return;
+    }
+    console.log("1 - segmentLevel : ",segmentLevel);
+    // === Check level and switch if needed ===
+    if (segmentLevel !== null && segmentLevel !== levelRoutePoi) {
+        if(segmentLevel == 0)
+        {
+           segmentLevel = "G"; 
+        }
+        switchFloorByOn(segmentLevel);
+    }
+
+    // === Highlight Line Segment ===
+    const segmentGeoJSON = {
+        type: 'Feature',
+        geometry: {
+            type: 'LineString',
+            coordinates: segmentCoords
+        }
+    };
+
+    map.addSource('highlight-segment', {
+        type: 'geojson',
+        data: segmentGeoJSON
+    });
+
+    map.addLayer({
+        id: 'highlight-segment-layer',
+        type: 'line',
+        source: 'highlight-segment',
+        paint: {
+            'line-color': highlightColor,
+            'line-width': 6
+        }
+    });
+            map.moveLayer("arrow-layer")
+
+}
 
         // Remove or comment out the old populateNavigation function since it's no longer needed
         // The old function used stepsContainer, navigationProgress, currentInstruction, nextStepBtn
@@ -1507,6 +1677,9 @@
 
             // Store the selected departure location
             this.selectedDeparture = departureLocation;
+            console.log("-----------------------------");
+            console.log("1 - Departure : "+getPOITitleByLang(departureLocation.properties , cfg.state.language));
+            console.log("2 - Destination : "+getPOITitleByLang(this.currentLocation.properties , cfg.state.language));
             const departureInput = document.getElementById('departureInput');
              if (departureInput) {
                 departureInput.value = getPOITitleByLang(departureLocation.properties , cfg.state.language);

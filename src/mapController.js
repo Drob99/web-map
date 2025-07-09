@@ -383,7 +383,7 @@ export async function routeLevel() {
  * Removes all route-related layers and sources from the map.
  */
 export function removeRouteLayer() {
-  ["route", "route_outline", "route_another", "route_another_outline"].forEach(
+  ["route", "route_outline", "route_another", "route_another_outline", "highlight-segment-layer" , "highlight-segment","highlight-dot-layer","highlight-dot"].forEach(
     (id) => {
       if (map.getLayer(id)) map.removeLayer(id);
       if (map.getSource(id)) map.removeSource(id);
@@ -399,7 +399,7 @@ export function clearRoute() {
   removeRouteLayer();
   stopAnimation();
   exitNavigationMode();
-
+  cfg.state.lastHighlighted = null;
   state.routeArray = [];
   state.fullDistanceToDestination = 0;
   state.globalTime = 0;
