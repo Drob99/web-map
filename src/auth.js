@@ -13,6 +13,8 @@ import { loadPoisFloors, showPoisByLevel, switchToCurrentFloor } from "./mapCont
 import { flyToBuilding } from "./navigation.js";
 import { getCurrentTime } from "./utils.js";
 import { screensaver } from "./ui.js";
+import { updateFloorMenu } from "./markers.js";
+
 
 /** Checks if the stored access token is expired. */
 export function isAccessTokenExpired() {
@@ -134,6 +136,7 @@ await fetchAndCache(
     }));
 
     await layersLevel(restored);
+    
     switchToCurrentFloor();
   }
 );
@@ -164,6 +167,9 @@ async function loadPoisAndRoutes(startTime) {
   logDuration("Elevators linked", startTime);
   // Hide the splash screen.
   screensaver();
+
+  updateFloorMenu();
+  
 }
 
 /**
