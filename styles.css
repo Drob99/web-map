@@ -128,7 +128,7 @@
     }
     .search-input:not(:placeholder-shown) + .clear-btn { display: block; }
     #nearbyFilters {
-        display: flex;
+        display: none;
         gap: 8px;
         /* flex-wrap: wrap; */
         margin: 0% 5% 1% 0%;
@@ -150,10 +150,10 @@
       color: white;
     }
     #nearbySortWrapper {
+      display: none;
       padding: 4px 18px 10px 18px;
       background: #fff;
       font-size: 14px;
-      display: flex;
       align-items: center;
       gap: 8px;
     }
