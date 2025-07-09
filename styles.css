@@ -18,15 +18,15 @@
  }
 
  /* Nearby Menu - Updated for new container structure */
- #nearbyContainer .nearby-restaurant-card {
-     display: flex;
-     background-color: white;
-     border-radius: 12px;
-     padding: 12px;
-     margin-bottom: 12px;
-     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-     transition: transform 0.1s ease;
- }
+ /* #nearbyContainer .nearby-restaurant-card {
+      display: flex;
+      background-color: white;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      transition: transform 0.1s ease;
+    }
 
  #nearbyContainer .nearby-restaurant-card:hover {
      transform: scale(1.01);
@@ -64,13 +64,195 @@
      font-size: 13px;
  }
 
- #nearbyContainer .nearby-restaurant-image {
-     width: 80px;
-     height: 80px;
-     object-fit: cover;
-     border-radius: 8px;
-     margin-left: 10px;
- }
+    #nearbyContainer .nearby-restaurant-image {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-left: 10px;
+    } */
+
+
+    #nearbyContainer {
+      max-width: 380px;
+      /* margin: 28px auto; */
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+      overflow: hidden;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      padding: 16px 18px;
+      border-bottom: 1px solid #f0f0f0;
+      font-weight: 600;
+      font-size: 20px;
+      background: #fff;
+    }
+    .back-button {
+      background: none;
+      border: none;
+      margin-right: 16px;
+      cursor: pointer;
+      padding: 2px;
+      border-radius: 50%;
+      transition: background 0.1s;
+    }
+    .back-button:hover { background: #fbbc0540; }
+    .search-section {
+      position: relative;
+      padding: 14px 18px 6px 18px;
+      background: #fff;
+    }
+    .search-input-nearby {
+      width: 90%;
+      padding: 12px 36px 12px 16px;
+      border: none;
+      border-radius: 18px;
+      background: #f4f4f4;
+      font-size: 15px;
+      outline: none;
+      transition: box-shadow 0.15s;
+    }
+    .clear-btn {
+      position: absolute;
+      right: 30px;
+      top: 18px;
+      background: none;
+      border: none;
+      font-size: 20px;
+      color: #bbb;
+      cursor: pointer;
+      display: none;
+    }
+    .search-input:not(:placeholder-shown) + .clear-btn { display: block; }
+    #nearbyFilters {
+        display: flex;
+        gap: 8px;
+        /* flex-wrap: wrap; */
+        margin: 0% 5% 1% 0%;
+        padding: 8px 18px 10px 18px;
+        background: #fff;
+        overflow-x: auto;
+    }
+    .filter-btn {
+      background: #f2f2f2;
+      border: none;
+      border-radius: 16px;
+      padding: 6px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .filter-btn.active, .filter-btn:focus {
+      background: #fbbc05;
+      color: white;
+    }
+    #nearbySortWrapper {
+      padding: 4px 18px 10px 18px;
+      background: #fff;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    #nearbySortSelect {
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      padding: 4px 8px;
+      background: #fafafa;
+      font-size: 14px;
+    }
+    #nearbyCategoriesSection {
+      max-height: 368px;
+      overflow-y: auto;
+      padding: 0 18px 14px 18px;
+      background: #fff;
+    }
+    .section-title {
+      margin: 12px 0 10px 0;
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    /* Card styling from your CSS */
+    #nearbyContainer .nearby-restaurant-card {
+      display: flex;
+      background-color: white;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      transition: transform 0.1s ease;
+      position: relative;
+    }
+    #nearbyContainer .nearby-restaurant-card:hover {
+      transform: scale(1.01);
+    }
+    #nearbyContainer .nearby-restaurant-info { flex: 1; min-width: 0;}
+    #nearbyContainer .nearby-restaurant-name {
+      font-weight: bold;
+      font-size: 16px;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 170px;
+    }
+    #nearbyContainer .nearby-rating {
+        display: none;
+      color: #fbbc05;
+      font-size: 14px;
+      margin-bottom: 4px;
+      user-select: none;
+    }
+    #nearbyContainer .nearby-restaurant-type,
+    #nearbyContainer .nearby-restaurant-location,
+    #nearbyContainer .nearby-restaurant-hours,
+    #nearbyContainer .nearby-restaurant-tags {
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 3px;
+    }
+    #nearbyContainer .nearby-restaurant-status {
+      color: green;
+      font-weight: bold;
+      font-size: 13px;
+    }
+    #nearbyContainer .nearby-restaurant-image {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-left: 10px;
+        /* background: #eee; */
+        flex-shrink: 0;
+        /* box-shadow: 0 1px 5px rgba(0, 0, 0, 0.07);*/
+    }
+    .favorite-btn {
+        display: none;
+      background: none;
+      border: none;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 20px;
+      cursor: pointer;
+      color: #bbb;
+      transition: color 0.2s;
+      z-index: 1;
+      padding: 0;
+    }
+    .favorite-btn.active { color: #fbbc05; }
+    @media (max-width: 480px) {
+      #nearbyContainer { max-width: 100vw; border-radius: 0; box-shadow: none;}
+      #nearbyCategoriesSection {padding: 0 8px 10px 8px;}
+      #nearbyFilters, #nearbySortWrapper, .search-section {padding-left: 8px; padding-right: 8px;}
+      .header {padding-left: 8px;padding-right:8px;}
+    }
+
+
 
  /* Language Button and Menu */
 
@@ -302,6 +484,7 @@
      padding: 4px;
      /* border-bottom: 1px solid #eee; */
      position: relative;
+     text-align: center;
  }
 
  .search-input {
