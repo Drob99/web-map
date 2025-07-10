@@ -450,66 +450,58 @@ document.addEventListener("DOMContentLoaded", function() {
 // Menu navigation is now handled by the menu-navigation module
 // This code has been moved to menu-navigation.js for better organization
 function searchNearBy(query) {
-  // Combine the demo data with POI data
-  const demoRestaurants = [];
+  const listContainer = document.getElementById("nearbyRestaurantList");
+  listContainer.innerHTML = ""; // Clear previous results
 
-  let allLocations = [];
+  const filteredLocations = [];
+
   state.allPoiGeojson.features.forEach((feature) => {
     feature.properties = mapTranslator.translatePOIProperties(feature);
-    const { title = '', location } = feature.properties;
 
-    const matchesPoiName = getPOITitleByLang(feature.properties, state.language).toLowerCase().includes(query.toLowerCase());
-
-    if (matchesPoiName) {
-      allLocations.push(feature);
+    const title = getPOITitleByLang(feature.properties, state.language);
+    if (title.toLowerCase().includes(query.toLowerCase())) {
+      filteredLocations.push(feature);
     }
   });
 
-  // Combine POI locations with demo restaurants
-  let combinedResults = demoRestaurants.map(demo => ({
-    name: demo.name,
-    image: demo.image,
-    location: demo.location,
-  }));
+  if (filteredLocations.length === 0) {
+    listContainer.innerHTML = `<div style="text-align:center;color:#aaa;padding:28px 0 10px 0;">No results found</div>`;
+    return;
+  }
 
-  allLocations.forEach(location => {
-    const title = getPOITitleByLang(location.properties, cfg.state.language);
-    const poiTerminalLocation = state.terminalTranslations[state.language][location?.properties.location] || "undefined";
-    const poiLevel = state.floorsNames[state.language][location.properties.level] || "Unknown Floor";
+  const self = this; // Capture 'this' context
 
-    combinedResults.push({
-      name: title,
-      image: location?.properties?.iconUrl || "./src/images/missingpoi.png",
-      location: `${poiTerminalLocation} - ${poiLevel}`,
-    });
-  });
+  filteredLocations.forEach((feature) => {
+    const title = getPOITitleByLang(feature.properties, state.language);
+    const poiTerminalLocation = state.terminalTranslations[state.language][feature.properties.location] || "Undefined";
+    const poiLevel = state.floorsNames[state.language][feature.properties.level] || "Unknown Floor";
 
-  // Rendering logic
-  const listContainer = document.getElementById("nearbyRestaurantList");
-  listContainer.innerHTML = combinedResults.length === 0
-    ? `<div style="text-align:center;color:#aaa;padding:28px 0 10px 0;">No results found</div>`
-    : "";
-
-  combinedResults.forEach((result) => {
     const locationItem = document.createElement("div");
     locationItem.className = "location-item";
+    locationItem.style.cursor = "pointer";
 
     const locationIcon = document.createElement("div");
     locationIcon.className = "location-icon";
-    locationIcon.innerHTML = `<img style="width: 40px; border-radius: 5px;" src="${result.image}" alt="${result.name}">`;
+    locationIcon.innerHTML = `<img style="width: 40px; border-radius: 5px;" src="${feature.properties.iconUrl || './src/images/missingpoi.png'}" alt="${title}">`;
 
     const locationDetails = document.createElement("div");
     locationDetails.className = "location-details";
     locationDetails.innerHTML = `
-      <div class="location-name">${result.name}</div>
-      <div class="location-address">${result.location}</div>
+      <div class="location-name">${title}</div>
+      <div class="location-address">${poiTerminalLocation} - ${poiLevel}</div>
     `;
 
     locationItem.appendChild(locationIcon);
     locationItem.appendChild(locationDetails);
     listContainer.appendChild(locationItem);
+
+    // 🔘 Add Click Action: Call your method
+    locationItem.addEventListener("click", () => {
+      airportMenu.showLocationDetailsView(feature); // Your method call
+    });
   });
 }
+
 
 function initAccessabilty() {
    document.getElementById("closeBtn").addEventListener("click", closeMenu);

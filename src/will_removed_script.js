@@ -287,6 +287,8 @@
                     e.preventDefault();
                     const departureContainer = document.getElementsByClassName("departure-input-container")[0];
                     const destinationContainer = document.getElementsByClassName("destination-container")[0];
+                    const directionsSearchBox = document.getElementsByClassName("direction-search-box")[0];
+                    directionsSearchBox.style.display = "flex";
                     departureContainer.style.display = "block";
                     destinationContainer.style.display = "block";
                     console.log("ENDED NAVIGATION" ,this.currentLocation );
@@ -811,7 +813,7 @@
             }
 
             // Setup swap locations functionality
-            const swapBtn = document.getElementById('swapLocationsBtn');
+            const swapBtn = document.getElementById('swapIcon');
             if (swapBtn) {
                 swapBtn.addEventListener('click', () => {
                     this.swapDepartureDestination();
@@ -902,6 +904,8 @@
             const destinationContainer = document.getElementsByClassName("destination-container")[0];
             const addDestination = document.querySelector('.add-destination');
             const routeSummary = document.getElementById('routeSummary');
+            const directionsSearchBox = document.getElementsByClassName("direction-search-box")[0];
+            directionsSearchBox.style.display = "none";
 
             if (departureContainer) departureContainer.style.display = 'none';
             if (destinationContainer) destinationContainer.style.display = 'none';
@@ -944,10 +948,12 @@
                 const destinationContainer = document.getElementsByClassName("destination-container")[0];
                 const addDestination = document.querySelector('.add-destination');
                 const routeSummary = document.getElementById('routeSummary');
+                const directionsSearchBox = document.getElementsByClassName("direction-search-box")[0];
 
                 if (departureContainer) {
                     departureContainer.style.display = 'block';
                     departureContainer.style.visibility = 'visible';
+                    directionsSearchBox.style.display = "flex";
                 }
                 if (destinationContainer) {
                     destinationContainer.style.display = 'flex';
@@ -1138,10 +1144,12 @@
                 const destinationContainer = document.getElementsByClassName("destination-container")[0];
                 const addDestination = document.querySelector('.add-destination');
                 const routeSummary = document.getElementById('routeSummary');
+                const directionsSearchBox = document.getElementsByClassName("direction-search-box")[0];
 
                 if (departureContainer) {
                     departureContainer.style.display = 'block';
                     departureContainer.style.visibility = 'visible';
+                    directionsSearchBox.style.display = "flex";
                 }
                 if (destinationContainer) {
                     destinationContainer.style.display = 'flex';

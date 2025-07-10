@@ -19,6 +19,7 @@ export class NavigationPlaybackControls {
   }
   
   createHTML() {
+    console.log("createHTML() ");
     this.container = document.createElement('div');
     this.container.id = 'playback-controls';
     this.container.className = 'playback-controls hidden';
