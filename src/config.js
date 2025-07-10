@@ -57,6 +57,7 @@ export const FLOOR_TITLES = {
  * Default application state.
  */
 export const state = {
+  airportMenu : null,
   bearerToken: null,
   buildingsObject: null,
   categoryObject: null,
@@ -112,6 +113,7 @@ export const state = {
   fromPolygonId : null,
   selectedTerminal : null,
   toPolygonId : null,
+  lastHighlighted : null,
   font : false? ['Arial Unicode MS Regular']: ['Arial Unicode MS Regular'],
   allPoiGeojson: {
     type: 'FeatureCollection',
@@ -376,7 +378,6 @@ export const state = {
     "restroom gid",
     "resuscitation",
     "retail",
-    "retail spot",
     "rmu",
     "room",
     "rum room",

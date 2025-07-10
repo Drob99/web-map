@@ -17,7 +17,7 @@ import { corridorsLayer } from './corridors.js';
 import { beLayer } from './be.js';
 import { gardenLayer } from './garden.js';
 import { showPoisByLevel, routeEnabled , routeLevel, elevatorGuide , addFromToMarkers} from '../mapController.js';
-import { setupArrowAnimation ,initializeArrowsSourceAndLayer , stopAnimation  } from '../animation/arrowAnimation.js';
+import { setupArrowAnimation ,initializeArrowsSourceAndLayer , stopAnimation , initializeAnimation ,  startAnimation  } from '../animation/arrowAnimation.js';
 import { removeRouteLayer } from '../mapController.js';
 
 /**

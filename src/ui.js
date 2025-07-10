@@ -491,6 +491,8 @@ function searchNearBy(query) {
       <div class="location-address">${poiTerminalLocation} - ${poiLevel}</div>
     `;
 
+    result
+
     locationItem.appendChild(locationIcon);
     locationItem.appendChild(locationDetails);
     listContainer.appendChild(locationItem);

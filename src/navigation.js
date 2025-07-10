@@ -23,60 +23,115 @@ export function flyToBuilding() {
  * @param {Object} geojsonRoute - GeoJSON route with features containing level info and coordinates.
  * @returns {Array<Object>} Array of instruction objects.
  */
-export function generateNavigationInstructions(geojsonRoute) {
+/**
+ * Generates step-by-step navigation instructions from a GeoJSON route.
+ * Supports multilingual output (English, Arabic, Chinese).
+ *
+ * @param {Object} geojsonRoute - GeoJSON route with features array.
+ * @param {string} lang - Language code: "EN", "AR", or "ZN". Defaults to "EN".
+ * @returns {Array} List of instruction objects with text, icon, level, and coordinates.
+ */
+
+  export function generateNavigationInstructions(geojsonRoute, lang = "EN") {
   if (!geojsonRoute?.features || !Array.isArray(geojsonRoute.features)) {
     console.error("Invalid GeoJSON route object");
     return [];
   }
 
-  const instructions = [];
-  let currentLevel = null;
-  let previousCoordinate = null;
+  // Translation dictionary
+  const translations = {
+    "Take stairs or elevator up to floor": {
+      EN: "Take stairs or elevator up to floor",
+      AR: "اصعد بالسلالم أو المصعد إلى الطابق",
+      ZN: "乘楼梯或电梯上到楼层",
+    },
+    "Take stairs or elevator down to floor": {
+      EN: "Take stairs or elevator down to floor",
+      AR: "انزل بالسلالم أو المصعد إلى الطابق",
+      ZN: "乘楼梯或电梯下到楼层",
+    },
+    Head: {
+      EN: "Head",
+      AR: "اتجه نحو",
+      ZN: "朝着",
+    },
+    Turn: {
+      EN: "Turn",
+      AR: "انعطف",
+      ZN: "转向",
+    },
+    onto: {
+      EN: "onto",
+      AR: "إلى",
+      ZN: "",
+    },
+    Continue: {
+      EN: "Continue",
+      AR: "تابع",
+      ZN: "继续",
+    },
+    "You have reached your destination": {
+      EN: "You have reached your destination",
+      AR: "لقد وصلت إلى وجهتك",
+      ZN: "您已到达目的地",
+    },
+    meters: {
+      EN: "m",
+      AR: "م",
+      ZN: "米",
+    },
+    kilometers: {
+      EN: "km",
+      AR: "كم",
+      ZN: "公里",
+    },
+    directions: {
+      N: { EN: "north", AR: "الشمال", ZN: "北" },
+      NE: { EN: "northeast", AR: "الشمال الشرقي", ZN: "东北" },
+      E: { EN: "east", AR: "الشرق", ZN: "东" },
+      SE: { EN: "southeast", AR: "الجنوب الشرقي", ZN: "东南" },
+      S: { EN: "south", AR: "الجنوب", ZN: "南" },
+      SW: { EN: "southwest", AR: "الجنوب الغربي", ZN: "西南" },
+      W: { EN: "west", AR: "الغرب", ZN: "西" },
+      NW: { EN: "northwest", AR: "الشمال الغربي", ZN: "西北" },
+    },
+    turn_directions: {
+      "slight right": { EN: "slight right", AR: "يمين قليلًا", ZN: "稍向右" },
+      "slight left": { EN: "slight left", AR: "يسار قليلًا", ZN: "稍向左" },
+      "right": { EN: "right", AR: "يمين", ZN: "右转" },
+      "left": { EN: "left", AR: "يسار", ZN: "左转" },
+      "sharp right": { EN: "sharp right", AR: "يمين حاد", ZN: "急右转" },
+      "sharp left": { EN: "sharp left", AR: "يسار حاد", ZN: "急左转" },
+      "u turn": { EN: "U-turn", AR: "انعطاف كامل", ZN: "掉头" },
+    },
+  };
 
-  // Direction & turn icons
- const directionIcons = {
-  N: "↑",       // U+2191 (Bootstrap: bi-arrow-up)
-  NE: "↗",      // U+2197 (Bootstrap: bi-arrow-up-right)
-  E: "→",       // U+2192 (Bootstrap: bi-arrow-right)
-  SE: "↘",      // U+2198 (Bootstrap: bi-arrow-down-right)
-  S: "↓",       // U+2193 (Bootstrap: bi-arrow-down)
-  SW: "↙",      // U+2199 (Bootstrap: bi-arrow-down-left)
-  W: "←",       // U+2190 (Bootstrap: bi-arrow-left)
-  NW: "↖",      // U+2196 (Bootstrap: bi-arrow-up-left)
-};
+  const translate = (key) => translations[key]?.[lang] || key;
+  const getDirText = (dirCode) => translations.directions[dirCode]?.[lang] || dirCode;
+  const translateTurn = (key) =>
+    translations.turn_directions[key.replace("-", " ")]?.[lang] || key;
 
-const turnIcons = {
-  left: "↰",            // U+21A2 (Bootstrap: bi-arrow-left-circle)
-  right: "↱",           // U+21A3 (Bootstrap: bi-arrow-right-circle)
-  "slight-left": "⬹",   // U+2B39 (Subtle left curve)
-  "slight-right": "⬺",  // U+2B3A (Subtle right curve)
-  "sharp-left": "↤",    // U+21A4 (Bootstrap: bi-arrow-90deg-left)
-  "sharp-right": "↦",   // U+21A6 (Bootstrap: bi-arrow-90deg-right)
-  "u-turn": "↶",        // U+21B6 (Bootstrap: bi-arrow-return-left)
-};
+  const directionIcons = {
+    N: "↑", NE: "↗", E: "→", SE: "↘",
+    S: "↓", SW: "↙", W: "←", NW: "↖",
+  };
 
-const floorIcons = {
-  up: "⏶",      // U+23F6 (Bootstrap: bi-caret-up-fill)
-  down: "⏷",    // U+23F7 (Bootstrap: bi-caret-down-fill)
-};
+  const turnIcons = {
+    left: "↰", right: "↱",
+    "slight-left": "⬹", "slight-right": "⬺",
+    "sharp-left": "↤", "sharp-right": "↦",
+    "u-turn": "↶",
+  };
 
-const startEndIcons = {
-  start: "●",       // U+25CF (Bootstrap: bi-record-circle)
-  destination: "⧁", // U+29C1 (Bootstrap: bi-flag-fill)
-};
+  const floorIcons = { up: "⏶", down: "⏷" };
+  const startEndIcons = { start: "●", destination: "⧁" };
 
-  // Helpers
   const calculateBearing = (start, end) => {
-    const y =
-      Math.sin(((end[0] - start[0]) * Math.PI) / 180) *
-      Math.cos((end[1] * Math.PI) / 180);
-    const x =
-      Math.cos((start[1] * Math.PI) / 180) *
-        Math.sin((end[1] * Math.PI) / 180) -
-      Math.sin((start[1] * Math.PI) / 180) *
-        Math.cos((end[1] * Math.PI) / 180) *
-        Math.cos(((end[0] - start[0]) * Math.PI) / 180);
-    let brg = (Math.atan2(y, x) * 180) / Math.PI;
+    const y = Math.sin(((end[0] - start[0]) * Math.PI) / 180) * Math.cos((end[1] * Math.PI) / 180);
+    const x = Math.cos((start[1] * Math.PI) / 180) * Math.sin((end[1] * Math.PI) / 180) -
+              Math.sin((start[1] * Math.PI) / 180) * Math.cos((end[1] * Math.PI) / 180) *
+              Math.cos(((end[0] - start[0]) * Math.PI) / 180);
+    const brg = (Math.atan2(y, x) * 180) / Math.PI;
     return brg < 0 ? brg + 360 : brg;
   };
 
@@ -91,25 +146,28 @@ const startEndIcons = {
     if (angle < -180) angle += 360;
     const absA = Math.abs(angle);
     if (absA < 10) return { direction: "straight", angle: absA };
-    if (absA < 45)
-      return {
-        direction: angle > 0 ? "slight-right" : "slight-left",
-        angle: absA,
-      };
-    if (absA < 135)
-      return { direction: angle > 0 ? "right" : "left", angle: absA };
-    if (absA < 180)
-      return {
-        direction: angle > 0 ? "sharp-right" : "sharp-left",
-        angle: absA,
-      };
+    if (absA < 45) return { direction: angle > 0 ? "slight-right" : "slight-left", angle: absA };
+    if (absA < 135) return { direction: angle > 0 ? "right" : "left", angle: absA };
+    if (absA < 180) return { direction: angle > 0 ? "sharp-right" : "sharp-left", angle: absA };
     return { direction: "u-turn", angle: absA };
   };
 
   const calculateDistance = (start, end) =>
     turf.distance(turf.point(start), turf.point(end), { units: "meters" });
 
-  // Flatten features with coordinates
+  const formatDistance = (d) => {
+    if (d >= 1000) {
+      return `${(d / 1000).toFixed(1)} ${translate("kilometers")}`;
+    } else {
+      return `${Math.round(d)} ${translate("meters")}`;
+    }
+  };
+
+  const instructions = [];
+  let currentLevel = null;
+  let previousCoordinate = null;
+  let previousBearing = null;
+
   const validFeatures = geojsonRoute.features.filter(
     (f) => f.geometry?.coordinates?.length > 0
   );
@@ -120,22 +178,22 @@ const startEndIcons = {
 
     // Floor change
     if (currentLevel !== null && currentLevel !== lvl) {
-      const upOrDown = lvl > currentLevel ? "up" : "down";
+      const dir = lvl > currentLevel ? "up" : "down";
       instructions.push({
-        text: `Take stairs or elevator ${upOrDown} to floor ${lvl}`,
-        icon: floorIcons[upOrDown],
+        text: `${translate(`Take stairs or elevator ${dir} to floor`)} ${lvl}`,
+        icon: floorIcons[dir],
         level: lvl,
         coordinates: [previousCoordinate, coords[0]],
       });
     }
     currentLevel = lvl;
 
-    // First instruction: head direction
+    // Start instruction
     if (instructions.length === 0 && coords.length > 1) {
       const b = calculateBearing(coords[0], coords[1]);
       const dir = getCardinalDirection(b);
       instructions.push({
-        text: `Head ${dir.toLowerCase()} on`,
+        text: `${translate("Head")} ${getDirText(dir)} ${translate("onto")}`,
         icon: startEndIcons.start,
         level: lvl,
         coordinates: [coords[0]],
@@ -143,7 +201,7 @@ const startEndIcons = {
       previousBearing = b;
     }
 
-    // Walk segments
+    // Turn detection
     let segStartIdx = 0;
     let segDist = 0;
     let lastDir = null;
@@ -156,39 +214,40 @@ const startEndIcons = {
       const d = calculateDistance(prev, coord);
       segDist += d;
 
-      // Turn detection at segment start
+      // Initial turn
       if (i === 1 && previousBearing !== null) {
         const turn = determineTurn(previousBearing, b);
         if (turn.direction !== "straight" && turn.angle > 30) {
           instructions.push({
-            text: `Turn ${turn.direction.replace("-", " ")} onto`,
+            text: `${translate("Turn")} ${translateTurn(turn.direction)} ${translate("onto")}`,
             icon: turnIcons[turn.direction],
             level: lvl,
             coordinates: [prev],
           });
-          segStartIdx = 0;
         }
+        segStartIdx = 0;
       }
 
-      // Direction change mid-feature
+      // Mid-segment direction change
       if (lastDir && dir !== lastDir) {
-        const ptPrev = coords[segStartIdx];
         const turn = determineTurn(previousBearing, b);
+        const segStart = coords[segStartIdx];
+        const segEnd = coords[i - 1];
+
         if (turn.direction !== "straight" && turn.angle > 30) {
-          const distSegment = calculateDistance(ptPrev, prev);
           instructions.push({
-            text: `Continue ${formatDistance(distSegment)}`,
+            text: `${translate("Continue")} ${formatDistance(calculateDistance(segStart, segEnd))}`,
             icon: "↑",
             level: lvl,
-            coordinates: [ptPrev, prev],
-            distance: distSegment,
+            coordinates: [segStart, segEnd],
           });
           instructions.push({
-            text: `Turn ${turn.direction.replace("-", " ")} onto`,
+            text: `${translate("Turn")} ${translateTurn(turn.direction)} ${translate("onto")}`,
             icon: turnIcons[turn.direction],
             level: lvl,
             coordinates: [prev],
           });
+
           segStartIdx = i - 1;
           segDist = d;
         }
@@ -198,10 +257,10 @@ const startEndIcons = {
       previousBearing = b;
       previousCoordinate = coord;
 
-      // End of feature segment
+      // End of segment
       if (i === coords.length - 1 && segDist > 0) {
         instructions.push({
-          text: `Continue ${formatDistance(segDist)}`,
+          text: `${translate("Continue")} ${formatDistance(segDist)}`,
           icon: "↑",
           level: lvl,
           coordinates: [coords[segStartIdx], coord],
@@ -211,21 +270,22 @@ const startEndIcons = {
     });
   });
 
-  // Arrival instruction
+  // Final instruction
   if (validFeatures.length) {
-    const lastFeat = validFeatures[validFeatures.length - 1];
-    const lastCoords = lastFeat.geometry.coordinates;
-    const lastPt = lastCoords[lastCoords.length - 1];
+    const last = validFeatures.at(-1);
+    const lastCoords = last.geometry.coordinates;
+    const lastPoint = lastCoords.at(-1);
     instructions.push({
-      text: "You have reached your destination",
+      text: translate("You have reached your destination"),
       icon: startEndIcons.destination,
-      level: lastFeat.properties.level,
-      coordinates: [lastPt],
+      level: last.properties.level,
+      coordinates: [lastPoint],
     });
   }
 
   return instructions;
 }
+
 
 /**
  * Renders navigation instructions to the directions panel.
@@ -237,7 +297,7 @@ export function renderDirectionsPanel(
   containerId = "directions-panel"
 ) {
   try {
-    const instructions = generateNavigationInstructions(geojsonRoute);
+    const instructions = generateNavigationInstructions(geojsonRoute , state.language);
     const totalDistance = instructions.reduce(
       (sum, ins) => sum + (ins.distance || 0),
       0
@@ -292,26 +352,38 @@ export function renderDirectionsPanel(
 }
 
 
-export function formatDistanceImperial(meters) {
-    if (!meters) return { value: '', unit: '' };
+export function formatDistanceImperial(meters, lang = "EN") {
+  if (!meters) return { value: '', unit: '' };
 
-    // Convert to feet (1m ≈ 3.28084ft)
-    const feet = meters;
+  // Translation dictionary for units
+  const unitTranslations = {
+    meters: {
+      EN: "meters",
+      AR: "متر",
+      ZN: "米",
+    },
+    km: {
+      EN: "km",
+      AR: "كم",
+      ZN: "公里",
+    },
+  };
 
-    if (feet < 1000) {
-        // Less than 1000 feet, show in feet
-        return {
-            value: Math.round(feet),
-            unit: 'meters'
-        };
-    } else {
-        // More than 1000 feet, show in miles
-        const miles = feet / 1000;
-        return {
-            value: miles.toFixed(2),
-            unit: 'km'
-        };
-    }
+  // Convert to feet (though still using metric in logic here)
+  const feet = meters;
+
+  if (feet < 1000) {
+    return {
+      value: Math.round(feet),
+      unit: unitTranslations.meters[lang] || 'm',
+    };
+  } else {
+    const km = feet / 1000;
+    return {
+      value: km.toFixed(2),
+      unit: unitTranslations.km[lang] || 'km',
+    };
+  }
 }
 
 /**

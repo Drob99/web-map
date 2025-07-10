@@ -1,6 +1,4 @@
 
-// Airport Menu Component - Interactive Functionality
-
 (function () {
     'use strict';
 
@@ -33,6 +31,13 @@
      import('/src/markers.js').then(markers => {
         console.log('markers loaded:', markers);
         window.markers = markers;
+    }).catch(err => {
+        console.error('Failed to load markers:', err);
+    });
+
+     import('/src/mapInit.js').then( mapInit => {
+        console.log('mapInit loaded:', mapInit);
+        window.mapInit = mapInit;
     }).catch(err => {
         console.error('Failed to load markers:', err);
     });
@@ -271,7 +276,6 @@
                 this.locationDetailsBackBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     if (this.currentSubcategory != null) {
-                        console.error("this.currentSubcategory : ", this.currentSubcategory);
                         this.showLocationsView(this.currentSubcategory);
                         document.getElementById("menuArrow").style.display = "none";
                     }else{
@@ -291,7 +295,6 @@
                     directionsSearchBox.style.display = "flex";
                     departureContainer.style.display = "block";
                     destinationContainer.style.display = "block";
-                    console.log("ENDED NAVIGATION" ,this.currentLocation );
                     this.showLocationDetailsView(this.currentLocation);
                     mapc.clearRoute();
                     document.getElementById("stepsButton").innerHTML = `Show Steps`;
@@ -339,13 +342,13 @@
 
         setCurrentLocation(location)
         {
-            airportMenu.currentLocation = location;
+            cfg.state.airportMenu.currentLocation = location;
         }
 
         clearLocations()
         {
-            airportMenu.departureLocation = null;
-            airportMenu.currentLocation = null;
+            cfg.state.airportMenu.departureLocation = null;
+            cfg.state.airportMenu.currentLocation = null;
         }
 
         setupMenuItemClicks() {
@@ -365,7 +368,6 @@
         setupSearchInteractions() {
             if (this.searchInput) {
                 this.searchInput.addEventListener('focus', () => {
-                    console.log('Search input changed:', e.target.value);
                      const query = e.target.value.trim();
                     if (query.length > 0) {
                        this.currentSubcategory = null;
@@ -380,7 +382,6 @@
                 });
 
                 this.searchInput.addEventListener('input', (e) => {
-                    console.log('Search input changed:', e.target.value);
                      const query = e.target.value.trim();
                     if (query.length > 0) {
                        this.currentSubcategory = null;
@@ -547,11 +548,8 @@
         }
 
         showLocationDetailsView(location) {
-            console.log('Showing location details view for', location);
             this.currentView = 'location-details';
             this.currentLocation = location;
-            console.log("showLocationDetailsView :",this.currentLocation)
-
             // Auto-expand menu
             this.expandMenu();
 
@@ -674,7 +672,6 @@
 
         // Updated showCompleteDirectionsInterface function
         showCompleteDirectionsInterface(departureLocation) {
-            console.log('Showing complete directions interface for:', departureLocation , this.currentLocation);
 
             // Ensure we're in the directions view
             this.currentView = 'directions';
@@ -807,7 +804,7 @@
                     if (destinationInput) {
                         destinationInput.value = "";
                     }
-                    this.showLocationDetailsView(this.currentLocation);
+                    //this.showLocationDetailsView(this.currentLocation);
                 };
                 backBtn.addEventListener('click', this.handleBackClick);
             }
@@ -992,74 +989,7 @@
                 return;
             }
 
-            // Get navigation steps from airport data or use default steps
-            let steps = [];
-
-            // if (window.AIRPORT_DATA && this.selectedDeparture && this.currentLocation) {
-            //     const path = window.AIRPORT_DATA.getPathBetween(
-            //         this.selectedDeparture.id,
-            //         this.currentLocation.id
-            //     );
-            //     if (path && path.steps) {
-            //         steps = path.steps;
-            //     }
-            // }
-
-            // Enhanced default steps with proper directions and landmarks
-            if (steps.length === 0) {
-                console.log("departure : "+this.selectedDeparture.properties.title)
-                const departureName = this.selectedDeparture ? this.selectedDeparture.properties.title : 'your departure location';
-                const destinationName = this.currentLocation ? this.currentLocation.properties.title : 'your destination';
-
-                steps = [
-                    {
-                        text: `Leave ${departureName} and take escalator down to Level 4`,
-                        time: 'Less than a minute',
-                        icon: '🔘',
-                        type: 'start'
-                    },
-                    {
-                        text: 'Turn right at DFS Duty Free',
-                        time: 'Less than a minute',
-                        icon: '↑',
-                        type: 'turn'
-                    },
-                    {
-                        text: 'Turn left at Cartier',
-                        time: 'Less than a minute',
-                        icon: '↰',
-                        type: 'turn'
-                    },
-                    {
-                        text: 'Turn right at Bvlgari',
-                        time: 'Less than a minute',
-                        icon: '→',
-                        type: 'turn'
-                    },
-                    {
-                        text: 'Turn left at Book Soup',
-                        time: 'Less than a minute',
-                        icon: '↰',
-                        type: 'turn'
-                    },
-                    {
-                        text: 'Turn right',
-                        time: 'Less than a minute',
-                        icon: '→',
-                        type: 'turn'
-                    },
-                    {
-                        text: `Arrive at ${destinationName}`,
-                        time: '',
-                        icon: '🏁',
-                        type: 'destination'
-                    }
-                ];
-            }
-
-            const instructions = navigation.generateNavigationInstructions(mapc.smartRoute);
-            console.log(instructions);
-
+            const instructions = navigation.generateNavigationInstructions(mapc.smartRoute , cfg.state.language);
             // Clear existing steps
             navigationStepsList.innerHTML = '';
 
@@ -1091,7 +1021,7 @@
                 </div>
             `;
                 } else {
-                const distance = step?.distance ? navigation.formatDistanceImperial(step.distance) : null;
+                const distance = step?.distance ? navigation.formatDistanceImperial(step.distance , cfg.state.language) : null;
 
                 stepElement.innerHTML = `
                 <div class="clean-step-icon">${step.icon}</div>
@@ -1103,6 +1033,15 @@
                 </div>
                 `;
                 }
+
+                stepElement.addEventListener('click', () => {
+                    if(step.coordinates.length > 1){
+                        this.highlightRouteSegment(window.mapInit.map, window.mapInit.map.getSource('route')._data, step.coordinates[0],step.coordinates[1],cfg.state.levelRoutePoi,mapc.switchFloorByNo, '#FFB534') 
+                    }else{
+                        markers.flyToPointA(step.coordinates[0][0], step.coordinates[0][1]);  
+                        this.highlightRouteSegment(window.mapInit.map, window.mapInit.map.getSource('route')._data, step.coordinates[0],step.coordinates[0],cfg.state.levelRoutePoi,mapc.switchFloorByNo, '#FFB534') 
+                    }
+                });
 
                 navigationStepsList.appendChild(stepElement);
             });
@@ -1121,6 +1060,161 @@
             // Apply timeline styling
             //this.applyTimelineStyles();
         }
+
+
+
+ highlightRouteSegment(map, geojsonData, startCoord, endCoord, levelRoutePoi, switchFloorByOn, highlightColor = '#FF0000') {
+    const startStr = startCoord.map(c => Number(c).toFixed(6)).join(',');
+    const endStr = endCoord.map(c => Number(c).toFixed(6)).join(',');
+
+    const currentKey = `${startStr}_${endStr}`;
+
+    // Toggle: remove highlight if user clicks again on the same instruction
+    if (cfg.state.lastHighlighted === currentKey) {
+        if (map.getLayer('highlight-segment-layer')) map.removeLayer('highlight-segment-layer');
+        if (map.getSource('highlight-segment')) map.removeSource('highlight-segment');
+        if (map.getLayer('highlight-dot-layer')) map.removeLayer('highlight-dot-layer');
+        if (map.getSource('highlight-dot')) map.removeSource('highlight-dot');
+        cfg.state.lastHighlighted = null;
+        return;
+    }
+
+    // Remove any existing highlights
+    if (map.getLayer('highlight-segment-layer')) map.removeLayer('highlight-segment-layer');
+    if (map.getSource('highlight-segment')) map.removeSource('highlight-segment');
+    if (map.getLayer('highlight-dot-layer')) map.removeLayer('highlight-dot-layer');
+    if (map.getSource('highlight-dot')) map.removeSource('highlight-dot');
+
+    cfg.state.lastHighlighted = currentKey;
+
+        if (startStr !== endStr) {
+        // Convert to numbers
+        const lng1 = Number(startCoord[0]);
+        const lat1 = Number(startCoord[1]);
+        const lng2 = Number(endCoord[0]);
+        const lat2 = Number(endCoord[1]);
+
+        // Calculate bearing
+        const point1 = turf.point([lng1, lat1]);
+        const point2 = turf.point([lng2, lat2]);
+        const bearing = turf.bearing(point1, point2);
+
+        // Midpoint
+        const center = [(lng1 + lng2) / 2, (lat1 + lat2) / 2];
+
+        map.flyTo({
+            center: center,
+            bearing: bearing,
+            zoom: map.getZoom(), // or custom zoom level
+            speed: 1.2,
+            pitch: 60,
+            duration: 3000
+        });
+        }
+    // === CASE: Same start and end => draw dot ===
+    if (startStr === endStr) {
+        const dotFeature = {
+            type: 'Feature',
+            geometry: {
+                type: 'Point',
+                coordinates: startCoord.map(Number)
+            }
+        };
+
+        map.addSource('highlight-dot', {
+            type: 'geojson',
+            data: dotFeature
+        });
+
+        map.addLayer({
+            id: 'highlight-dot-layer',
+            type: 'circle',
+            source: 'highlight-dot',
+            paint: {
+                'circle-radius': 8,
+                'circle-color': highlightColor,
+                'circle-stroke-width': 2,
+                'circle-stroke-color': '#ffffff'
+            }
+        });
+        map.moveLayer("arrow-layer")
+        return;
+    }
+
+    // === CASE: Find segment between points ===
+    let foundStart = false;
+    let foundEnd = false;
+    let segmentCoords = [];
+    let segmentLevel = null;
+
+    for (const feature of geojsonData.features || []) {
+        const coords = feature.geometry?.coordinates || [];
+        if (!coords.length) continue;
+
+        const featureLevel = parseInt(feature.properties?.level);
+
+        for (let i = 0; i < coords.length; i++) {
+            const pointStr = coords[i].map(c => Number(c).toFixed(6)).join(',');
+
+            if (!foundStart && pointStr === startStr) {
+                foundStart = true;
+                segmentLevel = featureLevel;
+                segmentCoords.push(coords[i].map(Number));
+                continue;
+            }
+
+            if (foundStart && !foundEnd) {
+                segmentCoords.push(coords[i].map(Number));
+                if (pointStr === endStr) {
+                    foundEnd = true;
+                    break;
+                }
+            }
+        }
+
+        if (foundEnd) break;
+    }
+
+    if (!foundStart || !foundEnd) {
+        console.warn("Start or end coordinate not found in the route.");
+        cfg.state.lastHighlighted = null;
+        return;
+    }
+    // === Check level and switch if needed ===
+    if (segmentLevel !== null && segmentLevel !== levelRoutePoi) {
+        if(segmentLevel == 0)
+        {
+           segmentLevel = "G"; 
+        }
+        switchFloorByOn(segmentLevel);
+    }
+
+    // === Highlight Line Segment ===
+    const segmentGeoJSON = {
+        type: 'Feature',
+        geometry: {
+            type: 'LineString',
+            coordinates: segmentCoords
+        }
+    };
+
+    map.addSource('highlight-segment', {
+        type: 'geojson',
+        data: segmentGeoJSON
+    });
+
+    map.addLayer({
+        id: 'highlight-segment-layer',
+        type: 'line',
+        source: 'highlight-segment',
+        paint: {
+            'line-color': highlightColor,
+            'line-width': 15
+        }
+    });
+            map.moveLayer("arrow-layer")
+
+}
 
         // Remove or comment out the old populateNavigation function since it's no longer needed
         // The old function used stepsContainer, navigationProgress, currentInstruction, nextStepBtn
@@ -1243,7 +1337,6 @@
                 `;
 
                 resultItem.addEventListener('click', () => {
-                    console.log("Selected !!!")
                     this.selectDepartureLocation(location);
                 });
 
@@ -1299,7 +1392,6 @@
         // }
 
         showNavigationView() {
-            // console.log('Showing navigation view');
             this.currentView = 'navigation';
             this.currentStep = 0;
 
@@ -1318,7 +1410,6 @@
             if (popularView) popularView.style.display = 'none';
         }
         showPopularLocationsView() {
-            //console.log('Showing popular locations view');
             this.currentView = 'popular-locations';
 
             // Set destination in popular view
@@ -1515,6 +1606,7 @@
 
             // Store the selected departure location
             this.selectedDeparture = departureLocation;
+            
             const departureInput = document.getElementById('departureInput');
              if (departureInput) {
                 departureInput.value = getPOITitleByLang(departureLocation.properties , cfg.state.language);
@@ -1852,7 +1944,6 @@
             
             var language = cfg.state.language;
             var amenities = [];
-            console.log("CHECK : ",location?.properties);
             if(language == "EN"){
              amenities = getEnglishOnly(location?.properties?.subcategories);
             }else if(language == "AR")
@@ -1867,7 +1958,6 @@
                 amenities.push(this.categoryItem);
             }
 
-            console.log("amenities size : "+amenities.length);
             var display = "block";
             if(amenities.length < 1)
             {
@@ -1903,7 +1993,7 @@
             </div>
 
             <div class="location-actions">
-                <button class="action-button primary-button" onclick="airportMenu.showDirectionsView(airportMenu.currentLocation)">
+                <button class="action-button primary-button" onclick="cfg.state.airportMenu.showDirectionsView(cfg.state.airportMenu.currentLocation)">
                 Start Directions
                 </button>
             </div>
@@ -2116,20 +2206,21 @@
 
     // Initialize the component when DOM is ready
     document.addEventListener('DOMContentLoaded', function () {
-        window.airportMenu = new AirportMenuComponent();
+         import('/src/config.js').then(cfg => window.cfg = cfg);
+        cfg.state.airportMenu = new AirportMenuComponent();
     });
 
     // Also initialize if DOM is already loaded
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function () {
-            window.airportMenu = new AirportMenuComponent();
+        //cfg.state.airportMenu = new AirportMenuComponent();
         });
     } else {
-        window.airportMenu = new AirportMenuComponent();
+        //cfg.state.airportMenu = new AirportMenuComponent();
     }
 
     // Export the class for external use
-    window.AirportMenuComponent = AirportMenuComponent;
+            window.AirportMenuComponent = AirportMenuComponent;
 })();
 
 
