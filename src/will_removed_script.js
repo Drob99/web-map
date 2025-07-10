@@ -276,7 +276,6 @@
                 this.locationDetailsBackBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     if (this.currentSubcategory != null) {
-                        console.error("this.currentSubcategory : ", this.currentSubcategory);
                         this.showLocationsView(this.currentSubcategory);
                         document.getElementById("menuArrow").style.display = "none";
                     }else{
@@ -294,7 +293,6 @@
                     const destinationContainer = document.getElementsByClassName("destination-container")[0];
                     departureContainer.style.display = "block";
                     destinationContainer.style.display = "block";
-                    console.log("ENDED NAVIGATION" ,this.currentLocation );
                     this.showLocationDetailsView(this.currentLocation);
                     mapc.clearRoute();
                     document.getElementById("stepsButton").innerHTML = `Show Steps`;
@@ -342,13 +340,13 @@
 
         setCurrentLocation(location)
         {
-            airportMenu.currentLocation = location;
+            cfg.state.airportMenu.currentLocation = location;
         }
 
         clearLocations()
         {
-            airportMenu.departureLocation = null;
-            airportMenu.currentLocation = null;
+            cfg.state.airportMenu.departureLocation = null;
+            cfg.state.airportMenu.currentLocation = null;
         }
 
         setupMenuItemClicks() {
@@ -368,7 +366,6 @@
         setupSearchInteractions() {
             if (this.searchInput) {
                 this.searchInput.addEventListener('focus', () => {
-                    console.log('Search input changed:', e.target.value);
                      const query = e.target.value.trim();
                     if (query.length > 0) {
                        this.currentSubcategory = null;
@@ -383,7 +380,6 @@
                 });
 
                 this.searchInput.addEventListener('input', (e) => {
-                    console.log('Search input changed:', e.target.value);
                      const query = e.target.value.trim();
                     if (query.length > 0) {
                        this.currentSubcategory = null;
@@ -550,11 +546,8 @@
         }
 
         showLocationDetailsView(location) {
-            console.log('Showing location details view for', location);
             this.currentView = 'location-details';
             this.currentLocation = location;
-            console.log("showLocationDetailsView :",this.currentLocation)
-
             // Auto-expand menu
             this.expandMenu();
 
@@ -677,7 +670,6 @@
 
         // Updated showCompleteDirectionsInterface function
         showCompleteDirectionsInterface(departureLocation) {
-            console.log('Showing complete directions interface for:', departureLocation , this.currentLocation);
 
             // Ensure we're in the directions view
             this.currentView = 'directions';
@@ -810,7 +802,7 @@
                     if (destinationInput) {
                         destinationInput.value = "";
                     }
-                    this.showLocationDetailsView(this.currentLocation);
+                    //this.showLocationDetailsView(this.currentLocation);
                 };
                 backBtn.addEventListener('click', this.handleBackClick);
             }
@@ -991,73 +983,7 @@
                 return;
             }
 
-            // Get navigation steps from airport data or use default steps
-            let steps = [];
-
-            // if (window.AIRPORT_DATA && this.selectedDeparture && this.currentLocation) {
-            //     const path = window.AIRPORT_DATA.getPathBetween(
-            //         this.selectedDeparture.id,
-            //         this.currentLocation.id
-            //     );
-            //     if (path && path.steps) {
-            //         steps = path.steps;
-            //     }
-            // }
-
-            // Enhanced default steps with proper directions and landmarks
-            if (steps.length === 0) {
-                console.log("departure : "+this.selectedDeparture.properties.title)
-                const departureName = this.selectedDeparture ? this.selectedDeparture.properties.title : 'your departure location';
-                const destinationName = this.currentLocation ? this.currentLocation.properties.title : 'your destination';
-
-                steps = [
-                    {
-                        text: `Leave ${departureName} and take escalator down to Level 4`,
-                        time: 'Less than a minute',
-                        icon: '🔘',
-                        type: 'start'
-                    },
-                    {
-                        text: 'Turn right at DFS Duty Free',
-                        time: 'Less than a minute',
-                        icon: '↑',
-                        type: 'turn'
-                    },
-                    {
-                        text: 'Turn left at Cartier',
-                        time: 'Less than a minute',
-                        icon: '↰',
-                        type: 'turn'
-                    },
-                    {
-                        text: 'Turn right at Bvlgari',
-                        time: 'Less than a minute',
-                        icon: '→',
-                        type: 'turn'
-                    },
-                    {
-                        text: 'Turn left at Book Soup',
-                        time: 'Less than a minute',
-                        icon: '↰',
-                        type: 'turn'
-                    },
-                    {
-                        text: 'Turn right',
-                        time: 'Less than a minute',
-                        icon: '→',
-                        type: 'turn'
-                    },
-                    {
-                        text: `Arrive at ${destinationName}`,
-                        time: '',
-                        icon: '🏁',
-                        type: 'destination'
-                    }
-                ];
-            }
-
             const instructions = navigation.generateNavigationInstructions(mapc.smartRoute , cfg.state.language);
-            console.log(instructions);
             // Clear existing steps
             navigationStepsList.innerHTML = '';
 
@@ -1103,7 +1029,6 @@
                 }
 
                 stepElement.addEventListener('click', () => {
-                    console.log(step.coordinates.length)
                     if(step.coordinates.length > 1){
                         this.highlightRouteSegment(window.mapInit.map, window.mapInit.map.getSource('route')._data, step.coordinates[0],step.coordinates[1],cfg.state.levelRoutePoi,mapc.switchFloorByNo, '#FFB534') 
                     }else{
@@ -1249,7 +1174,6 @@
         cfg.state.lastHighlighted = null;
         return;
     }
-    console.log("1 - segmentLevel : ",segmentLevel);
     // === Check level and switch if needed ===
     if (segmentLevel !== null && segmentLevel !== levelRoutePoi) {
         if(segmentLevel == 0)
@@ -1279,7 +1203,7 @@
         source: 'highlight-segment',
         paint: {
             'line-color': highlightColor,
-            'line-width': 6
+            'line-width': 15
         }
     });
             map.moveLayer("arrow-layer")
@@ -1405,7 +1329,6 @@
                 `;
 
                 resultItem.addEventListener('click', () => {
-                    console.log("Selected !!!")
                     this.selectDepartureLocation(location);
                 });
 
@@ -1461,7 +1384,6 @@
         // }
 
         showNavigationView() {
-            // console.log('Showing navigation view');
             this.currentView = 'navigation';
             this.currentStep = 0;
 
@@ -1480,7 +1402,6 @@
             if (popularView) popularView.style.display = 'none';
         }
         showPopularLocationsView() {
-            //console.log('Showing popular locations view');
             this.currentView = 'popular-locations';
 
             // Set destination in popular view
@@ -1677,9 +1598,7 @@
 
             // Store the selected departure location
             this.selectedDeparture = departureLocation;
-            console.log("-----------------------------");
-            console.log("1 - Departure : "+getPOITitleByLang(departureLocation.properties , cfg.state.language));
-            console.log("2 - Destination : "+getPOITitleByLang(this.currentLocation.properties , cfg.state.language));
+            
             const departureInput = document.getElementById('departureInput');
              if (departureInput) {
                 departureInput.value = getPOITitleByLang(departureLocation.properties , cfg.state.language);
@@ -2017,7 +1936,6 @@
             
             var language = cfg.state.language;
             var amenities = [];
-            console.log("CHECK : ",location?.properties);
             if(language == "EN"){
              amenities = getEnglishOnly(location?.properties?.subcategories);
             }else if(language == "AR")
@@ -2032,7 +1950,6 @@
                 amenities.push(this.categoryItem);
             }
 
-            console.log("amenities size : "+amenities.length);
             var display = "block";
             if(amenities.length < 1)
             {
@@ -2068,7 +1985,7 @@
             </div>
 
             <div class="location-actions">
-                <button class="action-button primary-button" onclick="airportMenu.showDirectionsView(airportMenu.currentLocation)">
+                <button class="action-button primary-button" onclick="cfg.state.airportMenu.showDirectionsView(cfg.state.airportMenu.currentLocation)">
                 Start Directions
                 </button>
             </div>
@@ -2281,20 +2198,21 @@
 
     // Initialize the component when DOM is ready
     document.addEventListener('DOMContentLoaded', function () {
-        window.airportMenu = new AirportMenuComponent();
+         import('/src/config.js').then(cfg => window.cfg = cfg);
+        cfg.state.airportMenu = new AirportMenuComponent();
     });
 
     // Also initialize if DOM is already loaded
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function () {
-            window.airportMenu = new AirportMenuComponent();
+        //cfg.state.airportMenu = new AirportMenuComponent();
         });
     } else {
-        window.airportMenu = new AirportMenuComponent();
+        //cfg.state.airportMenu = new AirportMenuComponent();
     }
 
     // Export the class for external use
-    window.AirportMenuComponent = AirportMenuComponent;
+            window.AirportMenuComponent = AirportMenuComponent;
 })();
 
 

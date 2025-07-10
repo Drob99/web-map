@@ -14,6 +14,7 @@ import { setupMapLanguageListener } from "./mapController.js";
 import { playbackControls } from "./navigation/navigationPlaybackControls.js";
 
 
+
 /**
  * Main application class following Dependency Injection (DI) and Single Responsibility.
  */

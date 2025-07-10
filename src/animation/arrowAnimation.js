@@ -63,18 +63,22 @@ export function setupArrowAnimation() {
 export function startAnimation() {
   if (isAnimating) return;
   isAnimating = true;
+
+  // If image already exists, skip re-adding
   if (!map.hasImage('arrow-icon')) {
     const img = new Image();
     img.onload = () => {
-      map.addImage('arrow-icon', img);
-      // Only initialize if route exists
+      // Double-check inside onload as well
+      if (!map.hasImage('arrow-icon')) {
+        map.addImage('arrow-icon', img);
+      }
+
       if (map.getSource('route_outline')) {
         initializeAnimation();
       }
     };
     img.src = arrowDataURL;
   } else {
-    // Only initialize if route exists
     if (map.getSource('route_outline')) {
       initializeAnimation();
     }

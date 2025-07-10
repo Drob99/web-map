@@ -505,6 +505,8 @@ function searchNearBy(query) {
       <div class="location-address">${result.location}</div>
     `;
 
+    result
+
     locationItem.appendChild(locationIcon);
     locationItem.appendChild(locationDetails);
     listContainer.appendChild(locationItem);

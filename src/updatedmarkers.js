@@ -6,8 +6,7 @@ import { drawPathToPoi } from './data/routes.js';
 import { clearRoute, routeEnabled } from './mapController.js';
 import { map } from './mapInit.js';
 import { state } from './config.js';
-
-
+import * as airportMenu from './will_removed_script.js'; // Import the new module
 
 // Marker state
 let fromMarker = null;
@@ -16,6 +15,8 @@ let fromPolygonId = null;
 let toPolygonId = null;
 let fromLng, fromLat, fromLevel, fromPoiName;
 let toLng, toLat, toLevel, toPoiName;
+
+// No longer need airportMenuInstance or getAirportMenuInstance() as we're using a module
 
 /**
  * Sets up click handler on the 'polygons' layer.
@@ -35,9 +36,9 @@ function handleMapClick(e) {
   const props = feature.properties;
 
   if (!toMarker) {
-    state.airportMenu.expandMenu();
-    state.airportMenu.showDirectionsView(feature);
-    state.airportMenu.setCurrentLocation(feature);
+    airportMenu.expandMenu();
+    airportMenu.showDirectionsView(feature);
+    airportMenu.setCurrentLocation(feature);
     document.getElementById("menuArrow").style.display = "none";
     toPolygonId = feature.id;
     toLng = coords[0];
@@ -62,9 +63,9 @@ function handleMapClick(e) {
           departureInput.value = "";
       }
       
-      state.airportMenu.endNavigation();
-      state.airportMenu.showCategoriesView();
-      state.airportMenu.clearLocations();
+      airportMenu.endNavigation();
+      airportMenu.showCategoriesView();
+      airportMenu.clearLocations();
 
       const menuArrow = document.getElementById('menuArrow');
       if (menuArrow) {
@@ -89,12 +90,12 @@ function handleMapClick(e) {
 
     if (state.routeEnabled) {
      clearRoute();
-      state.airportMenu.endNavigation();
-      state.airportMenu.showCategoriesView();
-      state.airportMenu.clearLocations();
+      airportMenu.endNavigation();
+      airportMenu.showCategoriesView();
+      airportMenu.clearLocations();
     }
     document.getElementById("menuArrow").style.display = "none";
-    state.airportMenu.selectDepartureLocation(feature)
+    airportMenu.selectDepartureLocation(feature)
     // drawPathToPoi(
     //   fromPoiName, fromLng, fromLat, fromLevel,
     //   toPoiName, toLng, toLat, toLevel
@@ -267,11 +268,11 @@ export function resetMarkers() {
 
   fromMarker = null;
   toMarker = null;
-  fromPolygonId = null;
-  toPolygonId = null;
   fromPoiName = toPoiName = '';
   fromLng = fromLat = fromLevel = undefined;
   toLng = toLat = toLevel = undefined;
+
+  // No longer need to reset airportMenuInstance as it's managed by the module
 }
 
 /**
@@ -314,4 +315,5 @@ function createMarkerEl(letter, bgColor) {
   `;
   return el.firstElementChild;
 }
+
 
