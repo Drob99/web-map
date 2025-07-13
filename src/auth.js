@@ -16,6 +16,7 @@ import { screensaver } from "./ui.js";
 import { updateFloorMenu } from "./markers.js";
 
 
+
 /** Checks if the stored access token is expired. */
 export function isAccessTokenExpired() {
   const createdAt = Number(localStorage.getItem("created_at"));

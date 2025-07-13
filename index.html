@@ -456,64 +456,37 @@
                 </div>
             </div>
 
-            <div class="direction-search-box" style="display: flex;">
-                <div style="justify-items: center; margin: 5% 0%;">
-                    <div style="height: 10px;
-    width: 10px;
-    background: gray;
-    border-radius: 50%;
-    margin: 3px;">
-
-                    </div>
-                     <div style="height: 6px;
-    width: 6px;
-    background: gray;
-    border-radius: 50%;
-    margin: 5px;
-    background: rgb(242, 242, 242);">
-                        
-                    </div>
-                     <div style="height: 6px;
-    width: 6px;
-    background: gray;
-    border-radius: 50%;
-    margin: 5px;
-    background: rgb(242, 242, 242);">
-                        
-                    </div>
-                     <div style="height: 6px;
-    width: 6px;
-    background: gray;
-    border-radius: 50%;
-    margin: 5px;
-    background: rgb(242, 242, 242);">
-                        
-                    </div>
-                    <svg class="directions-path-icon-pin" viewBox="0 0 36.8 50" width="20" height="20" data-testid="location-pin" role="presentation" display="block"><g><path d="M18.4,48.3c-1.2,0-2.2-0.7-2.6-1.8c-0.5-1.3-0.9-2.5-1.3-3.5v-0.1c-0.4-1.2-0.9-2.5-1.4-3.6
-    c-1.3-2.8-3.3-5.7-6.8-9.6l-0.1-0.1c-2.8-3-4.4-7.1-4.4-11.2c0-9.2,7.5-16.6,16.6-16.6c0.6,0,1.3,0,1.9,0.1
-    c9.1,1,15.6,9.1,14.7,18.2c-0.4,3.6-1.9,6.9-4.3,9.5c-3.5,3.9-5.6,6.8-6.9,9.7c-0.5,1.2-1,2.3-1.4,3.5L22.3,43
-    c-0.4,1.1-0.7,2.2-1.3,3.5C20.6,47.6,19.5,48.3,18.4,48.3z" fill="#5E5E5E"></path><path d="M18.4,3.5L18.4,3.5c0.6,0,1.1,0,1.7,0.1c8.1,0.9,14,8.1,13.1,16.3c-0.3,3.2-1.7,6.2-3.9,8.5l0,0l0,0
-        c-3.6,4-5.8,7.1-7.2,10.1c-0.5,1.2-1,2.4-1.4,3.7l-0.1,0.2c-0.3,1-0.7,2.1-1.2,3.4c-0.3,0.6-0.9,0.8-1.5,0.5
-        c-0.2-0.1-0.4-0.3-0.5-0.5c-0.5-1.3-0.9-2.4-1.2-3.4v-0.1c-0.4-1.3-0.9-2.6-1.5-3.8c-1.4-3-3.5-6-7-9.9l0,0l-0.2-0.2
-        C2,22.4,2.3,13,8.3,7.5c2.8-2.6,6.4-4,10.2-4 M18.6,0C8.4-0.1,0.1,8,0,18.2c0,0.1,0,0.1,0,0.2c0,4.6,1.8,9.1,4.9,12.4l0,0
-        c3.4,3.8,5.3,6.5,6.6,9.2c0.5,1.1,0.9,2.3,1.3,3.5v0.1c0.3,1.1,0.8,2.2,1.3,3.6c1,2.3,3.7,3.5,6,2.5c1.1-0.5,2-1.4,2.5-2.5
-        c0.6-1.3,1-2.5,1.3-3.6l0.1-0.2c0.4-1.2,0.8-2.3,1.3-3.4c1.2-2.7,3.2-5.5,6.6-9.2c6.9-7.4,6.4-19-1-25.9C28,2.2,24.4,0.6,20.5,0.1
-        C19.8,0.1,19.1,0,18.4,0L18.6,0z" fill="#FFFFFF"></path><path d="M25,18.4c0,3.6-2.9,6.6-6.6,6.6s-6.6-2.9-6.6-6.6s2.9-6.6,6.6-6.6C22,11.9,24.9,14.8,25,18.4z" fill="#FFFFFF"></path></g></svg>
+         <div class="direction-search-box">
+            <div class="icon-container">
+                <div class="icon-circle gray-circle"></div>
+                <div class="icon-circle white-circle"></div>
+                <div class="icon-circle white-circle"></div>
+                <div class="icon-circle white-circle"></div>
+                <svg class="directions-path-icon-pin" viewBox="0 0 36.8 50" width="20" height="20" data-testid="location-pin" role="presentation">
+                    <g>
+                        <path d="M18.4,48.3c-1.2,0-2.2-0.7-2.6-1.8c-0.5-1.3-0.9-2.5-1.3-3.5v-0.1c-0.4-1.2-0.9-2.5-1.4-3.6 c-1.3-2.8-3.3-5.7-6.8-9.6l-0.1-0.1c-2.8-3-4.4-7.1-4.4-11.2c0-9.2,7.5-16.6,16.6-16.6c0.6,0,1.3,0,1.9,0.1 c9.1,1,15.6,9.1,14.7,18.2c-0.4,3.6-1.9,6.9-4.3,9.5c-3.5,3.9-5.6,6.8-6.9,9.7c-0.5,1.2-1,2.3-1.4,3.5L22.3,43 c-0.4,1.1-0.7,2.2-1.3,3.5C20.6,47.6,19.5,48.3,18.4,48.3z" fill="#5E5E5E"></path>
+                        <path d="M18.4,3.5L18.4,3.5c0.6,0,1.1,0,1.7,0.1c8.1,0.9,14,8.1,13.1,16.3c-0.3,3.2-1.7,6.2-3.9,8.5l0,0l0,0 c-3.6,4-5.8,7.1-7.2,10.1c-0.5,1.2-1,2.4-1.4,3.7l-0.1,0.2c-0.3,1-0.7,2.1-1.2,3.4c-0.3,0.6-0.9,0.8-1.5,0.5 c-0.2-0.1-0.4-0.3-0.5-0.5c-0.5-1.3-0.9-2.4-1.2-3.4v-0.1c-0.4-1.3-0.9-2.6-1.5-3.8c-1.4-3-3.5-6-7-9.9l0,0l-0.2-0.2 C2,22.4,2.3,13,8.3,7.5c2.8-2.6,6.4-4,10.2-4 M18.6,0C8.4-0.1,0.1,8,0,18.2c0,0.1,0,0.1,0,0.2c0,4.6,1.8,9.1,4.9,12.4l0,0 c3.4,3.8,5.3,6.5,6.6,9.2c0.5,1.1,0.9,2.3,1.3,3.5v0.1c0.3,1.1,0.8,2.2,1.3,3.6c1,2.3,3.7,3.5,6,2.5c1.1-0.5,2-1.4,2.5-2.5 c0.6-1.3,1-2.5,1.3-3.6l0.1-0.2c0.4-1.2,0.8-2.3,1.3-3.4c1.2-2.7,3.2-5.5,6.6-9.2c6.9-7.4,6.4-19-1-25.9C28,2.2,24.4,0.6,20.5,0.1 C19.8,0.1,19.1,0,18.4,0L18.6,0z" fill="#FFFFFF"></path>
+                        <path d="M25,18.4c0,3.6-2.9,6.6-6.6,6.6s-6.6-2.9-6.6-6.6s2.9-6.6,6.6-6.6C22,11.9,24.9,14.8,25,18.4z" fill="#FFFFFF"></path>
+                    </g>
+                </svg>
+            </div>
+            <div class="inputs-container">
+                <div class="departure-input-container">
+                    <input type="text" class="departure-input" id="departureInput" data-i18n="Choose Departure" data-i18n-attr="placeholder" placeholder="Choose Departure">
+                    <div class="departure-results" id="departureResults"></div>
                 </div>
-                <div style="width: 90%;">
-                    <div class="departure-input-container">
-                        <input type="text" class="departure-input" id="departureInput" data-i18n="Choose Departure" data-i18n-attr="placeholder" placeholder="Choose Departure">
-                        <div class="departure-results" id="departureResults" style="display: none;"></div>
-                    </div>
-
-                    <div class="destination-container">
-                        <input type="text" class="departure-input" id="destinationInput" data-i18n="Choose Destination" data-i18n-attr="placeholder" placeholder="Choose Destination">
-                    </div>
-                </div>
-                <div style="transform:translate(0%, 39%) scale(1);">
-                    <svg width="20" height="20" viewBox="0 0 32 32" data-testid="icon-swap" id="swapIcon"><g fill="#909090"><path stroke="none" d="M23.4256 0.93934C22.8398 0.353553 21.8901 0.353553 21.3043 0.93934L14.5232 7.72049C13.9374 8.30628 13.9374 9.25603 14.5232 9.84181C15.1089 10.4276 16.0587 10.4276 16.6445 9.84181L20.865 5.62132V16.9331C20.865 17.7615 21.5365 18.4331 22.365 18.4331C23.1934 18.4331 23.865 17.7615 23.865 16.9331V5.62132L28.0855 9.84181C28.6712 10.4276 29.621 10.4276 30.2068 9.84181C30.7926 9.25603 30.7926 8.30628 30.2068 7.72049L23.4256 0.93934ZM9.69438 13.5C10.5228 13.5 11.1944 14.1716 11.1944 15L11.1944 26.3118L15.4281 22.0781C16.0139 21.4923 16.9637 21.4923 17.5494 22.0781C18.1352 22.6638 18.1352 23.6136 17.5494 24.1994L10.755 30.9938C10.1692 31.5796 9.2195 31.5796 8.63371 30.9938L1.8393 24.1994C1.25352 23.6136 1.25352 22.6638 1.8393 22.0781C2.42509 21.4923 3.37484 21.4923 3.96062 22.0781L8.19438 26.3118L8.19438 15C8.19438 14.1716 8.86595 13.5 9.69438 13.5Z"></path></g></svg>
+                <div class="destination-container">
+                    <input type="text" class="departure-input" id="destinationInput" data-i18n="Choose Destination" data-i18n-attr="placeholder" placeholder="Choose Destination">
                 </div>
             </div>
+            <div class="swap-icon-container">
+                <svg id="swapIcon" width="20" height="20" viewBox="0 0 32 32" data-testid="icon-swap">
+                    <g fill="#909090">
+                        <path stroke="none" d="M23.4256 0.93934C22.8398 0.353553 21.8901 0.353553 21.3043 0.93934L14.5232 7.72049C13.9374 8.30628 13.9374 9.25603 14.5232 9.84181C15.1089 10.4276 16.0587 10.4276 16.6445 9.84181L20.865 5.62132V16.9331C20.865 17.7615 21.5365 18.4331 22.365 18.4331C23.1934 18.4331 23.865 17.7615 23.865 16.9331V5.62132L28.0855 9.84181C28.6712 10.4276 29.621 10.4276 30.2068 9.84181C30.7926 9.25603 30.7926 8.30628 30.2068 7.72049L23.4256 0.93934ZM9.69438 13.5C10.5228 13.5 11.1944 14.1716 11.1944 15L11.1944 26.3118L15.4281 22.0781C16.0139 21.4923 16.9637 21.4923 17.5494 22.0781C18.1352 22.6638 18.1352 23.6136 17.5494 24.1994L10.755 30.9938C10.1692 31.5796 9.2195 31.5796 8.63371 30.9938L1.8393 24.1994C1.25352 23.6136 1.25352 22.6638 1.8393 22.0781C2.42509 21.4923 3.37484 21.4923 3.96062 22.0781L8.19438 26.3118L8.19438 15C8.19438 14.1716 8.86595 13.5 9.69438 13.5Z"></path>
+                    </g>
+                </svg>
+            </div>
+        </div>
 
             <div class="popular-locations-view" id="popularLocationsView">
             <!-- <div class="view-header">
