@@ -649,6 +649,205 @@
      display: none !important;
  }
 
+ /* Styling the share icon */
+.share-icon {
+  cursor: pointer;
+  color: #666;
+  font-size: 22px;
+}
+    .share-icon:hover {
+      color: #04615c;
+    }
+
+    /* Share dropdown menu styling */
+
+       .share-dropdown-menu {
+  position: absolute;
+  top: 100%; /* Appear just below the icon */
+  left: 0;
+  margin-top: 10px; /* Slight spacing below the icon */
+  font-family: 'Poppins', sans-serif;
+  display: none;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.12); /* Blended shadow */
+  min-width: 160px;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+    .share-dropdown-menu.open {
+    display: block;
+}
+
+    /* Provided styles for dropdown items */
+   .share-wrapper {
+        position: relative; /* Make this the positioning context */
+        display: inline-block; /* Keep it as small as the icon */
+    }
+
+    .share-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #444;
+  background: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+
+/* .share-dropdown-item:hover {
+  background: #f5f5f5;
+} */
+
+.share-dropdown-item:hover i,
+.share-dropdown-item:hover span {
+  color: #04615c;
+}
+
+     /* Flex layout: 80% text, 20% icon */
+    .share-dropdown-item i {
+      flex: 0 0 20%; /* Icon takes 20% */
+      font-size: 16px;
+    color: #444;
+    width: 20px;
+    text-align: center;
+    }
+    .share-dropdown-item:not(:last-child) {
+  border-bottom: 1px solid #eee;
+}
+
+    .share-dropdown-item span {
+      flex: 1; /* Text takes the remaining 80% */
+    }
+
+    .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .qr-modal {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 350px;
+            padding: 30px;
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+        }
+
+        .modal-overlay.active .qr-modal {
+            transform: scale(1);
+        }
+
+        .qr-modal h3 {
+            color: #04615c;
+            margin-bottom: 25px;
+            font-size: 22px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #qrcode {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: #F8F9FB;
+            border-radius: 12px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 0px solid #04615c;
+        }
+
+        .close-btn {
+            background-color: rgb(242, 242, 242);
+            color: rgb(96, 96, 96);
+        }
+
+        .close-btn:hover {
+            background: #04615c;
+            color: white;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #04615c;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: 500;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            opacity: 1;
+            visibility: visible;
+            bottom: 40px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                border-radius: 12px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .share-btn {
+                padding: 12px 30px;
+                font-size: 16px;
+            }
+        }
+
  /* Subcategories View */
  .subcategories-view {
      display: none;
@@ -811,6 +1010,7 @@
  }
 
  .location-title-with-icon {
+     margin-bottom: 5px;
      display: flex;
      align-items: center;
      /* margin-bottom: 12px;

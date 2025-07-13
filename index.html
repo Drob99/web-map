@@ -17,11 +17,16 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.7/underscore-min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@turf/turf@7/turf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script type="text/javascript" src="./src/openlocationcode.js"></script>
     <!-- <link rel="stylesheet" href="./font-awesome.min.css"> -->
     <link rel="stylesheet" href="./styles.css">
+  
 
 </head>
 
@@ -446,6 +451,37 @@
                     </svg>
                 </button>
                 <h3 class="view-title" data-i18n ="Directions">Directions</h3>
+                <!-- <i class="fas fa-share-alt share-icon">
+                    
+                    <div class="share-dropdown-menu" id="shareDropdownMenu">
+                        <div class="share-dropdown-item" id="shareCopyLink">
+                            <i class="far fa-copy"></i>
+                            <span>Copy Link</span>
+                        </div>
+                        <div class="share-dropdown-item" id="shareShowQR">
+                            <i class="fas fa-qrcode"></i>
+                            <span>QR Code</span>
+                        </div>
+                    </div>
+                </i> -->
+                <div class="share-wrapper">
+                    <div class="share-icon" id="shareIcon">
+                        <i class="fas fa-share-alt"></i>
+                    </div>
+
+                    <div class="share-dropdown-menu" id="shareDropdownMenu">
+                        <div class="share-dropdown-item" id="shareCopyLink">
+                        <i class="far fa-copy"></i>
+                        <span>Copy Link</span>
+                        </div>
+                        <div class="share-dropdown-item" id="shareShowQR">
+                        <i class="fas fa-qrcode"></i>
+                        <span>QR Code</span>
+                        </div>
+                    </div>
+                </div>
+
+
                 <div class="header-options" style="display: none;">
                     <span class="accessible-label" data-i18n ="Accessible">Accessible</span>
                     <div class="toggle-switch">
@@ -662,6 +698,33 @@
         </div>
     </div>
 
+      <!-- Share Dropdown -->
+        <div class="share-dropdown-menu" id="shareDropdownMenu">
+            <div class="share-dropdown-item" id="shareCopyLink">
+            <i class="far fa-copy"></i>
+            <span>Copy Link</span>
+            </div>
+            <div class="share-dropdown-item" id="shareShowQR">
+            <i class="fas fa-qrcode"></i>
+            <span>QR Code</span>
+            </div>
+        </div>
+
+    <!-- QR Code Modal -->
+  <div class="modal-overlay" id="qrModal" role="dialog" aria-modal="true">
+    <div class="qr-modal">
+      <h3><i class="fas fa-qrcode"></i> Scan QR Code</h3>
+      <p>Scan this code with your phone's camera to get the map on your phone</p>
+      <div id="qrcode"></div>
+      <div class="modal-actions">
+        <button class="modal-btn close-btn" id="closeModal">Close</button>
+      </div>
+    </div>
+  </div>
+     <!-- Notification -->
+  <div class="notification" id="notification">
+    Link copied to clipboard!
+  </div>
 
     <div class="popup-menu" id="sideMenu">
 		<div class="menu-header" id="menuHeader" data-i18n ="Mega Accessibility Pack">

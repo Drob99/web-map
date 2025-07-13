@@ -499,7 +499,7 @@ function searchNearBy(query) {
 
     // 🔘 Add Click Action: Call your method
     locationItem.addEventListener("click", () => {
-      airportMenu.showLocationDetailsView(feature); // Your method call
+      state.airportMenu.showLocationDetailsView(feature); // Your method call
     });
   });
 }
@@ -732,3 +732,408 @@ function resetSettings() {
 
 }
  
+// Share Button And QR Code :
+// Get references to the elements
+ const shareIcon = document.getElementById('shareIcon');
+    const shareDropdownMenu = document.getElementById('shareDropdownMenu');
+    const qrModal = document.getElementById('qrModal');
+    const closeModalBtn = document.getElementById('closeModal');
+    const notification = document.getElementById('notification');
+    const currentUrl = window.location.href;
+
+    // Toggle dropdown menu
+    shareIcon.addEventListener('click', function (e) {
+      e.stopPropagation();
+      shareDropdownMenu.classList.toggle('open');
+    });
+
+    // Close dropdown and modal when clicking outside
+    document.addEventListener('click', function (event) {
+      if (!shareIcon.contains(event.target) && !shareDropdownMenu.contains(event.target)) {
+        shareDropdownMenu.classList.remove('open');
+      }
+      if (event.target === qrModal) {
+        qrModal.classList.remove('active');
+      }
+    });
+
+    // Close modal button
+    closeModalBtn.addEventListener('click', function () {
+      qrModal.classList.remove('active');
+    });
+
+    // Copy link to clipboard
+    document.getElementById('shareCopyLink').addEventListener('click', function () {
+
+        const url = "https://maps.kkia.sa/share/map.html?dest=";
+        let rawCenter = state.airportMenu?.currentLocation?.properties?.center;
+        let destCenter = [0, 0];
+        var linkWithParameters = "";
+
+        // Try to convert string → array if needed
+        if (typeof rawCenter === 'string') {
+          try {
+            rawCenter = JSON.parse(rawCenter);
+          } catch (e) {
+            console.warn('❌ Failed to parse rawCenter string:', rawCenter);
+            rawCenter = null;
+          }
+        }
+
+        if (Array.isArray(rawCenter) && rawCenter.length === 2) {
+          const lng = parseFloat(rawCenter[0]);
+          const lat = parseFloat(rawCenter[1]);
+
+          if (!isNaN(lng) && !isNaN(lat)) {
+            destCenter = [lng, lat];
+          } else {
+            console.warn('❌ Invalid numeric values:', rawCenter);
+          }
+        } else {
+          console.warn('❌ Invalid rawCenter structure:', rawCenter);
+        }
+
+        console.log('✅ Final destCenter:', destCenter);
+
+        const destLevel = state.airportMenu.currentLocation.properties.level;
+        const destTitle = state.airportMenu.currentLocation.properties.title;
+        const destArabic = state.airportMenu.currentLocation.properties.title_ar;
+        const destChinese = state.airportMenu.currentLocation.properties.title_zn;
+        const destTerminal = state.airportMenu.currentLocation.properties.location;
+        const original_code = OpenLocationCode.encode(destCenter[0], destCenter[1], 11);
+
+          if (state.airportMenu.language == "AR") {
+            linkWithParameters =
+              url +
+              original_code +
+              "&fl=" +
+              destLevel +
+              "&name=" +
+              encodeForURL(destArabic) +
+              "&terminal=" + 
+              destTerminal +
+              "&floor=" +
+              destLevel
+              +
+              "&location="
+              +
+              "Null";
+
+          }
+          else if (state.airportMenu.language == "ZN") {
+            linkWithParameters =
+              url +
+              original_code +
+              "&fl=" +
+              destLevel +
+              "&name=" +
+              encodeForURL(destChinese) +
+              "&terminal=" + 
+              destTerminal +
+              "&floor=" +
+              destLevel
+              +
+              "&location="
+              +
+              "Null";
+          }
+          else {
+            linkWithParameters =
+              url +
+              original_code +
+              "&fl=" +
+              destLevel +
+              "&name=" +
+              destTitle;
+              "&terminal=" + 
+              destTerminal +
+              "&floor=" +
+              destLevel +
+              "&location="+
+              "Null";
+          }
+
+      navigator.clipboard.writeText(linkWithParameters)
+        .then(() => {
+          notification.classList.add('show');
+          
+          setTimeout(() => {
+            notification.classList.remove('show');
+          }, 2000);
+          shareDropdownMenu.classList.remove('open');
+        })
+        .catch(err => {
+          console.error('Failed to copy: ', err);
+        });
+    });
+
+    // Show QR Code
+    document.getElementById('shareShowQR').addEventListener('click', function () {
+
+      document.getElementById('qrcode').innerHTML = '';
+      console.log(state.airportMenu.currentLocation.properties.center);
+      const url = "https://maps.kkia.sa/share/map.html?dest=";
+      //const rawCenter = state.airportMenu.currentLocation.properties.center || [0, 0];
+      // const destCenter = [parseFloat(rawCenter[0]), parseFloat(rawCenter[1])];
+
+      //let destCenter = [0, 0]; // default fallback
+
+      let rawCenter = state.airportMenu?.currentLocation?.properties?.center;
+      let destCenter = [0, 0];
+
+      // Try to convert string → array if needed
+      if (typeof rawCenter === 'string') {
+        try {
+          rawCenter = JSON.parse(rawCenter);
+        } catch (e) {
+          console.warn('❌ Failed to parse rawCenter string:', rawCenter);
+          rawCenter = null;
+        }
+      }
+
+      if (Array.isArray(rawCenter) && rawCenter.length === 2) {
+        const lng = parseFloat(rawCenter[0]);
+        const lat = parseFloat(rawCenter[1]);
+
+        if (!isNaN(lng) && !isNaN(lat)) {
+          destCenter = [lng, lat];
+        } else {
+          console.warn('❌ Invalid numeric values:', rawCenter);
+        }
+      } else {
+        console.warn('❌ Invalid rawCenter structure:', rawCenter);
+      }
+
+      console.log('✅ Final destCenter:', destCenter);
+
+      const destLevel = state.airportMenu.currentLocation.properties.level;
+      const destTitle = state.airportMenu.currentLocation.properties.title;
+      const destArabic = state.airportMenu.currentLocation.properties.title_ar;
+      const destChinese = state.airportMenu.currentLocation.properties.title_zn;
+      const destTerminal = state.airportMenu.currentLocation.properties.location;
+      const original_code = OpenLocationCode.encode(destCenter[0], destCenter[1], 11);
+
+      if (state.airportMenu.language == "AR") {
+        var qrCodeText =
+          url +
+          original_code +
+          "&fl=" +
+          destLevel +
+          "&name=" +
+          encodeForURL(destArabic) +
+          "&terminal=" + 
+          destTerminal +
+          "&floor=" +
+          destLevel
+          +
+          "&location="
+          +
+          "Null";
+     
+          new QRCode(document.getElementById('qrcode'), {
+            text: createArabicURL(qrCodeText, destArabic) + "&lang=AR",
+            width: 200,
+            height: 200,
+            colorDark: "rgb(96, 96, 96)",
+            colorLight: "#F8F9FB",
+            correctLevel: QRCode.CorrectLevel.H,
+            version: 10,
+          });
+      }
+      else if (state.airportMenu.language == "ZN") {
+        var qrCodeText =
+          url +
+          original_code +
+          "&fl=" +
+          destLevel +
+          "&name=" +
+          encodeForURL(destChinese) +
+          "&terminal=" + 
+          destTerminal +
+          "&floor=" +
+          destLevel
+          +
+          "&location="
+          +
+          "Null";
+     
+          new QRCode(document.getElementById('qrcode'), {
+            text: createArabicURL(qrCodeText, destChinese) + "&lang=ZN",
+            width: 200,
+            height: 200,
+            colorDark: "rgb(96, 96, 96)",
+            colorLight: "#F8F9FB",
+            correctLevel: QRCode.CorrectLevel.H,
+            version: 10,
+          });
+      }
+      else {
+        var qrCodeText =
+          url +
+          original_code +
+          "&fl=" +
+          destLevel +
+          "&name=" +
+          destTitle;
+          "&terminal=" + 
+          destTerminal +
+          "&floor=" +
+          destLevel +
+          "&location="+
+          "Null";
+     
+          new QRCode(document.getElementById('qrcode'), {
+            text: createArabicURL(qrCodeText, destTitle) ,
+            width: 200,
+            height: 200,
+            colorDark: "rgb(96, 96, 96)",
+            colorLight: "#F8F9FB",
+            correctLevel: QRCode.CorrectLevel.H,
+            version: 10,
+          });
+      }
+      console.log(qrCodeText);
+      qrModal.classList.add('active');
+      shareDropdownMenu.classList.remove('open');
+    });
+
+
+function encodeForURL(text) {
+	return encodeURIComponent(text);
+}
+
+// Function to handle Arabic text in URLs
+function createArabicURL(baseUrl, arabicText) {
+	// Method 1: Using encodeURIComponent
+	const encodedText = encodeURIComponent(arabicText);
+	return `${baseUrl}&name=${encodedText}`;
+}
+
+
+function getAllUrlParams(url) {
+	// get query string from url (optional) or window
+	var queryString = url ? url.split("?")[1] : window.location.search.slice(1);
+
+	// we'll store the parameters here
+	var obj = {};
+
+	// if query string exists
+	if (queryString) {
+		// stuff after # is not part of query string, so get rid of it
+		queryString = queryString.split("#")[0];
+
+		// split our query string into its component parts
+		var arr = queryString.split("&");
+
+		for (var i = 0; i < arr.length; i++) {
+			// separate the keys and the values
+			var a = arr[i].split("=");
+
+			// set parameter name and value (use 'true' if empty)
+			var paramName = a[0];
+			var paramValue = typeof a[1] === "undefined" ? true : a[1];
+
+			// (optional) keep case consistent
+			paramName = paramName.toLowerCase();
+			if (typeof paramValue === "string")
+				paramValue = paramValue.toLowerCase();
+
+			// if the paramName ends with square brackets, e.g. colors[] or colors[2]
+			if (paramName.match(/\[(\d+)?\]$/)) {
+				// create key if it doesn't exist
+				var key = paramName.replace(/\[(\d+)?\]/, "");
+				if (!obj[key]) obj[key] = [];
+
+				// if it's an indexed array e.g. colors[2]
+				if (paramName.match(/\[\d+\]$/)) {
+					// get the index value and add the entry at the appropriate position
+					var index = /\[(\d+)\]/.exec(paramName)[1];
+					obj[key][index] = paramValue;
+				} else {
+					// otherwise add the value to the end of the array
+					obj[key].push(paramValue);
+				}
+			} else {
+				// we're dealing with a string
+				if (!obj[paramName]) {
+					// if it doesn't exist, create property
+					obj[paramName] = paramValue;
+				} else if (
+					obj[paramName] &&
+					typeof obj[paramName] === "string"
+				) {
+					// if property does exist and it's a string, convert it to an array
+					obj[paramName] = [obj[paramName]];
+					obj[paramName].push(paramValue);
+				} else {
+					// otherwise add the property
+					obj[paramName].push(paramValue);
+				}
+			}
+		}
+	}
+
+	return obj;
+}
+
+var flag_open_link_with_paramaters = false;
+var flag_open_link_with_paramaters_lang = false;
+
+var open_link_name = "";
+function check_link_parameters() {
+	if (getAllUrlParams().lang != undefined) {
+		var lang = getAllUrlParams().lang.toUpperCase();
+		if (language != lang) {
+			changelang(lang);
+		}
+	}
+	
+	if (getAllUrlParams().location != undefined) {
+		flyToTerminalFromUrl(window.location);
+	}
+	if (getAllUrlParams().dest != undefined) {
+		var destination_coordinates = getAllUrlParams().dest;
+		//console.log(destination_coordinates);
+		var area = OpenLocationCode.decode(destination_coordinates);
+		//console.log(area);
+
+		var original_code = OpenLocationCode.encode(
+			area.latitudeCenter,
+			area.longitudeCenter,
+			area.codeLength
+		);
+
+		var decoded = OpenLocationCode.decode(original_code);
+
+		var name = getAllUrlParams().name.replace(/%20/g, " ");
+		open_link_name = name;
+		
+		if(firstGpsMove){
+			flag_open_link_with_paramaters = true;
+		}
+		flag_open_link_with_paramaters_lang = true;
+		setTimeout(() => {
+			//searchInputNearby.value = name;
+			document.getElementById("poi-menu").style.display = "block";
+			show_pois_menu(name);
+			map.flyTo({
+				center: [decoded.longitudeCenter, decoded.latitudeCenter],
+				zoom: 19.489296826958224,
+				duration: 3000,
+			});
+			switchtofloor(getAllUrlParams().fl)
+			//console.log("Flooooor : "+getAllUrlParams().fl);
+		}, 3000);
+
+		// setTimeout(() => {
+		// 	draw_path_to_poi(
+		// 		name,
+		// 		decoded.longitudeCenter,
+		// 		decoded.latitudeCenter,
+		// 		getAllUrlParams().fl,
+		// 		"",
+		// 		""
+		// 	);
+		// }, 10000);
+	}
+}
