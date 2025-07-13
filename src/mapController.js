@@ -439,11 +439,12 @@ export function clearRoute() {
  * @param {number} levelB - Floor level for end.
  */
 export function addFromToMarkers(from, to, levelA, levelB) {
-    // Remove any existing “A” or “B” markers
-    if (markerA) markerA.remove();
-    if (markerB) markerB.remove();
-  
-    // Create and add marker A
+  // Remove any existing markers
+  if (markerA) markerA.remove();
+  if (markerB) markerB.remove();
+
+  // Check if 'from' is a valid [lng, lat] coordinate
+  if (Array.isArray(from) && from.length === 2 && typeof from[0] === 'number' && typeof from[1] === 'number') {
     const elA = document.createElement("div");
     elA.innerHTML = levelA === state.levelRoutePoi
       ? `<div style="background:#00BFFF;color:#fff;border-radius:50%;width:30px;height:30px;border:2px solid;display:flex;align-items:center;justify-content:center;font-weight:bold;box-shadow:0 0 6px rgba(0,0,0,0.3)">A</div>`
@@ -451,8 +452,10 @@ export function addFromToMarkers(from, to, levelA, levelB) {
     markerA = new mapboxgl.Marker(elA)
       .setLngLat(from)
       .addTo(map);
-  
-    // Create and add marker B
+  }
+
+  // Check if 'to' is a valid [lng, lat] coordinate
+  if (Array.isArray(to) && to.length === 2 && typeof to[0] === 'number' && typeof to[1] === 'number') {
     const elB = document.createElement("div");
     elB.innerHTML = levelB === state.levelRoutePoi
       ? `<div style="background:#6A5ACD;color:#fff;border-radius:50%;width:30px;height:30px;border:2px solid;display:flex;align-items:center;justify-content:center;font-weight:bold;box-shadow:0 0 6px rgba(0,0,0,0.3)">B</div>`
@@ -460,6 +463,7 @@ export function addFromToMarkers(from, to, levelA, levelB) {
     markerB = new mapboxgl.Marker(elB)
       .setLngLat(to)
       .addTo(map);
+  }
 }
 
 /**

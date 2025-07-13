@@ -10,40 +10,38 @@
     }
     import('/src/config.js').then(cfg => window.cfg = cfg);
     import('/src/data/routes.js').then(route => {
-        console.log('route loaded:', route);
         window.route = route;
     }).catch(err => {
         console.error('Failed to load route:', err);
     });
 
-     import('/src/mapController.js').then(mapc => {
-        console.log('route loaded:', mapc);
+    import('/src/mapController.js').then(mapc => {
         window.mapc = mapc;
     }).catch(err => {
         console.error('Failed to load route:', err);
     });
 
-     import('/src/navigation.js').then(navigation => {
-        console.log('navigation loaded:', navigation);
+    import('/src/navigation.js').then(navigation => {
         window.navigation = navigation;
     }).catch(err => {
         console.error('Failed to load route:', err);
     });
 
-     import('/src/markers.js').then(markers => {
-        console.log('markers loaded:', markers);
+    import('/src/markers.js').then(markers => {
         window.markers = markers;
     }).catch(err => {
         console.error('Failed to load markers:', err);
     });
 
+    import('/src/mapInit.js').then(mapInit => {
+        window.mapInit = mapInit;
+    }).catch(err => {
+        console.error('Failed to load markers:', err);
+    });
 
-      import('/src/i18n/mapTranslator.js').then(mapTranslator => {
-        console.log('mark map Translatorers loaded:', mapTranslator);
-            console.log('mapTranslatorModule:', mapTranslator);
-    console.log('mapTranslatorModule.mapTranslator:', mapTranslator.mapTranslator);
 
-    window.mapTranslator = mapTranslator.mapTranslator;
+    import('/src/i18n/mapTranslator.js').then(mapTranslator => {
+        window.mapTranslator = mapTranslator.mapTranslator;
     }).catch(err => {
         console.error('Failed to load mapTranslator:', err);
     });
@@ -67,21 +65,21 @@
     const options = dropdownList.querySelectorAll(".dropdown-option");
     options.forEach(option => {
         option.addEventListener("click", function () {
-        const selectedTerminal = option.getAttribute("data-terminal-id");
-        dropdownSubtitle.textContent = selectedTerminal;
+            const selectedTerminal = option.getAttribute("data-terminal-id");
+            dropdownSubtitle.textContent = selectedTerminal;
 
-        // Hide the dropdown list after selection
-        dropdownList.classList.remove("show");
+            // Hide the dropdown list after selection
+            dropdownList.classList.remove("show");
 
-        // Optional: log or use the value
-        //console.log("Selected terminal:", selectedTerminal);
+            // Optional: log or use the value
+            //console.log("Selected terminal:", selectedTerminal);
 
-        if(selectedTerminal == "All"){
-            cfg.state.selectedTerminal = null
-        }else{
-            cfg.state.selectedTerminal = selectedTerminal
-            mapc.flyToTerminal(selectedTerminal);
-        }
+            if (selectedTerminal == "All") {
+                cfg.state.selectedTerminal = null
+            } else {
+                cfg.state.selectedTerminal = selectedTerminal
+                mapc.flyToTerminal(selectedTerminal);
+            }
 
         });
     });
@@ -274,7 +272,7 @@
                         console.error("this.currentSubcategory : ", this.currentSubcategory);
                         this.showLocationsView(this.currentSubcategory);
                         document.getElementById("menuArrow").style.display = "none";
-                    }else{
+                    } else {
                         this.showCategoriesView();
                         this.isExpanded = false;
                         document.getElementById("menuArrow").style.display = "flex";
@@ -337,15 +335,13 @@
             }
         }
 
-        setCurrentLocation(location)
-        {
-            airportMenu.currentLocation = location;
+        setCurrentLocation(location) {
+            cfg.state.airportMenu.currentLocation = location;
         }
 
-        clearLocations()
-        {
-            airportMenu.departureLocation = null;
-            airportMenu.currentLocation = null;
+        clearLocations() {
+            cfg.state.airportMenu.departureLocation = null;
+            cfg.state.airportMenu.currentLocation = null;
         }
 
         setupMenuItemClicks() {
@@ -365,31 +361,29 @@
         setupSearchInteractions() {
             if (this.searchInput) {
                 this.searchInput.addEventListener('focus', () => {
-                    console.log('Search input changed:', e.target.value);
-                     const query = e.target.value.trim();
+                    const query = e.target.value.trim();
                     if (query.length > 0) {
-                       this.currentSubcategory = null;
-                       this.categoryItem = null;
-                       this.populateLocationSearch(query);
-                       this.expandMenu();
-                       document.getElementById("menuArrow").style.display = "none";
+                        this.currentSubcategory = null;
+                        this.categoryItem = null;
+                        this.populateLocationSearch(query);
+                        this.expandMenu();
+                        document.getElementById("menuArrow").style.display = "none";
                     } else {
-                        this.showCategoriesView(); 
+                        this.showCategoriesView();
                         document.getElementById("menuArrow").style.display = "flex";
                     }
                 });
 
                 this.searchInput.addEventListener('input', (e) => {
-                    console.log('Search input changed:', e.target.value);
-                     const query = e.target.value.trim();
+                    const query = e.target.value.trim();
                     if (query.length > 0) {
-                       this.currentSubcategory = null;
-                       this.categoryItem = null;
-                       this.populateLocationSearch(query);
-                       this.expandMenu();
-                       document.getElementById("menuArrow").style.display = "none";
+                        this.currentSubcategory = null;
+                        this.categoryItem = null;
+                        this.populateLocationSearch(query);
+                        this.expandMenu();
+                        document.getElementById("menuArrow").style.display = "none";
                     } else {
-                        this.showCategoriesView(); 
+                        this.showCategoriesView();
                         document.getElementById("menuArrow").style.display = "flex";
                     }
                 });
@@ -464,13 +458,13 @@
             if (this.locationDetailsView) this.locationDetailsView.style.display = 'none';
             if (this.directionsView) this.directionsView.style.display = 'none';
             if (this.navigationView) this.navigationView.style.display = 'none';
-            
+
             // Restore menu arrow visibility when returning to categories view
             const menuArrow = document.getElementById('menuArrow');
             if (menuArrow) {
                 menuArrow.style.display = 'flex';
             }
-            
+
             // Restore proper container sizing for categories view
             if (this.menuContainer) {
                 // Check if menu is expanded and set appropriate height
@@ -506,13 +500,13 @@
             }
 
             this.populateSubcategories(categoryName);
-            
+
             // Hide menu arrow in subcategories view and adjust container
             const menuArrow = document.getElementById('menuArrow');
             if (menuArrow) {
                 menuArrow.style.display = 'none';
             }
-            
+
             // Show subcategories view and hide others
             // if (this.categoriesSection) this.categoriesSection.style.display = 'none';
             // if (this.subcategoriesView) this.subcategoriesView.style.display = 'block';
@@ -520,7 +514,7 @@
             // if (this.locationDetailsView) this.locationDetailsView.style.display = 'none';
             // if (this.directionsView) this.directionsView.style.display = 'none';
             // if (this.navigationView) this.navigationView.style.display = 'none';
-            
+
             // Adjust container height to fit content
             if (this.menuContainer) {
                 this.menuContainer.style.maxHeight = 'fit-content';
@@ -572,7 +566,7 @@
             // Set destination
             const destinationText = document.getElementById('destinationInput');
             if (destinationText && location) {
-                destinationText.value = getPOITitleByLang(location.properties , cfg.state.language) || 'Selected Location';
+                destinationText.value = getPOITitleByLang(location.properties, cfg.state.language) || 'Selected Location';
                 destinationText.disabled = true;
             }
 
@@ -718,14 +712,14 @@
             const [toLng, toLat] = parseCenter(this.currentLocation.properties.center);
 
             route.drawPathToPoi(
-            departureLocation.properties.title,
-            fromLng,
-            fromLat,
-            departureLocation.properties.level,
-            this.currentLocation.properties.title,
-            toLng,
-            toLat,
-            this.currentLocation.properties.level
+                departureLocation.properties.title,
+                fromLng,
+                fromLat,
+                departureLocation.properties.level,
+                this.currentLocation.properties.title,
+                toLng,
+                toLat,
+                this.currentLocation.properties.level
             );
             // Replace departure input with selected departure display
             // const departureContainer = document.querySelector('.destination-container');
@@ -776,12 +770,12 @@
                 }
 
                 const endroutebtn = document.getElementById('endRoutebtn');
-                 endroutebtn.removeEventListener('click', this.handleEndRouteClick); // Remove old listener
-                    this.handleEndRouteClick = () => {
-                       mapc.clearRoute();
-                       document.getElementById("directionsBackBtn").click();
-                    };
-                    endroutebtn.addEventListener('click', this.handleEndRouteClick);
+                endroutebtn.removeEventListener('click', this.handleEndRouteClick); // Remove old listener
+                this.handleEndRouteClick = () => {
+                    mapc.clearRoute();
+                    document.getElementById("directionsBackBtn").click();
+                };
+                endroutebtn.addEventListener('click', this.handleEndRouteClick);
             }
 
             // Show journey breakdown
@@ -815,9 +809,11 @@
             // Setup swap locations functionality
             const swapBtn = document.getElementById('swapIcon');
             if (swapBtn) {
-                swapBtn.addEventListener('click', () => {
+                swapBtn.removeEventListener('click', this.handleSwapClick); // Remove old listener
+                this.handleSwapClick = () => {
                     this.swapDepartureDestination();
-                });
+                }
+                swapBtn.addEventListener('click', this.handleSwapClick);
             }
         }
 
@@ -837,12 +833,28 @@
 
         // Helper function to swap departure and destination
         swapDepartureDestination() {
-            //console.log('Swapping departure and destination');
+            // Prevent swap if either is null or undefined
+            if (!this.selectedDeparture || !this.currentLocation) {
+                console.warn('Swap aborted: selectedDeparture or currentLocation is null');
+                return;
+            }
+
             const temp = this.selectedDeparture;
             this.selectedDeparture = this.currentLocation;
             this.currentLocation = temp;
 
-            // Refresh the interface
+            const departureInput = document.getElementById('departureInput');
+            if (departureInput) {
+                departureInput.value = getPOITitleByLang(this.selectedDeparture.properties, cfg.state.language);
+                departureInput.classList.add('filled');
+            }
+
+            const destinationInput = document.getElementById('destinationInput');
+            if (destinationInput) {
+                destinationInput.value = getPOITitleByLang(this.currentLocation.properties, cfg.state.language);
+                destinationInput.classList.add('filled');
+            }
+
             this.showCompleteDirectionsInterface(this.selectedDeparture);
         }
 
@@ -915,14 +927,14 @@
             // Update the Steps button text to indicate it can close
             const stepsButton = document.getElementById('stepsButton');
             if (stepsButton) {
-        //         stepsButton.innerHTML = `
-        //     Hide Steps
-        //     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        //         <path d="M18 6L6 18"></path>
-        //         <path d="M6 6l12 12"></path>
-        //     </svg>
-        // `;
-                  stepsButton.innerHTML = `Hide Steps`;
+                //         stepsButton.innerHTML = `
+                //     Hide Steps
+                //     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                //         <path d="M18 6L6 18"></path>
+                //         <path d="M6 6l12 12"></path>
+                //     </svg>
+                // `;
+                stepsButton.innerHTML = `Hide Steps`;
                 stepsButton.style.background = '#4DA8DA !important'; // Red color for close
             }
 
@@ -972,13 +984,13 @@
             // Restore the Steps button text and color
             const stepsButton = document.getElementById('stepsButton');
             if (stepsButton) {
-        //         stepsButton.innerHTML = `
-        //     Steps
-        //     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        //         <path d="M9 18l6-6-6-6"></path>
-        //     </svg>
-        // `;
-            stepsButton.innerHTML = `Show Steps`;
+                //         stepsButton.innerHTML = `
+                //     Steps
+                //     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                //         <path d="M9 18l6-6-6-6"></path>
+                //     </svg>
+                // `;
+                stepsButton.innerHTML = `Show Steps`;
                 stepsButton.style.background = '#4DA8DA !important'; // Blue color for steps
             }
         }
@@ -992,74 +1004,7 @@
                 return;
             }
 
-            // Get navigation steps from airport data or use default steps
-            let steps = [];
-
-            // if (window.AIRPORT_DATA && this.selectedDeparture && this.currentLocation) {
-            //     const path = window.AIRPORT_DATA.getPathBetween(
-            //         this.selectedDeparture.id,
-            //         this.currentLocation.id
-            //     );
-            //     if (path && path.steps) {
-            //         steps = path.steps;
-            //     }
-            // }
-
-            // Enhanced default steps with proper directions and landmarks
-            if (steps.length === 0) {
-                console.log("departure : "+this.selectedDeparture.properties.title)
-                const departureName = this.selectedDeparture ? this.selectedDeparture.properties.title : 'your departure location';
-                const destinationName = this.currentLocation ? this.currentLocation.properties.title : 'your destination';
-
-                steps = [
-                    {
-                        text: `Leave ${departureName} and take escalator down to Level 4`,
-                        time: 'Less than a minute',
-                        icon: '🔘',
-                        type: 'start'
-                    },
-                    {
-                        text: 'Turn right at DFS Duty Free',
-                        time: 'Less than a minute',
-                        icon: '↑',
-                        type: 'turn'
-                    },
-                    {
-                        text: 'Turn left at Cartier',
-                        time: 'Less than a minute',
-                        icon: '↰',
-                        type: 'turn'
-                    },
-                    {
-                        text: 'Turn right at Bvlgari',
-                        time: 'Less than a minute',
-                        icon: '→',
-                        type: 'turn'
-                    },
-                    {
-                        text: 'Turn left at Book Soup',
-                        time: 'Less than a minute',
-                        icon: '↰',
-                        type: 'turn'
-                    },
-                    {
-                        text: 'Turn right',
-                        time: 'Less than a minute',
-                        icon: '→',
-                        type: 'turn'
-                    },
-                    {
-                        text: `Arrive at ${destinationName}`,
-                        time: '',
-                        icon: '🏁',
-                        type: 'destination'
-                    }
-                ];
-            }
-
-            const instructions = navigation.generateNavigationInstructions(mapc.smartRoute);
-            console.log(instructions);
-
+            const instructions = navigation.generateNavigationInstructions(mapc.smartRoute, cfg.state.language);
             // Clear existing steps
             navigationStepsList.innerHTML = '';
 
@@ -1069,7 +1014,7 @@
                 departureHeader.className = 'location-header';
                 departureHeader.innerHTML = `
             <div class="location-dot departure"></div>
-            <div class="location-text">${getPOITitleByLang(this.selectedDeparture.properties , cfg.state.language)}</div>
+            <div class="location-text">${getPOITitleByLang(this.selectedDeparture.properties, cfg.state.language)}</div>
         `;
                 navigationStepsList.appendChild(departureHeader);
             }
@@ -1091,9 +1036,9 @@
                 </div>
             `;
                 } else {
-                const distance = step?.distance ? navigation.formatDistanceImperial(step.distance) : null;
+                    const distance = step?.distance ? navigation.formatDistanceImperial(step.distance, cfg.state.language) : null;
 
-                stepElement.innerHTML = `
+                    stepElement.innerHTML = `
                 <div class="clean-step-icon">${step.icon}</div>
                 <div class="clean-step-content">
                     <div class="clean-step-text">${step.text}</div>
@@ -1104,6 +1049,15 @@
                 `;
                 }
 
+                stepElement.addEventListener('click', () => {
+                    if (step.coordinates.length > 1) {
+                        this.highlightRouteSegment(window.mapInit.map, window.mapInit.map.getSource('route')._data, step.coordinates[0], step.coordinates[1], cfg.state.levelRoutePoi, mapc.switchFloorByNo, '#FFB534')
+                    } else {
+                        markers.flyToPointA(step.coordinates[0][0], step.coordinates[0][1]);
+                        this.highlightRouteSegment(window.mapInit.map, window.mapInit.map.getSource('route')._data, step.coordinates[0], step.coordinates[0], cfg.state.levelRoutePoi, mapc.switchFloorByNo, '#FFB534')
+                    }
+                });
+
                 navigationStepsList.appendChild(stepElement);
             });
 
@@ -1113,13 +1067,167 @@
                 destinationFooter.className = 'location-header';
                 destinationFooter.innerHTML = `
             <div class="location-dot destination"></div>
-            <div class="location-text">${getPOITitleByLang(this.currentLocation.properties , cfg.state.language)}</div>
+            <div class="location-text">${getPOITitleByLang(this.currentLocation.properties, cfg.state.language)}</div>
         `;
                 navigationStepsList.appendChild(destinationFooter);
             }
 
             // Apply timeline styling
             //this.applyTimelineStyles();
+        }
+
+
+
+        highlightRouteSegment(map, geojsonData, startCoord, endCoord, levelRoutePoi, switchFloorByOn, highlightColor = '#FF0000') {
+            const startStr = startCoord.map(c => Number(c).toFixed(6)).join(',');
+            const endStr = endCoord.map(c => Number(c).toFixed(6)).join(',');
+
+            const currentKey = `${startStr}_${endStr}`;
+
+            // Toggle: remove highlight if user clicks again on the same instruction
+            if (cfg.state.lastHighlighted === currentKey) {
+                if (map.getLayer('highlight-segment-layer')) map.removeLayer('highlight-segment-layer');
+                if (map.getSource('highlight-segment')) map.removeSource('highlight-segment');
+                if (map.getLayer('highlight-dot-layer')) map.removeLayer('highlight-dot-layer');
+                if (map.getSource('highlight-dot')) map.removeSource('highlight-dot');
+                cfg.state.lastHighlighted = null;
+                return;
+            }
+
+            // Remove any existing highlights
+            if (map.getLayer('highlight-segment-layer')) map.removeLayer('highlight-segment-layer');
+            if (map.getSource('highlight-segment')) map.removeSource('highlight-segment');
+            if (map.getLayer('highlight-dot-layer')) map.removeLayer('highlight-dot-layer');
+            if (map.getSource('highlight-dot')) map.removeSource('highlight-dot');
+
+            cfg.state.lastHighlighted = currentKey;
+
+            if (startStr !== endStr) {
+                // Convert to numbers
+                const lng1 = Number(startCoord[0]);
+                const lat1 = Number(startCoord[1]);
+                const lng2 = Number(endCoord[0]);
+                const lat2 = Number(endCoord[1]);
+
+                // Calculate bearing
+                const point1 = turf.point([lng1, lat1]);
+                const point2 = turf.point([lng2, lat2]);
+                const bearing = turf.bearing(point1, point2);
+
+                // Midpoint
+                const center = [(lng1 + lng2) / 2, (lat1 + lat2) / 2];
+
+                map.flyTo({
+                    center: center,
+                    bearing: bearing,
+                    zoom: map.getZoom(), // or custom zoom level
+                    speed: 1.2,
+                    pitch: 60,
+                    duration: 3000
+                });
+            }
+            // === CASE: Same start and end => draw dot ===
+            if (startStr === endStr) {
+                const dotFeature = {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Point',
+                        coordinates: startCoord.map(Number)
+                    }
+                };
+
+                map.addSource('highlight-dot', {
+                    type: 'geojson',
+                    data: dotFeature
+                });
+
+                map.addLayer({
+                    id: 'highlight-dot-layer',
+                    type: 'circle',
+                    source: 'highlight-dot',
+                    paint: {
+                        'circle-radius': 8,
+                        'circle-color': highlightColor,
+                        'circle-stroke-width': 2,
+                        'circle-stroke-color': '#ffffff'
+                    }
+                });
+                map.moveLayer("arrow-layer")
+                return;
+            }
+
+            // === CASE: Find segment between points ===
+            let foundStart = false;
+            let foundEnd = false;
+            let segmentCoords = [];
+            let segmentLevel = null;
+
+            for (const feature of geojsonData.features || []) {
+                const coords = feature.geometry?.coordinates || [];
+                if (!coords.length) continue;
+
+                const featureLevel = parseInt(feature.properties?.level);
+
+                for (let i = 0; i < coords.length; i++) {
+                    const pointStr = coords[i].map(c => Number(c).toFixed(6)).join(',');
+
+                    if (!foundStart && pointStr === startStr) {
+                        foundStart = true;
+                        segmentLevel = featureLevel;
+                        segmentCoords.push(coords[i].map(Number));
+                        continue;
+                    }
+
+                    if (foundStart && !foundEnd) {
+                        segmentCoords.push(coords[i].map(Number));
+                        if (pointStr === endStr) {
+                            foundEnd = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (foundEnd) break;
+            }
+
+            if (!foundStart || !foundEnd) {
+                console.warn("Start or end coordinate not found in the route.");
+                cfg.state.lastHighlighted = null;
+                return;
+            }
+            // === Check level and switch if needed ===
+            if (segmentLevel !== null && segmentLevel !== levelRoutePoi) {
+                if (segmentLevel == 0) {
+                    segmentLevel = "G";
+                }
+                switchFloorByOn(segmentLevel);
+            }
+
+            // === Highlight Line Segment ===
+            const segmentGeoJSON = {
+                type: 'Feature',
+                geometry: {
+                    type: 'LineString',
+                    coordinates: segmentCoords
+                }
+            };
+
+            map.addSource('highlight-segment', {
+                type: 'geojson',
+                data: segmentGeoJSON
+            });
+
+            map.addLayer({
+                id: 'highlight-segment-layer',
+                type: 'line',
+                source: 'highlight-segment',
+                paint: {
+                    'line-color': highlightColor,
+                    'line-width': 15
+                }
+            });
+            map.moveLayer("arrow-layer")
+
         }
 
         // Remove or comment out the old populateNavigation function since it's no longer needed
@@ -1167,13 +1275,13 @@
                 // Restore the Steps button
                 const stepsButton = document.getElementById('stepsButton');
                 if (stepsButton) {
-            //         stepsButton.innerHTML = `
-            //     Steps
-            //     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            //         <path d="M9 18l6-6-6-6"></path>
-            //     </svg>
-            // `;
-                 stepsButton.innerHTML = `Show Steps`;
+                    //         stepsButton.innerHTML = `
+                    //     Steps
+                    //     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    //         <path d="M9 18l6-6-6-6"></path>
+                    //     </svg>
+                    // `;
+                    stepsButton.innerHTML = `Show Steps`;
                     stepsButton.style.background = '#4DA8DA !important';
                 }
             }, 100);
@@ -1363,22 +1471,21 @@
             let allLocations = [];
 
             cfg.state.allPoiGeojson.features.forEach((feature) => {
-            feature.properties = window.mapTranslator.translatePOIProperties(feature);
-            const { title = '', location } = feature.properties;
+                feature.properties = window.mapTranslator.translatePOIProperties(feature);
+                const { title = '', location } = feature.properties;
 
-            const matchesPoiName = getPOITitleByLang(feature.properties , cfg.state.language).toLowerCase().includes(poiName.toLowerCase());
-            const matchesTerminal = !cfg.state.selectedTerminal || location === cfg.state.selectedTerminal;
+                const matchesPoiName = getPOITitleByLang(feature.properties, cfg.state.language).toLowerCase().includes(poiName.toLowerCase());
+                const matchesTerminal = !cfg.state.selectedTerminal || location === cfg.state.selectedTerminal;
 
-            if (matchesPoiName && matchesTerminal) {
-                
-                allLocations.push(feature);
-            }
+                if (matchesPoiName && matchesTerminal) {
+
+                    allLocations.push(feature);
+                }
             });
 
-            if(allLocations.length < 1)
-            {
+            if (allLocations.length < 1) {
                 document.getElementById("NoResultsFound").style.display = "block";
-            }else{
+            } else {
                 document.getElementById("NoResultsFound").style.display = "none";
             }
 
@@ -1388,7 +1495,7 @@
                 var icon = location?.properties?.iconUrl
                     ? location.properties.iconUrl
                     : "./src/images/missingpoi.png";
-                var title = getPOITitleByLang(location.properties , cfg.state.language);
+                var title = getPOITitleByLang(location.properties, cfg.state.language);
                 var language = cfg.state.language
                 var poiTerminalLocation = cfg.state.terminalTranslations[language][location?.properties.location];
                 var poiLevel = cfg.state.floorsNames[language][location.properties.level];
@@ -1421,15 +1528,15 @@
             let allLocations = [];
 
             cfg.state.allPoiGeojson.features.forEach((feature) => {
-            feature.properties = window.mapTranslator.translatePOIProperties(feature);
-            const { title = '', location } = feature.properties;
+                feature.properties = window.mapTranslator.translatePOIProperties(feature);
+                const { title = '', location } = feature.properties;
 
-            const matchesPoiName = getPOITitleByLang(feature.properties , cfg.state.language).toLowerCase().includes(poiName.toLowerCase());
-            const matchesTerminal = !cfg.state.selectedTerminal || location === cfg.state.selectedTerminal;
+                const matchesPoiName = getPOITitleByLang(feature.properties, cfg.state.language).toLowerCase().includes(poiName.toLowerCase());
+                const matchesTerminal = !cfg.state.selectedTerminal || location === cfg.state.selectedTerminal;
 
-            if (matchesPoiName && matchesTerminal) {
-                allLocations.push(feature);
-            }
+                if (matchesPoiName && matchesTerminal) {
+                    allLocations.push(feature);
+                }
             });
 
             popularLocationsList.innerHTML = '';
@@ -1437,10 +1544,10 @@
 
             allLocations.forEach(location => {
                 var icon = location?.properties?.iconUrl
-                ? location.properties.iconUrl
-                : "./src/images/missingpoi.png";
-                var title = getPOITitleByLang(location.properties , cfg.state.language);
-                 var language = cfg.state.language
+                    ? location.properties.iconUrl
+                    : "./src/images/missingpoi.png";
+                var title = getPOITitleByLang(location.properties, cfg.state.language);
+                var language = cfg.state.language
                 var poiTerminalLocation = cfg.state.terminalTranslations[language][location.properties.location];
                 var level = cfg.state.floorsNames[language][location.properties.level];
                 const item = document.createElement('div');
@@ -1472,11 +1579,11 @@
             let allLocations = [];
 
             cfg.state.allPoiGeojson.features.forEach((feature) => {
-            // const location = feature.properties.location;
-            if (!cfg.state.selectedTerminal || location === cfg.state.selectedTerminal) {
-                feature.properties = window.mapTranslator.translatePOIProperties(feature);
-                allLocations.push(feature);
-            }
+                // const location = feature.properties.location;
+                if (!cfg.state.selectedTerminal || location === cfg.state.selectedTerminal) {
+                    feature.properties = window.mapTranslator.translatePOIProperties(feature);
+                    allLocations.push(feature);
+                }
             });
 
             popularLocationsList.innerHTML = '';
@@ -1484,9 +1591,9 @@
 
             allLocations.forEach(location => {
                 var icon = location?.properties?.iconUrl
-                ? location.properties.iconUrl
-                : "./src/images/missingpoi.png";
-                var title = getPOITitleByLang(location.properties , cfg.state.language);
+                    ? location.properties.iconUrl
+                    : "./src/images/missingpoi.png";
+                var title = getPOITitleByLang(location.properties, cfg.state.language);
                 var language = cfg.state.language
                 var poiTerminalLocation = cfg.state.terminalTranslations[language][location.properties.location];
                 const item = document.createElement('div');
@@ -1516,14 +1623,14 @@
             // Store the selected departure location
             this.selectedDeparture = departureLocation;
             const departureInput = document.getElementById('departureInput');
-             if (departureInput) {
-                departureInput.value = getPOITitleByLang(departureLocation.properties , cfg.state.language);
+            if (departureInput) {
+                departureInput.value = getPOITitleByLang(departureLocation.properties, cfg.state.language);
                 departureInput.classList.add('filled');
             }
 
             const destinationInput = document.getElementById('destinationInput');
-             if (destinationInput) {
-                destinationInput.value = getPOITitleByLang(this.currentLocation.properties , cfg.state.language);
+            if (destinationInput) {
+                destinationInput.value = getPOITitleByLang(this.currentLocation.properties, cfg.state.language);
                 destinationInput.classList.add('filled');
             }
 
@@ -1573,7 +1680,7 @@
             if (popularView) popularView.style.display = 'none';
         }
 
-            showLocationsView(subcategoryName) {
+        showLocationsView(subcategoryName) {
             //console.log('Showing locations view for', subcategoryName);
             this.currentView = 'locations';
             this.currentSubcategory = subcategoryName;
@@ -1597,7 +1704,7 @@
             var language = cfg.state.language;
             for (var t = 0; t < cfg.state.categoryObject.building_poi_categories.length; t++) {
                 if (
-                    cfg.state.categoryObject.building_poi_categories[t].name === 
+                    cfg.state.categoryObject.building_poi_categories[t].name ===
                     cfg.state.reversedCategoryTranslations[language][categoryName]
                 ) {
                     clickedCategoryId = cfg.state.categoryObject.building_poi_categories[t].id;
@@ -1617,18 +1724,18 @@
 
             // BY TERMINALS
 
-                const subcategoryMap = {
+            const subcategoryMap = {
                 EN: "All",
                 AR: "الكل",
                 ZN: "全部"
-                };
+            };
 
-                // Start with the translated "All"
-                let subcategories = [subcategoryMap[cfg.state.language] || "All"];
-                let found = false;
+            // Start with the translated "All"
+            let subcategories = [subcategoryMap[cfg.state.language] || "All"];
+            let found = false;
 
-                // Collect subcategories
-                cfg.state.allPoiGeojson.features.forEach((feature) => {
+            // Collect subcategories
+            cfg.state.allPoiGeojson.features.forEach((feature) => {
                 const { category_id, location, subcategories: featureSubcategories } = feature.properties;
 
                 const matchesCategory = category_id === clickedCategoryId;
@@ -1638,21 +1745,21 @@
                     subcategories.push(...featureSubcategories);
                     found = true;
                 }
-                });
+            });
 
-                // Remove duplicates (preserving the first "All") and sort the rest
-                const uniqueSubcategories = [...new Set(subcategories)];
+            // Remove duplicates (preserving the first "All") and sort the rest
+            const uniqueSubcategories = [...new Set(subcategories)];
 
-                // Get "All" value and rest separately
-                const allValue = subcategoryMap[cfg.state.language] || "All";
-                const sortedSubcategories = [
+            // Get "All" value and rest separately
+            const allValue = subcategoryMap[cfg.state.language] || "All";
+            const sortedSubcategories = [
                 allValue,
                 ...uniqueSubcategories
                     .filter(sc => sc !== allValue)
                     .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
-                ];
+            ];
 
-                subcategories = sortedSubcategories;
+            subcategories = sortedSubcategories;
 
             // If no subcategories were found, remove "All"
             if (!found) {
@@ -1666,12 +1773,12 @@
                 this.subcategoriesList.innerHTML = '';
                 subcategories.forEach(subcategory => {
                     if (cfg.state.language === "EN") {
-                    if (!isItEnglish(subcategory)) return;
+                        if (!isItEnglish(subcategory)) return;
                     } else if (cfg.state.language === "AR") {
-                    if (!isItArabic(subcategory)) return;
+                        if (!isItArabic(subcategory)) return;
                     } else if (cfg.state.language === "ZN") {
-                    if (isItEnglish(subcategory) || isItArabic(subcategory)) return;
-}
+                        if (isItEnglish(subcategory) || isItArabic(subcategory)) return;
+                    }
                     const item = document.createElement('div');
                     item.className = 'subcategory-item';
                     item.innerHTML = `
@@ -1707,16 +1814,16 @@
 
         populateLocationSearch(query) {
 
-                this.populateLocationsByName(query)
-                if (this.categoriesSection) this.categoriesSection.style.display = 'none';
-                if (this.searchSectionCategories) this.searchSectionCategories.style.display = 'none';
-                if (this.subcategoriesView) this.subcategoriesView.style.display = 'none';
-                if (this.locationsView) this.locationsView.style.display = 'block';
-                if (this.locationDetailsView) this.locationDetailsView.style.display = 'none';
-                if (this.directionsView) this.directionsView.style.display = 'none';
-                if (this.navigationView) this.navigationView.style.display = 'none';
+            this.populateLocationsByName(query)
+            if (this.categoriesSection) this.categoriesSection.style.display = 'none';
+            if (this.searchSectionCategories) this.searchSectionCategories.style.display = 'none';
+            if (this.subcategoriesView) this.subcategoriesView.style.display = 'none';
+            if (this.locationsView) this.locationsView.style.display = 'block';
+            if (this.locationDetailsView) this.locationDetailsView.style.display = 'none';
+            if (this.directionsView) this.directionsView.style.display = 'none';
+            if (this.navigationView) this.navigationView.style.display = 'none';
         }
-        
+
 
 
 
@@ -1736,36 +1843,34 @@
             // }
             var language = cfg.state.language
             cfg.state.allPoiGeojson.features.forEach((feature) => {
-            const { subcategories = [], location } = feature.properties;
+                const { subcategories = [], location } = feature.properties;
 
-            const matchesSubcategory = subcategories.includes(subcategoryName);
-            const matchesTerminal = !cfg.state.selectedTerminal || location === cfg.state.selectedTerminal;
+                const matchesSubcategory = subcategories.includes(subcategoryName);
+                const matchesTerminal = !cfg.state.selectedTerminal || location === cfg.state.selectedTerminal;
 
-            if (matchesSubcategory && matchesTerminal) {
-                feature.properties = window.mapTranslator.translatePOIProperties(feature);
-                locations.push(feature);
-            }
+                if (matchesSubcategory && matchesTerminal) {
+                    feature.properties = window.mapTranslator.translatePOIProperties(feature);
+                    locations.push(feature);
+                }
             });
 
-            if(locations.length < 1)
-            {
+            if (locations.length < 1) {
                 document.getElementById("NoResultsFound").style.display = "block";
-            }else
-            {
+            } else {
                 document.getElementById("NoResultsFound").style.display = "none";
             }
 
             this.locationsList.innerHTML = '';
-            
+
             sortLocationsByLang(locations, language); // Sorts by Arabic title
 
             locations.forEach(location => {
                 var icon = location?.properties?.iconUrl
                     ? location.properties.iconUrl
                     : "./src/images/missingpoi.png";
-               // var title = mapTranslator.getTranslatedPOIName(location.properties.title , cfg.state.language , location);
-                
-                var title = getPOITitleByLang(location.properties , language);
+                // var title = mapTranslator.getTranslatedPOIName(location.properties.title , cfg.state.language , location);
+
+                var title = getPOITitleByLang(location.properties, language);
                 var poiTerminalLocation = cfg.state.terminalTranslations[language][location.properties.location];
                 var poiLevel = cfg.state.floorsNames[language][location.properties.level];
                 const item = document.createElement('div');
@@ -1797,20 +1902,19 @@
             let locations = [];
 
             cfg.state.allPoiGeojson.features.forEach((feature) => {
-            const { category_id, location } = feature.properties;
+                const { category_id, location } = feature.properties;
 
-            const matchesCategory = category_id === categoryID;
-            const matchesTerminal = !cfg.state.selectedTerminal || location === cfg.state.selectedTerminal;
-            //workhere
-            if (matchesCategory && matchesTerminal) {
-                feature.properties = window.mapTranslator.translatePOIProperties(feature);
-                locations.push(feature);
-            }
+                const matchesCategory = category_id === categoryID;
+                const matchesTerminal = !cfg.state.selectedTerminal || location === cfg.state.selectedTerminal;
+                //workhere
+                if (matchesCategory && matchesTerminal) {
+                    feature.properties = window.mapTranslator.translatePOIProperties(feature);
+                    locations.push(feature);
+                }
             });
-            if(locations.length < 1)
-            {
+            if (locations.length < 1) {
                 document.getElementById("NoResultsFound").style.display = "block";
-            }else{
+            } else {
                 document.getElementById("NoResultsFound").style.display = "none";
             }
 
@@ -1821,9 +1925,9 @@
                 var icon = location?.properties?.iconUrl
                     ? location.properties.iconUrl
                     : "./src/images/missingpoi.png";
-                var title = getPOITitleByLang(location.properties , cfg.state.language);
+                var title = getPOITitleByLang(location.properties, cfg.state.language);
                 var language = cfg.state.language
-                var title = getPOITitleByLang(location.properties , language);
+                var title = getPOITitleByLang(location.properties, language);
                 var poiTerminalLocation = cfg.state.terminalTranslations[language][location.properties.location];
                 var poiLevel = cfg.state.floorsNames[language][location.properties.level];
                 const item = document.createElement('div');
@@ -1849,42 +1953,38 @@
 
         populateLocationDetails(location) {
             if (!this.locationInfo) return;
-            
+
             var language = cfg.state.language;
             var amenities = [];
-            console.log("CHECK : ",location?.properties);
-            if(language == "EN"){
-             amenities = getEnglishOnly(location?.properties?.subcategories);
-            }else if(language == "AR")
-            {
-             amenities = getArabicOnly(location?.properties?.subcategories);
-            }else if(language == "ZN")
-            {
-             amenities = getChineseOnly(location?.properties?.subcategories);
+            if (language == "EN") {
+                amenities = getEnglishOnly(location?.properties?.subcategories);
+            } else if (language == "AR") {
+                amenities = getArabicOnly(location?.properties?.subcategories);
+            } else if (language == "ZN") {
+                amenities = getChineseOnly(location?.properties?.subcategories);
             }
 
-            if(this.categoryItem != null){
+            if (this.categoryItem != null) {
                 amenities.push(this.categoryItem);
             }
 
             console.log("amenities size : "+amenities.length);
             var display = "block";
-            if(amenities.length < 1)
-            {
+            if (amenities.length < 1) {
                 display = "none";
-            }else{
+            } else {
                 display = "block";
             }
-            var title = getPOITitleByLang(location?.properties , cfg.state.language);
+            var title = getPOITitleByLang(location?.properties, cfg.state.language);
             const [fromLng, fromLat] = parseCenter(location?.properties.center);
             var language = cfg.state.language
             var icon = location?.properties?.iconUrl
                 ? location.properties.iconUrl
                 : "./src/images/missingpoi.png";
             var poiTerminalLocation = cfg.state.terminalTranslations[language][location?.properties.location];
-            markers.flyToPointA(fromLng , fromLat);  
-            mapc.switchFloorByNo(location?.properties.level);        
-           this.locationInfo.innerHTML = `
+            markers.flyToPointA(fromLng, fromLat);
+            mapc.switchFloorByNo(location?.properties.level);
+            this.locationInfo.innerHTML = `
             <div class="location-title-with-icon">
                 <div class="location-text-column">
                 <div class="location-title">${title}</div>
@@ -2116,13 +2216,14 @@
 
     // Initialize the component when DOM is ready
     document.addEventListener('DOMContentLoaded', function () {
-        window.airportMenu = new AirportMenuComponent();
+        import('/src/config.js').then(cfg => window.cfg = cfg);
+        cfg.state.airportMenu = new AirportMenuComponent();
     });
 
     // Also initialize if DOM is already loaded
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function () {
-            window.airportMenu = new AirportMenuComponent();
+            //cfg.state.airportMenu = new AirportMenuComponent();
         });
     } else {
         window.airportMenu = new AirportMenuComponent();
@@ -2145,54 +2246,54 @@ function isItEnglish(text) {
 
 
 function normalizeArray(input) {
-  if (typeof input === 'string') {
-    try {
-      const parsed = JSON.parse(input);
-      if (Array.isArray(parsed)) {
-        return parsed;
-      }
-    } catch (e) {
-      console.warn('Invalid JSON array string:', input);
-      return [];
+    if (typeof input === 'string') {
+        try {
+            const parsed = JSON.parse(input);
+            if (Array.isArray(parsed)) {
+                return parsed;
+            }
+        } catch (e) {
+            console.warn('Invalid JSON array string:', input);
+            return [];
+        }
     }
-  }
-  return Array.isArray(input) ? input : [];
+    return Array.isArray(input) ? input : [];
 }
 
 function getEnglishOnly(arr) {
-  const items = normalizeArray(arr);
-  const englishRegex = /^[\u0000-\u007F]+$/;
-  return items.filter(item => englishRegex.test(item));
+    const items = normalizeArray(arr);
+    const englishRegex = /^[\u0000-\u007F]+$/;
+    return items.filter(item => englishRegex.test(item));
 }
 
 function getArabicOnly(arr) {
-  const items = normalizeArray(arr);
-  const arabicRegex = /^[\u0600-\u06FF\s]+$/;
-  return items.filter(item => arabicRegex.test(item));
+    const items = normalizeArray(arr);
+    const arabicRegex = /^[\u0600-\u06FF\s]+$/;
+    return items.filter(item => arabicRegex.test(item));
 }
 
 function getChineseOnly(arr) {
-  const items = normalizeArray(arr);
-  const chineseRegex = /^[\u3400-\u4DBF\u4E00-\u9FFF\s]+$/;
-  return items.filter(item => chineseRegex.test(item));
+    const items = normalizeArray(arr);
+    const chineseRegex = /^[\u3400-\u4DBF\u4E00-\u9FFF\s]+$/;
+    return items.filter(item => chineseRegex.test(item));
 }
 
 function parseCenter(center) {
-  if (typeof center === 'string') {
-    try {
-      center = JSON.parse(center);
-    } catch (e) {
-      console.error('Invalid center format:', center);
-      return [0, 0]; // fallback default
+    if (typeof center === 'string') {
+        try {
+            center = JSON.parse(center);
+        } catch (e) {
+            console.error('Invalid center format:', center);
+            return [0, 0]; // fallback default
+        }
     }
-  }
 
-  if (Array.isArray(center) && center.length === 2) {
-    return [parseFloat(center[0]), parseFloat(center[1])];
-  }
+    if (Array.isArray(center) && center.length === 2) {
+        return [parseFloat(center[0]), parseFloat(center[1])];
+    }
 
-  console.error('Invalid center format:', center);
-  return [0, 0]; // fallback default
+    console.error('Invalid center format:', center);
+    return [0, 0]; // fallback default
 }
 
 function getPOITitleByLang(poi, lang = 'EN') {
