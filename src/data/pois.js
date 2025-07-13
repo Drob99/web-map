@@ -90,12 +90,13 @@ function processPoiProperties(poi) {
       level: state.levelArray[poi.building_floor_id],
       terminal:getPoiTerminal([poi.longitude, poi.latitude]),
       location:"Terminal "+getPoiTerminal([poi.longitude, poi.latitude]),
-      color: isNaN(poi.title) ? poi.color : '#CDD0CB'
+      color: isNaN(poi.title) ? poi.color : '#CDD0CB',
+	  working_hours : poi.working_hours
     }
   });
   
   // Update UI dropdowns
-  loadDropdownPoi(poi);
+  //loadDropdownPoi(poi);
 }
 
 

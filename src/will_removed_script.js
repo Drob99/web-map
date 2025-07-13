@@ -1873,6 +1873,10 @@
                 var title = getPOITitleByLang(location.properties, language);
                 var poiTerminalLocation = cfg.state.terminalTranslations[language][location.properties.location];
                 var poiLevel = cfg.state.floorsNames[language][location.properties.level];
+                console.log(location.properties.working_hours)
+                var scheduleData = location.properties.working_hours
+                var { workingHoursString, isOpenNow } = getWorkingHoursStatus(scheduleData);
+                console.log(workingHoursString , isOpenNow);
                 const item = document.createElement('div');
                 item.className = 'location-item';
                 item.innerHTML = `
@@ -1882,6 +1886,13 @@
                     <div class="location-details">
                         <div class="location-name">${title}</div>
                         <div class="location-address">${poiTerminalLocation} - ${poiLevel}</div>
+                        ${workingHoursString ? `
+                        <div class="location-hours">
+                            <span class="status ${isOpenNow ? 'open' : 'closed'}">
+                                ${isOpenNow ? '● Open Now' : '● Closed'}
+                            </span>
+                        </div>
+                        ` : ''}
                     </div>
                 `;
 
@@ -2320,4 +2331,102 @@ function sortLocationsByLang(locations, lang = 'EN') {
     });
 
     return locations;
+}
+
+function timeToMinutes(timeStr) {
+    if (typeof timeStr !== 'string') return 0;
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    if (isNaN(hours)) return 0;
+    return (hours * 60) + (isNaN(minutes) ? 0 : minutes);
+}
+
+// Main function to process schedule data
+function getWorkingHoursStatus(schedule) {
+    try {
+        // Return empty if schedule is missing or invalid
+        if (!Array.isArray(schedule)) {
+            return { workingHoursString: "", isOpenNow: false };
+        }
+        
+        const now = new Date();
+        const currentDay = now.getDay();  // 0 (Sunday) to 6 (Saturday)
+        const dayIndex = currentDay === 0 ? 6 : currentDay - 1;  // Map to schedule index
+        
+        // Return empty if day index is out of range
+        if (dayIndex < 0 || dayIndex >= schedule.length) {
+            return { workingHoursString: "", isOpenNow: false };
+        }
+        
+        const todaySchedule = schedule[dayIndex];
+        let workingHoursString = "";
+        let isOpenNow = false;
+
+        // Handle different schedule types
+        if (todaySchedule === null) {
+            // Return empty for null values
+            return { workingHoursString: "", isOpenNow: false };
+        }
+        
+        // Handle string status types ("00/00" or "--/--")
+        if (typeof todaySchedule === 'string') {
+            if (todaySchedule === "00/00") {
+                return { workingHoursString: "Open 24 hours", isOpenNow: true };
+            } else if (todaySchedule === "--/--") {
+                return { workingHoursString: "Closed", isOpenNow: false };
+            }
+        }
+        
+        // Handle array formats
+        if (Array.isArray(todaySchedule)) {
+            // Handle string in array (["00/00"], ["--/--"])
+            if (todaySchedule.length > 0 && typeof todaySchedule[0] === 'string') {
+                if (todaySchedule[0] === "00/00") {
+                    return { workingHoursString: "Open 24 hours", isOpenNow: true };
+                } else if (todaySchedule[0] === "--/--") {
+                    return { workingHoursString: "Closed", isOpenNow: false };
+                }
+            }
+            
+            // Handle shift arrays
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
+            const shiftStrings = [];
+            let foundValidShift = false;
+            
+            for (const shift of todaySchedule) {
+                // Handle shift format
+                if (Array.isArray(shift) && shift.length === 2) {
+                    const [start, end] = shift;
+                    
+                    // Only process if both values are strings
+                    if (typeof start === 'string' && typeof end === 'string') {
+                        let startMin = timeToMinutes(start);
+                        let endMin = timeToMinutes(end);
+                        
+                        // Handle midnight (00:00 → 24:00)
+                        if (endMin === 0) endMin = 1440;
+                        
+                        // Format shift for display
+                        shiftStrings.push(`${start} - ${end}`);
+                        foundValidShift = true;
+                        
+                        // Check if current time falls within this shift
+                        if (currentMinutes >= startMin && currentMinutes < endMin) {
+                            isOpenNow = true;
+                        }
+                    }
+                }
+            }
+            
+            if (foundValidShift) {
+                workingHoursString = shiftStrings.join(', ');
+            } else {
+                workingHoursString = "Closed";
+            }
+        }
+        
+        return { workingHoursString, isOpenNow };
+    } catch (error) {
+        console.error("Error processing schedule:", error);
+        return { workingHoursString: "", isOpenNow: false };
+    }
 }

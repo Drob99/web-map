@@ -18,21 +18,31 @@ export function beLayer(layerId, data) {
   }
 
   // Add layer if missing
-  if (!map.getLayer(layerId)) {
+if (!map.getLayer(layerId)) {
     map.addLayer({
       id: layerId,
-      type: 'fill',
+      type: 'fill-extrusion',
       source: layerId,
       paint: {
-        'fill-color': '#DEF7FF',
-        'fill-outline-color': '#9c9c9c',
-        'fill-opacity': [
-          'interpolate',
-          ['exponential', 0.1],
-          ['zoom'],
-          16.4, 0,
-          20.31967926651499, 1
-        ]
+       "fill-extrusion-color": [
+          "case",
+          ["has", "color"], ["get", "color"],
+          "#D8D3CD" // Default color if not found
+        ],
+        "fill-extrusion-height": [
+            "case",
+            ["has", "height"], ["get", "height"],
+            1 // Default height if not found
+        ],
+          "fill-extrusion-opacity": [
+            "interpolate",
+            ["exponential", 0.1],
+            ["zoom"],
+            16,
+            0,
+            20.31967926651499,
+            1,
+        ],
       }
     });
   }

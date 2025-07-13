@@ -50,7 +50,8 @@ export function initMap(
     center,
     zoom,
     bearing,
-    pitch
+    pitch,
+    preserveDrawingBuffer: true
   });
 
   // Add navigation controls

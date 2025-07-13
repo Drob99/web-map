@@ -671,19 +671,26 @@ export function showPoisByLevel() {
   // Add polygon layer
   map.addLayer({
     id: "polygons",
-    type: "fill",
+    type: "fill-extrusion",
     source: "municipalities",
     paint: {
-      "fill-color": ["coalesce", ["get", "color"], "#CCCCCC"],
-      "fill-opacity": [
-        "interpolate",
-        ["exponential", 0.1],
-        ["zoom"],
-        16.4,
-        0,
-        20.31967926651499,
-        0.8,
-      ],
+      "fill-extrusion-opacity": [
+				"interpolate",
+				// Set the exponential rate of change to 0.5
+				["exponential", 0.1],
+				["zoom"],
+				// When zoom is 10, buildings will be 100% transparent.
+				16,
+				0,
+				// When zoom is 18 or higher, buildings will be 100% opaque.
+				20.31967926651499,
+				1,
+			],
+			"fill-extrusion-height": 2.9,
+			"fill-extrusion-color": {
+				type: "identity",
+				property: "color",
+			},
     },
   });
 
@@ -692,6 +699,9 @@ export function showPoisByLevel() {
     id: "polygons_outside",
     type: "fill",
     source: "municipalities_outside",
+    layout : {
+      "visibility" : "none",
+    },
     paint: {
       "fill-color": ["coalesce", ["get", "color"], "#CCCCCC"],
       "fill-opacity": [
@@ -711,6 +721,9 @@ export function showPoisByLevel() {
     id: "polygons_outline",
     type: "line",
     source: "municipalities",
+    layout : {
+      "visibility" : "none",
+    },
     paint: {
       "line-color": "#828282",
       "line-width": [
@@ -872,4 +885,102 @@ export function flyToTerminal(selectedValue) {
       essential: true,
     });
   }
+}
+
+
+let is3DView = true; // Toggle state
+
+export function toggle2DTo3D() {
+    const { toggleableLayerIds } = state;
+
+    const layerHeights = {
+        'walls': 3,
+        'doors': 2.85,
+        'rooms': 2.8,
+        'be': 1
+    };
+
+    const animationDuration = 1000; // in ms
+    const frameRate = 60;
+    const steps = Math.floor(animationDuration / (1000 / frameRate));
+
+    function animateHeight(layerId, from, to, step = 0) {
+        if (step > steps) {
+            map.setPaintProperty(layerId, 'fill-extrusion-height', to);
+            return;
+        }
+
+        const progress = step / steps;
+        const value = from + (to - from) * progress;
+
+        map.setPaintProperty(layerId, 'fill-extrusion-height', value);
+
+        requestAnimationFrame(() => animateHeight(layerId, from, to, step + 1));
+    }
+
+    for (let i = 0; i < toggleableLayerIds.length; i++) {
+        const floorId = toggleableLayerIds[i];
+
+        for (let layerType in layerHeights) {
+            const layerId = `${floorId}/${layerType}`;
+
+            if (!map.getLayer(layerId)) continue;
+
+            let from = map.getPaintProperty(layerId, 'fill-extrusion-height');
+            if (from === undefined || typeof from !== 'number') from = is3DView ? layerHeights[layerType] : 0;
+
+            const to = is3DView ? 0 : layerHeights[layerType];
+            animateHeight(layerId, from, to);
+        }
+    }
+
+    // Also apply to "polygons" layer
+    const polygonLayer = 'polygons';
+    if (map.getLayer(polygonLayer)) {
+        let from = map.getPaintProperty(polygonLayer, 'fill-extrusion-height');
+        if (from === undefined || typeof from !== 'number') from = is3DView ? 2.9 : 0.001;
+
+        const to = is3DView ? 0.001 : 2.9;
+        animateHeight(polygonLayer, from, to);
+    }
+
+    is3DView = !is3DView;
+
+    const toggleBtn = document.getElementById("cur_btn");
+    if (toggleBtn) {
+        toggleBtn.innerText = is3DView ? "2D" : "3D";
+    }
+
+    if(is3DView){
+      map.flyTo({
+			pitch: 70,
+			duration: 3000,
+		});
+    }else{
+      map.flyTo({
+			pitch: 0,
+			duration: 3000,
+		});
+    }
+}
+
+export function flyToParking(type) {
+  const parkingCoordinates = {
+    ParkSHORT: [46.71047585133246,24.941461064091357],
+    ParkINTERNATIONAL: [46.7015935985641,24.95930306844491],
+    ParkLONG: [46.71210649383079,24.93867724700644],
+    //ParkVALET: [46.790000, 24.785800],
+  };
+
+  const center = parkingCoordinates[type];
+  if (!center) return;
+
+  map.flyTo({
+    center: center,
+    bearing: 61.59999999999843,
+		pitch: 0,
+		zoom: 16.905380521581602,
+		duration: 4000,
+		essential: true
+    });
 }
