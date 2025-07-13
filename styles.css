@@ -445,6 +445,42 @@
      font-weight: 500;
  }
 
+ .location-hours {
+    margin-top: 4px;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.status {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.85em;
+    font-weight: 500;
+    line-height: 1.1;
+    width: 65px;
+    padding: 4px 5px;
+}
+
+.status::before {
+    /* margin-right: 4px; */
+    font-size: 1.2em;
+}
+
+.status.open {
+    color: white;
+    background-color: #04615cf5;
+    border-radius: 5px;
+}
+
+.status.closed {
+    color: white;
+    background-color: #ef4129f5;
+    border-radius: 5px;
+}
+
  .language-item.active i {
      color: #007bff;
  }
