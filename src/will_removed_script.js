@@ -2014,7 +2014,7 @@
             </div>
 
             <div class="location-actions">
-                <button class="action-button primary-button" onclick="airportMenu.showDirectionsView(airportMenu.currentLocation)">
+                <button class="action-button primary-button" onclick="cfg.state.airportMenu.showDirectionsView(cfg.state.airportMenu.currentLocation)">
                 Start Directions
                 </button>
             </div>
