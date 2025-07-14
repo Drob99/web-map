@@ -1801,35 +1801,72 @@
      color: #636363;
  }
 
+ .mapboxgl-ctrl button:not(:disabled):hover{
+    transform: translateY(-3px);
+    box-shadow: 0 7px 15px rgba(26, 42, 108, 0.2), inset 0 0 0 1px rgba(26, 42, 108, 0.1);
+    color: #1a2a6c;
+    background: rgba(255, 255, 255, 1);
+ }
+
  .mapboxgl-ctrl-group button {
-     box-sizing: border-box;
-     outline: none;
-     overflow: hidden;
-     padding: 0;
-     cursor: pointer;
-     border: none;
-     background-color: rgb(255, 255, 255);
-     width: 44px;
-     height: 44px;
-     display: flex;
-     justify-content: center;
-     align-items: center;
-     box-shadow: rgba(0, 0, 0, 0.04) 0px 4px 8px -2px, rgba(0, 0, 0, 0.08) 0px 2px 4px -2px;
+    background-color: white;
+    border-radius: 7px !important;
+    font-family: 'Poppins';
+    font-weight: 700;
+    width: 35px;
+    height: 35px;
+    box-shadow: 0 4px 10px rgba(26, 42, 108, 0.1), inset 0 0 0 1px rgba(26, 42, 108, 0.05);
+    margin: 2px 4px;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+ }
+ .mapboxgl-ctrl-group:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 7px 15px rgba(26, 42, 108, 0.2), inset 0 0 0 1px rgba(26, 42, 108, 0.1);
+    color: #1a2a6c;
+    background: rgba(255, 255, 255, 1);
+ }
+
+ .mapboxgl-ctrl-group button:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 7px 15px rgba(26, 42, 108, 0.2), inset 0 0 0 1px rgba(26, 42, 108, 0.1);
+    color: #1a2a6c;
+    background: rgba(255, 255, 255, 1);
  }
 
  #currentlocation {
-     cursor: pointer;
-     border: none;
-     background-color: rgb(255, 255, 255);
-     width: 40px;
-     height: 44px;
-     display: flex;
-     justify-content: center;
-     align-items: center;
-     border-radius: 4px;
-     box-shadow: rgba(0, 0, 0, 0.04) 0px 4px 8px -2px, rgba(0, 0, 0, 0.08) 0px 2px 4px -2px;
+    float: right;
+    font-family: 'Poppins', sans-serif;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 43px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(26, 42, 108, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+    padding: 4px 0px;
+    margin: 13% 2%;
+    z-index: 10;
+    text-align: center;
+    transition: transform 0.3s ease;
  }
 
+ #currentlocation:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(26, 42, 108, 0.25), inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+}
+
+#cur_btn{
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+
+
+#cur_btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 7px 15px rgba(26, 42, 108, 0.2), inset 0 0 0 1px rgba(26, 42, 108, 0.1);
+    color: #1a2a6c;
+    background: rgba(255, 255, 255, 1);
+}
 
 
  .location-dot {
@@ -2283,9 +2320,9 @@
      flex-direction: column;
      width: 43px;
      background: white;
-     border-radius: 15px;
+     border-radius: 10px;
      box-shadow: 0 10px 30px rgba(26, 42, 108, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.8);
-     padding: 12px 0;
+     padding: 0px 0;
      margin: 42% 2%;
      z-index: 10;
      transition: transform 0.3s ease;
@@ -2364,12 +2401,39 @@
      opacity: 0;
      transition: all 0.3s ease;
  }
+ .mapboxgl-ctrl-icon {
+    background-size: 25px;
+ }
 
  .floor-active::before {
      opacity: 1;
-     top: -10px;
+     top: 3px;
      background: #ffd166;
  }
+
+ /* .mapboxgl-ctrl-bottom-right .mapboxgl-ctrl, .mapboxgl-ctrl-right .mapboxgl-ctrl:hover{
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(26, 42, 108, 0.25), inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+ } */
+
+ .mapboxgl-ctrl-bottom-right .mapboxgl-ctrl, .mapboxgl-ctrl-right .mapboxgl-ctrl {
+    float: right;
+    margin: 0 10px 10px 0;
+    /* float: right; */
+    font-family: 'Poppins', sans-serif;
+    /* position: relative; */
+    display: flex;
+    flex-direction: column;
+    width: 43px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(26, 42, 108, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+    padding: 4px 0px;
+    /* margin: 2% 2%; */
+    z-index: 10;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
 
  .floor-tooltip {
      position: absolute;

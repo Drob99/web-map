@@ -67,12 +67,12 @@ export function initMap(
     document.querySelector(".mapboxgl-ctrl-logo").href =
       "https://nearmotion.com/";
 
-    map.setLight({
-		'anchor': 'map',
-		'color': 'white',
-		'intensity': 0.05, // Adjust intensity as needed
-		'position': [1.5, 180, 80] // Position the light in a way to minimize shadows
-	});
+      map.setLight({
+        anchor: 'viewport', // or 'map' depending on your design
+        position: [90, 80, 0.5], // azimuthal angle, polar angle, and radial distance
+        color: 'white',
+        intensity: 0.09
+      });
   });
 
   return map;

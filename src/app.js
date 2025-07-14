@@ -89,7 +89,7 @@ const app = new App(
   {
     authenticate: authenticate,
     initUI,
-    displayFloor: switchFloorByNo,
+    // displayFloor: switchFloorByNo,
     initMapHandlers: setupMapEventHandlers,
     hideSplash: screensaver,
   },

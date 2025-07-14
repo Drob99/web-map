@@ -137,7 +137,7 @@ await fetchAndCache(
     }));
 
     await layersLevel(restored);
-    
+    updateFloorMenu();
     switchToCurrentFloor();
   }
 );
@@ -168,8 +168,6 @@ async function loadPoisAndRoutes(startTime) {
   logDuration("Elevators linked", startTime);
   // Hide the splash screen.
   screensaver();
-
-  updateFloorMenu();
   
 }
 
