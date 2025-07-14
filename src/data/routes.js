@@ -283,257 +283,45 @@ export function drawPathToPoi(
 
   // Add play button to navigation panel after route is drawn
   setTimeout(() => {
-    try {
-      const directionsPanel = document.querySelector(".directions-panel");
-
-      // Validate that we have a directions panel and no existing button
-      if (!directionsPanel) {
-        console.warn("Directions panel not found, cannot add play button");
-        return;
-      }
-
-      if (document.getElementById("play-route-btn")) {
-        console.log("Play route button already exists");
-        return;
-      }
-
-      // Create the play button with proper accessibility attributes
-      const playButton = createPlayRouteButton();
-
-      if (!playButton) {
-        console.error("Failed to create play route button");
-        return;
-      }
-
-      // Add event listener with proper error handling
-      playButton.addEventListener("click", handlePlayButtonClick);
-
-      // Insert the button in the appropriate location
-      insertPlayButtonIntoPanel(playButton, directionsPanel);
-
-      console.log("Play route button added successfully");
-    } catch (error) {
-      console.error("Error adding play route button:", error);
-    }
-  }, 500);
-
-  /**
-   * Create the play route button element
-   * @returns {HTMLElement|null} The created button element or null if failed
-   */
-  function createPlayRouteButton() {
-    try {
+    const directionsPanel = document.querySelector(".directions-panel");
+    if (directionsPanel && !document.getElementById("play-route-btn")) {
       const playButton = document.createElement("button");
       playButton.id = "play-route-btn";
-      playButton.className = "play-route-button";
-      playButton.innerHTML =
-        '<i class="fas fa-play" aria-hidden="true"></i> Play Route';
-
-      // Enhanced styling with CSS custom properties for better maintainability
+      playButton.className = "steps-button";
+      playButton.innerHTML = '<i class="fas fa-play"></i>';
+    //   playButton.style.cssText = `
+    //   width: 100%;
+    //   padding: 12px;
+    //   margin: 15px 0;
+    //   background: #007AFF;
+    //   color: white;
+    //   border: none;
+    //   border-radius: 8px;
+    //   font-size: 16px;
+    //   font-weight: 600;
+    //   cursor: pointer;
+    //   display: flex;
+    //   align-items: center;
+    //   justify-content: center;
+    //   gap: 8px;
+    // `;
       playButton.style.cssText = `
-      width: 100%;
-      padding: 12px;
-      margin: 15px 0;
-      background: var(--primary-color, #007AFF);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      min-width: 50px;
     `;
-
-      // Add hover and focus states for better UX
-      playButton.addEventListener("mouseenter", () => {
-        playButton.style.backgroundColor =
-          "var(--primary-color-hover, #0056CC)";
-        playButton.style.transform = "translateY(-1px)";
-        playButton.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.15)";
+      playButton.addEventListener("click", () => {
+        playbackControls.show();
       });
 
-      playButton.addEventListener("mouseleave", () => {
-        playButton.style.backgroundColor = "var(--primary-color, #007AFF)";
-        playButton.style.transform = "translateY(0)";
-        playButton.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)";
-      });
+      document.getElementsByClassName("Navigationbtncontrollers")[0].appendChild(playButton);
 
-      // Add accessibility attributes
-      playButton.setAttribute("aria-label", "Start navigation route playback");
-      playButton.setAttribute(
-        "title",
-        "Play an animated preview of your route"
-      );
-
-      return playButton;
-    } catch (error) {
-      console.error("Error creating play button:", error);
-      return null;
-    }
-  }
-
-  /**
-   * Handle play button click with comprehensive error handling
-   * Implements the Command pattern with proper error recovery
-   */
-  function handlePlayButtonClick() {
-    try {
-      console.log("Play route button clicked");
-
-      // Validate that we have the necessary dependencies
-      if (typeof playbackControls === "undefined") {
-        throw new Error("playbackControls is not available");
-      }
-
-      // Check if playback controls are properly imported
-      if (!playbackControls || typeof playbackControls.show !== "function") {
-        throw new Error("playbackControls.show method is not available");
-      }
-
-      // Attempt to show the playback controls
-      const success = playbackControls.show();
-
-      if (!success) {
-        throw new Error("Failed to show playback controls");
-      }
-
-      console.log("Playback controls shown successfully");
-    } catch (error) {
-      console.error("Error handling play button click:", error);
-
-      // Provide user feedback about the error
-      showUserFeedback(
-        "Unable to start route playback. Please try again or refresh the page.",
-        "error"
-      );
-
-      // Attempt recovery by ensuring initialization
-      attemptPlaybackRecovery();
-    }
-  }
-
-  /**
-   * Insert the play button into the directions panel at the appropriate location
-   * @param {HTMLElement} playButton - The button element to insert
-   * @param {HTMLElement} directionsPanel - The parent panel
-   */
-  function insertPlayButtonIntoPanel(playButton, directionsPanel) {
-    try {
-      // Try to insert after route summary if it exists
+      // Insert after route summary
       const routeSummary = document.getElementById("routeSummary");
-
-      if (routeSummary && routeSummary.parentNode) {
+      if (routeSummary) {
         routeSummary.parentNode.insertBefore(
-          playButton,
+          // playButton,
           routeSummary.nextSibling
         );
-        console.log("Play button inserted after route summary");
-      } else {
-        // Fallback: append to the end of directions panel
-        directionsPanel.appendChild(playButton);
-        console.log("Play button appended to directions panel");
-      }
-    } catch (error) {
-      console.error("Error inserting play button:", error);
-      // Last resort: try to append to directions panel
-      try {
-        directionsPanel.appendChild(playButton);
-      } catch (fallbackError) {
-        console.error("Fallback insertion also failed:", fallbackError);
       }
     }
-  }
-
-  /**
-   * Show feedback to the user
-   * @param {string} message - Message to display
-   * @param {string} type - Type of message ('error', 'warning', 'info')
-   */
-  function showUserFeedback(message, type = "info") {
-    try {
-      // You can customize this based on your app's notification system
-      // For now, we'll use a simple alert, but you could use toast notifications
-
-      if (type === "error") {
-        console.error(`User Feedback (${type}):`, message);
-        alert(message); // Replace with your preferred notification system
-      } else {
-        console.log(`User Feedback (${type}):`, message);
-      }
-    } catch (error) {
-      console.error("Error showing user feedback:", error);
-    }
-  }
-
-  /**
-   * Attempt to recover from playback initialization failures
-   * Implements the Recovery pattern for error handling
-   */
-  function attemptPlaybackRecovery() {
-    try {
-      console.log("Attempting playback recovery...");
-
-      // Check if playbackControls exists but isn't initialized
-      if (playbackControls && typeof playbackControls.init === "function") {
-        console.log("Attempting to re-initialize playback controls...");
-
-        const initSuccess = playbackControls.init();
-
-        if (initSuccess) {
-          console.log("Playback controls re-initialized successfully");
-          showUserFeedback(
-            "Route playback is now available. Please try again.",
-            "info"
-          );
-        } else {
-          console.error("Re-initialization failed");
-          showUserFeedback(
-            "Route playback initialization failed. Please refresh the page.",
-            "error"
-          );
-        }
-      } else {
-        console.error("playbackControls.init method not available");
-        showUserFeedback(
-          "Route playback is not available. Please refresh the page.",
-          "error"
-        );
-      }
-    } catch (error) {
-      console.error("Recovery attempt failed:", error);
-      showUserFeedback(
-        "Unable to recover route playback. Please refresh the page.",
-        "error"
-      );
-    }
-  }
-
-  /**
-   * Validation function to check if route data is available
-   * @returns {boolean} true if route data is valid
-   */
-  function validateRouteData() {
-    try {
-      // Check if we have the necessary route data
-      if (!state.fullPathRoute?.features?.length) {
-        console.warn("No route data available for playback");
-        return false;
-      }
-
-      if (!state.fullPathRoute.features[0]?.geometry?.coordinates?.length) {
-        console.warn("No route coordinates available for playback");
-        return false;
-      }
-
-      return true;
-    } catch (error) {
-      console.error("Error validating route data:", error);
-      return false;
-    }
-  }
+  }, 0);
 }

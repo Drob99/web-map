@@ -22,6 +22,7 @@ export class NavigationPlaybackControls {
     this.isVisible = false;
     this.currentStepIndex = 0;
     this.isInitialized = false;
+    this.playbackPanel = null;
   }
   
   /**
@@ -80,7 +81,7 @@ export class NavigationPlaybackControls {
     
     // Safely append to document body
     if (document.body) {
-      document.body.appendChild(this.container);
+      document.getElementById("directionsView").appendChild(this.container);
     } else {
       throw new Error('Document body not available for controls injection');
     }
@@ -93,44 +94,39 @@ export class NavigationPlaybackControls {
    */
   _getControlsTemplate() {
     return `
-      <div class="playback-header">
-        <span class="playback-title">Navigation Preview</span>
-        <button class="playback-close" aria-label="Close playback controls">&times;</button>
-      </div>
-      <div class="playback-body">
-        <div class="playback-progress">
-          <div class="playback-progress-bar" role="progressbar" aria-label="Playback progress">
-            <div class="playback-progress-fill"></div>
-          </div>
-          <div class="playback-time">
-            <span class="playback-elapsed">0:00</span>
-            <span class="playback-duration">0:00</span>
-          </div>
-        </div>
-        <div class="playback-controls-row">
-          <button class="playback-btn play-btn" aria-label="Play navigation">
-            <i class="fas fa-play"></i>
-          </button>
-          <button class="playback-btn pause-btn hidden" aria-label="Pause navigation">
-            <i class="fas fa-pause"></i>
-          </button>
-          <button class="playback-btn stop-btn" aria-label="Stop navigation">
-            <i class="fas fa-stop"></i>
-          </button>
-          <div class="playback-speed">
-            <label for="speed-select">Speed:</label>
-            <select class="speed-select" id="speed-select" aria-label="Playback speed">
-              <option value="0.5">0.5x</option>
-              <option value="1" selected>1x</option>
-              <option value="1.5">1.5x</option>
-              <option value="2">2x</option>
-            </select>
-          </div>
-        </div>
-        <div class="playback-floor-info">
-          Floor: <span class="current-floor">-</span>
-        </div>
-      </div>
+  <div class="playback-body">
+                <div class="playback-progress">
+                    <div class="playback-progress-bar" role="progressbar" aria-label="Playback progress">
+                        <div class="playback-progress-fill" id="playbackProgressFill"></div>
+                    </div>
+                    <div class="playback-time">
+                        <span class="playback-elapsed" id="elapsedTime">0:00</span>
+                        <span class="playback-duration" id="totalTime">0:00</span>
+                    </div>
+                </div>
+                
+                <div class="playback-controls-row">
+                    <button class="playback-btn play-btn" id="playBtn" aria-label="Play navigation">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button class="playback-btn pause-btn hidden" id="pauseBtn" aria-label="Pause navigation">
+                        <i class="fas fa-pause"></i>
+                    </button>
+                    <button class="playback-btn stop-btn" id="stopBtn" aria-label="Stop navigation">
+                        <i class="fas fa-stop"></i>
+                    </button>
+                    
+                    <div class="playback-speed">
+                        <label for="speed-select">Speed:</label>
+                        <select class="speed-select" id="speed-select" aria-label="Playback speed">
+                            <option value="0.5">0.5x</option>
+                            <option value="1" selected>1x</option>
+                            <option value="1.5">1.5x</option>
+                            <option value="2">2x</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
     `;
   }
   
@@ -169,6 +165,12 @@ export class NavigationPlaybackControls {
         try {
           navigationPlayback.play();
           this.updatePlayPauseButtons(true);
+          
+          // Also update the directions panel controls if they exist
+          if (this.playbackPanel) {
+            this.playbackPanel.querySelector('.play-btn').classList.add('hidden');
+            this.playbackPanel.querySelector('.pause-btn').classList.remove('hidden');
+          }
         } catch (error) {
           console.error('Error playing navigation:', error);
           this._showError('Failed to start playback');
@@ -181,6 +183,12 @@ export class NavigationPlaybackControls {
         try {
           navigationPlayback.pause();
           this.updatePlayPauseButtons(false);
+          
+          // Also update the directions panel controls if they exist
+          if (this.playbackPanel) {
+            this.playbackPanel.querySelector('.pause-btn').classList.add('hidden');
+            this.playbackPanel.querySelector('.play-btn').classList.remove('hidden');
+          }
         } catch (error) {
           console.error('Error pausing navigation:', error);
           this._showError('Failed to pause playback');
@@ -201,6 +209,14 @@ export class NavigationPlaybackControls {
         try {
           navigationPlayback.stop();
           this.hide();
+          
+          // Also update the directions panel controls if they exist
+          if (this.playbackPanel) {
+            this.playbackPanel.querySelector('.pause-btn').classList.add('hidden');
+            this.playbackPanel.querySelector('.play-btn').classList.remove('hidden');
+            this.playbackPanel.querySelector('.playback-progress-fill').style.width = "0%";
+            this.playbackPanel.querySelector('.playback-elapsed').textContent = "0:00";
+          }
         } catch (error) {
           console.error('Error stopping navigation:', error);
           this._showError('Failed to stop playback');
@@ -236,6 +252,14 @@ export class NavigationPlaybackControls {
             throw new Error('Invalid speed value');
           }
           navigationPlayback.setSpeed(speed);
+          
+          // Also update the directions panel controls if they exist
+          if (this.playbackPanel) {
+            const panelSpeedSelect = this.playbackPanel.querySelector('.speed-select');
+            if (panelSpeedSelect) {
+              panelSpeedSelect.value = speed;
+            }
+          }
         } catch (error) {
           console.error('Error setting playback speed:', error);
           this._showError('Failed to change playback speed');
@@ -270,43 +294,51 @@ export class NavigationPlaybackControls {
    * @returns {boolean} true if successfully shown
    */
   show() {
-    try {
-      // Defensive programming: ensure initialization
-      if (!this._ensureInitialized()) {
-        throw new Error('Failed to initialize playback controls');
-      }
-      
-      // Validate that container exists after initialization
-      if (!this.container) {
-        throw new Error('Playback controls container is not available');
-      }
-      
+  try {
+    // Defensive programming: ensure initialization
+    if (!this._ensureInitialized()) {
+      throw new Error('Failed to initialize playback controls');
+    }
+
+    // Validate that container exists after initialization
+    if (!this.container) {
+      throw new Error('Playback controls container is not available');
+    }
+
+    if (this.isVisible) {
+      // If already visible, hide the controls
+      this.isVisible = false;
+      this.container.classList.add('hidden');
+      navigationPlayback.stop(); // Optional: stop playback if needed
+    } else {
       // Initialize the navigation playback system
       const initialized = navigationPlayback.initialize({
         onProgress: (progress, stepIndex) => this.updateProgress(progress, stepIndex),
-        onComplete: () => this.hide(),
+        onComplete: () => this.hide(), // call toggle to hide on complete
         onFloorChange: (floor) => this.updateFloor(floor)
       });
-      
+
       if (!initialized) {
         alert('No route available for playback');
         return false;
       }
-      
+
       // Show the controls
       this.isVisible = true;
       this.container.classList.remove('hidden');
       this.updateFloor(state.levelRoutePoi);
       this.linkToNavigationSteps();
       this.connectToEndRoute();
-      
-      return true;
-    } catch (error) {
-      console.error('Error showing playback controls:', error);
-      this._showError('Failed to show playback controls: ' + error.message);
-      return false;
     }
+
+    return true;
+  } catch (error) {
+    console.error('Error toggling playback controls:', error);
+    this._showError('Failed to toggle playback controls: ' + error.message);
+    return false;
   }
+}
+
   
   /**
    * Hide the playback controls
@@ -380,6 +412,23 @@ export class NavigationPlaybackControls {
       
       // Update step highlighting
       this.updateStepHighlight(stepIndex);
+      
+      // Also update the directions panel controls if they exist
+      if (this.playbackPanel) {
+        const panelFill = this.playbackPanel.querySelector('.playback-progress-fill');
+        const panelElapsed = this.playbackPanel.querySelector('.playback-elapsed');
+        const panelDuration = this.playbackPanel.querySelector('.playback-duration');
+        
+        if (panelFill) {
+          panelFill.style.width = `${Math.max(0, Math.min(100, progress * 100))}%`;
+        }
+        if (panelElapsed) {
+          panelElapsed.textContent = this.formatTime(elapsed);
+        }
+        if (panelDuration) {
+          panelDuration.textContent = this.formatTime(duration);
+        }
+      }
     } catch (error) {
       console.error('Error updating progress:', error);
     }
@@ -397,6 +446,14 @@ export class NavigationPlaybackControls {
       const floorElement = this.container.querySelector('.current-floor');
       if (floorElement) {
         floorElement.textContent = floorLabel;
+      }
+      
+      // Also update the directions panel controls if they exist
+      if (this.playbackPanel) {
+        const panelFloor = this.playbackPanel.querySelector('.current-floor');
+        if (panelFloor) {
+          panelFloor.textContent = floorLabel;
+        }
       }
     } catch (error) {
       console.error('Error updating floor display:', error);
@@ -416,6 +473,14 @@ export class NavigationPlaybackControls {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
+  }
+  
+  /**
+   * Set the directions panel playback controls reference
+   * @param {HTMLElement} panel - The directions panel playback controls
+   */
+  setDirectionsPanelControls(panel) {
+    this.playbackPanel = panel;
   }
   
   /**
@@ -589,6 +654,7 @@ export class NavigationPlaybackControls {
       this.isVisible = false;
       this.isInitialized = false;
       this.currentStepIndex = 0;
+      this.playbackPanel = null;
       
       console.log('NavigationPlaybackControls destroyed successfully');
     } catch (error) {
