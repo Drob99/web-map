@@ -74,6 +74,12 @@ function processPoiProperties(poi) {
     loadPoiImage(iconUrl, iconName);
   }
 
+    if(poi.title == "room" || poi.title == "Room" )
+	{
+		console.log("POI : "+poi.title)
+		poi.color = "#f7f5ed"
+	}
+
   // Add GeoJSON feature to state
   state.allPoiGeojson.features.push({
     id: poi.id,

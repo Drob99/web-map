@@ -674,6 +674,11 @@ export function showPoisByLevel() {
     type: "fill-extrusion",
     source: "municipalities",
     paint: {
+      'fill-extrusion-ambient-occlusion-intensity': 0.2,  // Default: 0.3
+      'fill-extrusion-ambient-occlusion': false,
+      'fill-extrusion-color': '#e0e0e0',  // Lighter base color
+      'fill-extrusion-emissive-strength': 0.1,  // Default: 0
+      'fill-extrusion-emissive': '#ffffff',
       "fill-extrusion-opacity": [
 				"interpolate",
 				// Set the exponential rate of change to 0.5

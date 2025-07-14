@@ -71,7 +71,7 @@ export function initMap(
         anchor: 'viewport', // or 'map' depending on your design
         position: [90, 80, 0.5], // azimuthal angle, polar angle, and radial distance
         color: 'white',
-        intensity: 0.09
+        intensity: 0.05
       });
   });
 

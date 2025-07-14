@@ -72,7 +72,7 @@ export default class App {
     this.initMapHandlers();
 
     // 3) Display the current floor
-    this.displayFloor();
+    //this.displayFloor();
 
     // 4) Set up language change listener for the map
     setupMapLanguageListener();

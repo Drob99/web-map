@@ -171,11 +171,21 @@ export async function layersLevel(sortedLayers) {
                     const lvl = parseInt(lvlStr, 10);
                     
                     for (const layerName of state.layerNames) {
-                        const layerId = `${toggleId}/${layerName}`;
-                        if (!map.getLayer(layerId)) continue;
-                        const visibility = (lvl === floorNum) ? 'visible' : 'none';
-                        map.setLayoutProperty(layerId, 'visibility', visibility);
-                    }
+                      const layerId = `${toggleId}/${layerName}`;
+                      if (!map.getLayer(layerId)) continue;
+                  
+                      const visibility = (lvl === floorNum) ? 'visible' : 'none';
+                      map.setLayoutProperty(layerId, 'visibility', visibility);
+                  
+                      // Reordering specific layers if visible
+                      if (visibility === 'visible') {
+                          if (layerName === "arrows" || layerName === "Stairs_Line.geojson" || 
+                              layerName === "rooms" || layerName === "walls" || layerName === "be" || 
+                              layerName === "doors" || layerName === "municipality-name") {
+                              map.moveLayer(layerId);
+                          }
+                      }
+                  }
                 }
                 
                 // Update active link class
