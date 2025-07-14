@@ -360,28 +360,29 @@
 
         setupSearchInteractions() {
             if (this.searchInput) {
-                this.searchInput.addEventListener('focus', () => {
-                    const query = e.target.value.trim();
-                    if (query.length > 0) {
-                        this.currentSubcategory = null;
-                        this.categoryItem = null;
-                        this.populateLocationSearch(query);
-                        this.expandMenu();
-                        document.getElementById("menuArrow").style.display = "none";
-                    } else {
-                        this.showCategoriesView();
-                        document.getElementById("menuArrow").style.display = "flex";
-                    }
-                });
+                // this.searchInput.addEventListener('focus', () => {
+                //     const query = e.target.value.trim();
+                //     if (query.length > 2) {
+                //         this.currentSubcategory = null;
+                //         this.categoryItem = null;
+                //         this.populateLocationSearch(query);
+                //         this.expandMenu();
+                //         document.getElementById("menuArrow").style.display = "none";
+                //     } else {
+                //         this.showCategoriesView();
+                //         document.getElementById("menuArrow").style.display = "flex";
+                //     }
+                // });
 
                 this.searchInput.addEventListener('input', (e) => {
                     const query = e.target.value.trim();
-                    if (query.length > 0) {
+                    if (query.length > 2) {
                         this.currentSubcategory = null;
                         this.categoryItem = null;
                         this.populateLocationSearch(query);
                         this.expandMenu();
                         document.getElementById("menuArrow").style.display = "none";
+                        if (this.searchSectionCategories) this.searchSectionCategories.style.display = 'block';
                     } else {
                         this.showCategoriesView();
                         document.getElementById("menuArrow").style.display = "flex";
@@ -599,6 +600,7 @@
         }
 
         setupDepartureSearch() {
+            
             const departureInput = document.getElementById('departureInput');
             const departureResults = document.getElementById('departureResults');
 
@@ -607,7 +609,7 @@
             // Handle input events for search
             departureInput.addEventListener('input', (e) => {
                 const query = e.target.value.trim();
-                if (query.length > 0) {
+                if (query.length > 2) {
                     this.showPopularLocationsView();
                     this.populatePopularLocationsByName(query);
                 } else {
@@ -1499,6 +1501,8 @@
                 var language = cfg.state.language
                 var poiTerminalLocation = cfg.state.terminalTranslations[language][location?.properties.location];
                 var poiLevel = cfg.state.floorsNames[language][location.properties.level];
+                var scheduleData = location.properties.working_hours
+                var { workingHoursString, isOpenNow } = getWorkingHoursStatus(scheduleData);
                 const item = document.createElement('div');
                 item.className = 'location-item';
                 item.innerHTML = `
@@ -1508,6 +1512,13 @@
                     <div class="location-details">
                         <div class="location-name">${title}</div>
                         <div class="location-address">${poiTerminalLocation} - ${poiLevel}</div>
+                         ${workingHoursString ? `
+                        <div class="location-hours">
+                            <span class="status ${isOpenNow ? 'open' : 'closed'}">
+                                ${isOpenNow ? cfg.state.workHoursTranslations[language]['Open'] : cfg.state.workHoursTranslations[language]['Closed']}
+                            </span>
+                        </div>
+                        ` : ''}
                     </div>
                 `;
 
@@ -1550,6 +1561,8 @@
                 var language = cfg.state.language
                 var poiTerminalLocation = cfg.state.terminalTranslations[language][location.properties.location];
                 var level = cfg.state.floorsNames[language][location.properties.level];
+                var scheduleData = location.properties.working_hours
+                var { workingHoursString, isOpenNow } = getWorkingHoursStatus(scheduleData);
                 const item = document.createElement('div');
                 item.className = 'location-item';
                 item.innerHTML = `
@@ -1559,6 +1572,13 @@
                     <div class="location-details">
                         <div class="location-name">${title}</div>
                         <div class="location-address">${poiTerminalLocation} - ${level}</div>
+                         ${workingHoursString ? `
+                        <div class="location-hours">
+                            <span class="status ${isOpenNow ? 'open' : 'closed'}">
+                                ${isOpenNow ? cfg.state.workHoursTranslations[language]['Open'] : cfg.state.workHoursTranslations[language]['Closed']}
+                            </span>
+                        </div>
+                        ` : ''}
                     </div>
                 `;
 
@@ -1596,6 +1616,8 @@
                 var title = getPOITitleByLang(location.properties, cfg.state.language);
                 var language = cfg.state.language
                 var poiTerminalLocation = cfg.state.terminalTranslations[language][location.properties.location];
+                var scheduleData = location.properties.working_hours
+                var { workingHoursString, isOpenNow } = getWorkingHoursStatus(scheduleData);
                 const item = document.createElement('div');
                 item.className = 'location-item';
                 item.innerHTML = `
@@ -1605,6 +1627,13 @@
                     <div class="location-details">
                         <div class="location-name">${title}</div>
                         <div class="location-address">${poiTerminalLocation}</div>
+                         ${workingHoursString ? `
+                        <div class="location-hours">
+                            <span class="status ${isOpenNow ? 'open' : 'closed'}">
+                                ${isOpenNow ? cfg.state.workHoursTranslations[language]['Open'] : cfg.state.workHoursTranslations[language]['Closed']}
+                            </span>
+                        </div>
+                        ` : ''}
                     </div>
                 `;
 
@@ -1887,7 +1916,7 @@
                         ${workingHoursString ? `
                         <div class="location-hours">
                             <span class="status ${isOpenNow ? 'open' : 'closed'}">
-                                ${isOpenNow ? '&nbsp&nbsp Open' : '&nbsp Closed'}
+                                ${isOpenNow ? cfg.state.workHoursTranslations[language]['Open'] : cfg.state.workHoursTranslations[language]['Closed']}
                             </span>
                         </div>
                         ` : ''}
@@ -1939,6 +1968,8 @@
                 var title = getPOITitleByLang(location.properties, language);
                 var poiTerminalLocation = cfg.state.terminalTranslations[language][location.properties.location];
                 var poiLevel = cfg.state.floorsNames[language][location.properties.level];
+                var scheduleData = location.properties.working_hours
+                var { workingHoursString, isOpenNow } = getWorkingHoursStatus(scheduleData);
                 const item = document.createElement('div');
                 item.className = 'location-item';
                 item.innerHTML = `
@@ -1948,6 +1979,13 @@
                     <div class="location-details">
                         <div class="location-name">${title}</div>
                         <div class="location-address">${poiTerminalLocation} - ${poiLevel}</div>
+                         ${workingHoursString ? `
+                        <div class="location-hours">
+                            <span class="status ${isOpenNow ? 'open' : 'closed'}">
+                                ${isOpenNow ? cfg.state.workHoursTranslations[language]['Open'] : cfg.state.workHoursTranslations[language]['Closed']}
+                            </span>
+                        </div>
+                        ` : ''}
                     </div>
                 `;
 

@@ -455,12 +455,12 @@
 }
 
 .status {
-    display: inline-flex;
-    align-items: center;
+    display: block;
+    text-align: center;
     font-size: 0.85em;
     font-weight: 500;
     line-height: 1.1;
-    width: 65px;
+    width: 60px;
     padding: 4px 5px;
 }
 
@@ -471,13 +471,13 @@
 
 .status.open {
     color: white;
-    background-color: #04615cf5;
+    background-color: #04615cb8;
     border-radius: 5px;
 }
 
 .status.closed {
     color: white;
-    background-color: #ef4129f5;
+    background-color: #ef4129b8;
     border-radius: 5px;
 }
 
@@ -1327,7 +1327,7 @@
      left: 0;
      right: 0;
      background: white;
-     border: 1px solid #e0e0e0;
+     border: 0px solid #e0e0e0;
      border-top: none;
      border-radius: 0 0 8px 8px;
      max-height: 200px;
@@ -1699,14 +1699,26 @@
  }
 
  /* Vertical Timeline Line */
-#navigationStepsList::before {
+/* #navigationStepsList::before {
     content: '';
     position: absolute;
     left: 5px;
     top: 40px;
-    bottom: 20px; /* Adjusted to stop 20px before the bottom */
+    bottom: 20px;
     width: 2px;
     background: linear-gradient(to bottom, #878787f7 0%, #ddd 10%, #ddd 10%, #ddd 90%, #ddd 90%, #878787f7 100%);
+    z-index: 11;
+    margin-bottom: 20px;
+} */
+
+#navigationStepsList::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 35px;
+    bottom: 15px;
+    width: 0px;
+    border-left: 4px dotted #b3b3b3;
     z-index: 11;
     margin-bottom: 20px;
 }
@@ -1843,16 +1855,16 @@
 
  /* Step Timeline Dot */
  .clean-step-item::before {
-     content: '';
-     position: absolute;
-     left: 0px;
-     top: 15px;
-     width: 8px;
-     height: 8px;
-     border-radius: 50%;
-     background-color: #ddd;
-     border: 2px solid white;
-     z-index: 3;
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 17px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #ddd;
+    border: 2px solid white;
+    z-index: 3;
  }
 
  .clean-step-icon {
