@@ -4,7 +4,7 @@
  */
 // Importing the app module triggers its instantiation and startup logic.
 import './app.js';
-import { initUI, languageMenu } from './ui.js';
+import { initUI, languageMenu , init3DTo2D} from './ui.js';
 import { initMenuNavigation } from './menu-navigation.js';
 import { loadTerminalsOutlines } from "./markers.js";
 
@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize menu navigation system
   initMenuNavigation();
   loadTerminalsOutlines();
+  init3DTo2D();
     // Initial check to set the correct state
   //toggleSearchSection();
 });

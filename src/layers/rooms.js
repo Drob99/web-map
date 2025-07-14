@@ -21,17 +21,20 @@ export function roomsLayer(layerId, data) {
   if (!map.getLayer(layerId)) {
     map.addLayer({
       id: layerId,
-      type: 'fill',
+      type: 'fill-extrusion',
       source: layerId,
       paint: {
-        'fill-color': '#FFFBF5',
-        'fill-opacity': [
-          'interpolate',
-          ['exponential', 0.1],
-          ['zoom'],
-          16.4, 0,
-          20.31967926651499, 1
-        ]
+        "fill-extrusion-color": "#f7f5ed",
+        "fill-extrusion-height": 2.8,
+        "fill-extrusion-opacity": [
+          "interpolate",
+          ["exponential", 0.1],
+          ["zoom"],
+          16,
+          0,
+          20.31967926651499,
+          1,
+        ],
       }
     });
   }

@@ -21,17 +21,24 @@ export function wallsLayer(layerId, data) {
   if (!map.getLayer(layerId)) {
     map.addLayer({
       id: layerId,
-      type: 'fill',
+      type: 'fill-extrusion',
       source: layerId,
       paint: {
-        'fill-color': '#E6E9EC',
-        'fill-opacity': [
-          'interpolate',
-          ['exponential', 0.1],
-          ['zoom'],
-          16.4, 0,
-          20.31967926651499, 1
-        ]
+        //"fill-extrusion-color": "#E6E9EC",
+        "fill-extrusion-color": "#E6E9EC",
+        "fill-extrusion-height": 3,
+        "fill-extrusion-base": 0,
+        "fill-extrusion-flood-light-ground-attenuation": 1,
+        "fill-extrusion-vertical-gradient": true,
+        "fill-extrusion-opacity": [
+          "interpolate",
+          ["exponential", 0.1],
+          ["zoom"],
+          16,
+          0,
+          22,
+          1,
+        ],
       }
     });
   }

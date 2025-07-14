@@ -592,6 +592,21 @@ floorsNames : {
 	},
 }, 
 
+workHoursTranslations : {
+  EN: {
+    "Open": "Open",
+    "Closed": "Closed"
+  },
+  AR: {
+    "Open": "مفتوح",
+    "Closed": "مغلق"
+  },
+  ZN: {
+    "Open": "开放",
+    "Closed": "关闭"
+  }
+},
+
 uiTranslationsMenu : {
 	EN: {
 		  "Categories": "Categories",

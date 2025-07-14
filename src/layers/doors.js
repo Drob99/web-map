@@ -21,18 +21,20 @@ export function doorsLayer(layerId, data) {
   if (!map.getLayer(layerId)) {
     map.addLayer({
       id: layerId,
-      type: 'fill',
+      type: 'fill-extrusion',
       source: layerId,
       paint: {
-        'fill-color': '#F2DCBB',
-        'fill-outline-color': '#000000',
-        'fill-opacity': [
-          'interpolate',
-          ['exponential', 0.1],
-          ['zoom'],
-          16.4, 0,
-          20.31967926651499, 1
-        ]
+         "fill-extrusion-color": "#CDD0CB",
+          "fill-extrusion-height": 2.85,
+          "fill-extrusion-opacity": [
+              "interpolate",
+              ["exponential", 0.1],
+              ["zoom"],
+              16,
+              0,
+              20.31967926651499,
+              1,
+          ],
       }
     });
   }

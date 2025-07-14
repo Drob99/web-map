@@ -5,7 +5,7 @@
 // Note: jQuery and Select2 are loaded globally via index.html
 import { FLOOR_TITLES, state } from "./config.js";
 import { drawPathToPoi } from "./data/routes.js";
-import { clearRoute, routeEnabled } from "./mapController.js";
+import { clearRoute, routeEnabled , toggle2DTo3D , flyToParking} from "./mapController.js";
 import { stringMatch } from "./utils.js";
 import { map } from "./mapInit.js";
 import { languageService } from "./i18n/languageService.js";
@@ -20,6 +20,13 @@ export function initUI() {
   initDropdown("#to_location");
   bindSwapButton(".swap-btn");
   //initAccessabilty();
+}
+
+export function init3DTo2D()
+{
+  document.getElementById("cur_btn")?.addEventListener("click", function () {
+    toggle2DTo3D();
+  });
 }
 
 /**
@@ -187,14 +194,29 @@ export function screensaver() {
 }
 
 
+document.querySelectorAll('#legendPanel .legend-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const parkingType = item.querySelector('p')?.getAttribute('data-i18n');
 
-// Language Selection 
+    if (!parkingType) return;
 
-// Language mapping
+    // Use the parking type to determine the location or filter
+    flyToParking(parkingType);
+  });
+});
+
+
 const languageMap = {
   'English': 'EN',
   'عربي': 'AR',
   '中国人': 'ZN'
+};
+
+// Map language codes to country codes for flags
+const flagCountryMap = {
+  'EN': 'us', // United States
+  'AR': 'sa', // Saudi Arabia
+  'ZN': 'cn'  // China
 };
 
 // Update language list initialization
@@ -207,11 +229,20 @@ if (languageListEl) {
     li.classList.add('language-item');
     li.setAttribute('data-lang', code);
     
+    // Get country code for flag
+    const countryCode = flagCountryMap[code];
+    // Create flag image from CDN
+    const flagImg = `<img src="https://flagcdn.com/16x12/${countryCode}.png" 
+                        alt="${displayName} flag" 
+                        class="flag-icon" 
+                        width="20" 
+                        height="16"> `;
+    
     if (languageService.getCurrentLanguage() === code) {
       li.classList.add('active');
-      li.innerHTML = `${displayName} <i class="bi bi-check-lg"></i>`;
+      li.innerHTML = `${flagImg} ${displayName} <i class="bi bi-check-lg"></i>`;
     } else {
-      li.textContent = displayName;
+      li.innerHTML = `${flagImg} ${displayName}`;
     }
     
     li.addEventListener('click', () => selectLanguage(li, code));

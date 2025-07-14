@@ -50,7 +50,8 @@ export function initMap(
     center,
     zoom,
     bearing,
-    pitch
+    pitch,
+    preserveDrawingBuffer: true
   });
 
   // Add navigation controls
@@ -65,6 +66,13 @@ export function initMap(
     // Update Mapbox attribution link
     document.querySelector(".mapboxgl-ctrl-logo").href =
       "https://nearmotion.com/";
+
+    map.setLight({
+		'anchor': 'map',
+		'color': 'white',
+		'intensity': 0.05, // Adjust intensity as needed
+		'position': [1.5, 180, 80] // Position the light in a way to minimize shadows
+	});
   });
 
   return map;
