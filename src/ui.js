@@ -235,8 +235,8 @@ if (languageListEl) {
     const flagImg = `<img src="https://flagcdn.com/16x12/${countryCode}.png" 
                         alt="${displayName} flag" 
                         class="flag-icon" 
-                        width="16" 
-                        height="12"> `;
+                        width="20" 
+                        height="16"> `;
     
     if (languageService.getCurrentLanguage() === code) {
       li.classList.add('active');

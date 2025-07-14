@@ -24,6 +24,7 @@ export function wallsLayer(layerId, data) {
       type: 'fill-extrusion',
       source: layerId,
       paint: {
+        //"fill-extrusion-color": "#E6E9EC",
         "fill-extrusion-color": "#E6E9EC",
         "fill-extrusion-height": 3,
         "fill-extrusion-base": 0,

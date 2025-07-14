@@ -109,22 +109,24 @@ export function flyToBuilding() {
   const translate = (key) => translations[key]?.[lang] || key;
   const getDirText = (dirCode) => translations.directions[dirCode]?.[lang] || dirCode;
   const translateTurn = (key) =>
-    translations.turn_directions[key.replace("-", " ")]?.[lang] || key;
+  translations.turn_directions[key.replace("-", " ")]?.[lang] || key;
+
+
 
   const directionIcons = {
-    N: "↑", NE: "↗", E: "→", SE: "↘",
-    S: "↓", SW: "↙", W: "←", NW: "↖",
+    N: '<i class="ph ph-arrow-up"></i>', NE: '<i class="ph ph-arrow-up-right"></i>', E: '<i class="ph ph-arrow-right"></i>', SE: '<i class="ph ph-arrow-down-right"></i>',
+    S: '<i class="ph ph-arrow-down"></i>', SW: '<i class="ph ph-arrow-down-left"></i>', W: '<i class="ph ph-arrow-left"></i>', NW: '<i class="ph ph-arrow-up-left"></i>',
   };
 
   const turnIcons = {
-    left: "↰", right: "↱",
-    "slight-left": "⬹", "slight-right": "⬺",
-    "sharp-left": "↤", "sharp-right": "↦",
-    "u-turn": "↶",
+    left: '<i class="ph ph-arrow-bend-up-left"></i>', right: '<i class="ph ph-arrow-bend-up-right"></i>',
+    "slight-left": '<i class="ph ph-arrow-up-left"></i>', "slight-right": '<i class="ph ph-arrow-up-right"></i>',
+    "sharp-left": '<i class="ph ph-arrow-elbow-up-left"></i>', "sharp-right": '<i class="ph ph-arrow-elbow-up-right"></i>',
+    "u-turn": '<i class="ph ph-arrow-u-right-down"></i>',
   };
 
-  const floorIcons = { up: "⏶", down: "⏷" };
-  const startEndIcons = { start: "●", destination: "⧁" };
+  const floorIcons = { up: '<i class="ph ph-escalator-up"></i>', down: '<i class="ph ph-escalator-down"></i>' };
+  const startEndIcons = { start: '<i class="ph ph-person-simple-run"></i>', destination: '<i class="ph ph-flag-banner"></i>' };
 
   const calculateBearing = (start, end) => {
     const y = Math.sin(((end[0] - start[0]) * Math.PI) / 180) * Math.cos((end[1] * Math.PI) / 180);
@@ -237,7 +239,7 @@ export function flyToBuilding() {
         if (turn.direction !== "straight" && turn.angle > 30) {
           instructions.push({
             text: `${translate("Continue")} ${formatDistance(calculateDistance(segStart, segEnd))}`,
-            icon: "↑",
+            icon: '<i class="ph ph-arrow-up"></i>',
             level: lvl,
             coordinates: [segStart, segEnd],
           });
@@ -261,7 +263,7 @@ export function flyToBuilding() {
       if (i === coords.length - 1 && segDist > 0) {
         instructions.push({
           text: `${translate("Continue")} ${formatDistance(segDist)}`,
-          icon: "↑",
+          icon: '<i class="ph ph-arrow-up"></i>',
           level: lvl,
           coordinates: [coords[segStartIdx], coord],
           distance: segDist,

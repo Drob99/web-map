@@ -1797,8 +1797,7 @@
  }
 
  .location-text {
-     font-size: 14px;
-     font-weight: 600;
+     font-size: 16px;
      color: #333;
  }
 
@@ -1877,7 +1876,7 @@
      justify-content: center;
      margin-right: 12px;
      margin-left: 16px;
-     font-size: 24px;
+     font-size: 30px;
      color: rgb(96, 96, 96);
      flex-shrink: 0;
      margin-top: 0px;
@@ -1897,10 +1896,10 @@
  }
 
  .clean-step-text {
-     font-size: 14px;
+     font-size: 13px;
      color: #333;
-     line-height: 1.4;
-     margin-bottom: 4px;
+     line-height: 1.5;
+     margin-bottom: 0px;
  }
 
  .clean-step-time {
