@@ -157,9 +157,10 @@ export function elevatorGuide() {
     const [lng, lat, lvl] = state.routesArray[idx].split(",");
     journeyElevator[i] = lvl;
   });
+
   journeyElevatorOccurrence = _.countBy(journeyElevator);
   journeyElevator = _.uniq(journeyElevator);
-
+  console.log(journeyElevator);
   // Floors that occur only once (single elevator stops)
   journeyElevator.forEach((lvl) => {
     if (journeyElevatorOccurrence[lvl] === 1) {
@@ -172,9 +173,10 @@ export function elevatorGuide() {
     const [lng, lat, lvl] = state.routesArray[idx].split(",");
     if (i === 0) {
       prevEleLvl = lvl;
-    } else if (prevEleLvl !== lvl && !journeyOneElevator.includes(lvl)) {
+    } else if (prevEleLvl !== lvl && !journeyOneElevator.includes(lvl+"")) {
       const [plng, plat, plvl] =
-        state.routesArray[state.routeArray[i - 2]].split(",");
+      state.routesArray[state.routeArray[i - 2]].split(",");
+      console.log(plng +","+plat+","+plvl);
       elevatorLngs.push(plng);
       elevatorLats.push(plat);
       elevatorLvls.push(plvl);
@@ -184,9 +186,9 @@ export function elevatorGuide() {
   });
 
   // Show one popup at a time for elevator transitions
-  if (routeEnabled && elevatorLngs.length > 0) {
+  if (state.routeEnabled && elevatorLngs.length > 0) {
     elevatorLvls.forEach((lvl, i) => {
-      if (state.levelRoutePoi === parseInt(lvl, 10)) {
+      if (state.levelRoutePoi === parseInt(lvl)) {
         const up = parseInt(nextElevatorLvls[i], 10) > parseInt(lvl, 10);
         const arrow = up ? "fa-circle-up" : "fa-circle-down";
         let label;
@@ -206,17 +208,17 @@ export function elevatorGuide() {
             `<div style="text-align:center;margin-top:6px;">
                <button
                  onclick="switchFloorByNo(${nextElevatorLvls[i]})"
-                 style="border:2px solid white;background-color:#0090bf;color:white;padding:10px 20px;font-size:1.3em;border-radius:5px;cursor:pointer;"
+                 style="border:2px solid white;background-color:#04615c;color:white;padding:10px 20px;font-size:1.3em;border-radius:5px;cursor:pointer;"
                >
                  ${label}${nextElevatorLvls[i]} <i class="fa-solid ${arrow}"></i>
                </button>
              </div>`
           )
           .addTo(map);
-        popupsGlobal.push(popup);
+        state.popupsGlobal.push(popup);
       } else {
-        popupsGlobal.forEach((p) => p.remove());
-        popupsGlobal = [];
+        // popupsGlobal.forEach((p) => p.remove());
+        // popupsGlobal = [];
       }
     });
   }
@@ -416,8 +418,8 @@ export function clearRoute() {
   state.fromMarkerLevel = null;
   state.toMarkerLevel = null;
 
-  popupsGlobal.forEach((p) => p.remove());
-  popupsGlobal = [];
+  state.popupsGlobal.forEach((p) => p.remove());
+  state.popupsGlobal = [];
 
   $("#from_location").val("").trigger("change");
   $("#to_location").val("").trigger("change");
@@ -676,7 +678,6 @@ export function showPoisByLevel() {
     paint: {
       'fill-extrusion-ambient-occlusion-intensity': 0.2,  // Default: 0.3
       'fill-extrusion-ambient-occlusion': false,
-      'fill-extrusion-color': '#e0e0e0',  // Lighter base color
       'fill-extrusion-emissive-strength': 0.1,  // Default: 0
       'fill-extrusion-emissive': '#ffffff',
       "fill-extrusion-opacity": [
@@ -788,6 +789,8 @@ export function showPoisByLevel() {
         20.31967926651499,
         0.8,
       ],
+      "icon-halo-color": "rgba(255,255,255,1)",
+      "icon-halo-width": 5,
       "text-color": "rgba(0,0,0,1)",
       "text-halo-color": "rgba(255,255,255,1)",
       "text-halo-width": 2,

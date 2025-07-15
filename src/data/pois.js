@@ -76,7 +76,6 @@ function processPoiProperties(poi) {
 
     if(poi.title == "room" || poi.title == "Room" )
 	{
-		console.log("POI : "+poi.title)
 		poi.color = "#f7f5ed"
 	}
 

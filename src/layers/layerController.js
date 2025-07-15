@@ -73,25 +73,34 @@ export async function layersLevel(sortedLayers) {
         }
       }
 
-      const floorLabelMap = {
-          0: 'G',
-          1: 'I',
-          2: 'D',
-          3: 'M',
-          '-1': 'S',
-      };
-      // Add floor toggle if not present
-      const toggleId = `${buildingId}/${floorNum}`;
-      if (!state.toggleableLayerIds.includes(toggleId)) {
-        state.toggleableLayerIds.push(toggleId);
-        if (!state.floorNameTitle.includes(floorNum)) {
-          const labels = [floorLabelMap[floorNum], floorNum].filter(Boolean);
-            labels.forEach(label => {
-            toggleLayer([toggleId + "/" + floorNum], label);
-            state.floorNameTitle.push(floorNum);
-          });
-       }
-      }
+const floorLabelMap = {
+  0: ['G', 'A'],
+  1: ['I', '1'],
+  2: ['D', '2'],
+  3: ['M', '3'],
+  '-1': ['S', '-1'],
+};
+
+const toggleId = `${buildingId}/${floorNum}`;
+
+if (!state.toggleableLayerIds.includes(floorNum)) {
+  state.toggleableLayerIds.push(toggleId);
+
+  if (!state.floorNameTitle.includes(floorNum)) {
+    const labels = floorLabelMap.hasOwnProperty(floorNum)
+      ? floorLabelMap[floorNum]
+      : [String(floorNum)];
+
+    labels.forEach(label => {
+      toggleLayer([toggleId], label);
+    });
+
+    state.floorNameTitle.push(floorNum);
+  }
+}
+
+
+
     }
   } catch (err) {
     console.error('layersLevel error:', err);
@@ -207,6 +216,8 @@ export async function layersLevel(sortedLayers) {
                     // Remove and redraw route
                     removeRouteLayer();
                     routeLevel();
+                    state.popupsGlobal.forEach((p) => p.remove());
+                    state.popupsGlobal = [];
                     elevatorGuide();
                     
                     // Update markers

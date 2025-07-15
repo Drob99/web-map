@@ -57,6 +57,7 @@ export const FLOOR_TITLES = {
  * Default application state.
  */
 export const state = {
+  popupsGlobal : [],
   airportMenu : null,
   bearerToken: null,
   buildingsObject: null,
