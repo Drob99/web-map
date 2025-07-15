@@ -126,7 +126,7 @@ export function flyToBuilding() {
   };
 
   const floorIcons = { up: '<i class="ph ph-escalator-up"></i>', down: '<i class="ph ph-escalator-down"></i>' };
-  const startEndIcons = { start: '<i class="ph ph-person-simple-run"></i>', destination: '<i class="ph ph-flag-banner"></i>' };
+  const startEndIcons = { start: '<i class="fa-solid fa-person-walking"></i>', destination: '<i class="fa-solid fa-flag-checkered"></i>' };
 
   const calculateBearing = (start, end) => {
     const y = Math.sin(((end[0] - start[0]) * Math.PI) / 180) * Math.cos((end[1] * Math.PI) / 180);

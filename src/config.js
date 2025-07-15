@@ -611,15 +611,21 @@ workHoursTranslations : {
 uiTranslationsMenu : {
 	EN: {
 		  "Categories": "Categories",
-      "Start Directions" : "Start Directions"
+      "Start Directions" : "Start Directions",
+      "Hide Steps" : "Hide Steps",
+      "show Steps" : "show Steps"
 	},
 	AR: {
      "Categories": "الفئات",
-     "Start Directions": "ابدأ التوجيه"
+     "Start Directions": "ابدأ التوجيه",
+     "Hide Steps" : "إخفاء الخطوات",
+     "show Steps" : "عرض الخطوات"
 	},
 	ZN: {
     "Categories": "类别",
-    "Start Directions": "开始导航"
+    "Start Directions": "开始导航",
+    "Hide Steps" : "隐藏步骤",
+    "show Steps" : "显示步骤"
 	},
 },
 terminalsFloorsTitlesJson : null
