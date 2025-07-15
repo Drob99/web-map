@@ -160,11 +160,10 @@ export function elevatorGuide() {
 
   journeyElevatorOccurrence = _.countBy(journeyElevator);
   journeyElevator = _.uniq(journeyElevator);
-  console.log(journeyElevator);
   // Floors that occur only once (single elevator stops)
   journeyElevator.forEach((lvl) => {
     if (journeyElevatorOccurrence[lvl] === 1) {
-      journeyOneElevator.push(lvl);
+      journeyOneElevator.push(lvl+"");
     }
   });
 
@@ -176,7 +175,6 @@ export function elevatorGuide() {
     } else if (prevEleLvl !== lvl && !journeyOneElevator.includes(lvl+"")) {
       const [plng, plat, plvl] =
       state.routesArray[state.routeArray[i - 2]].split(",");
-      console.log(plng +","+plat+","+plvl);
       elevatorLngs.push(plng);
       elevatorLats.push(plat);
       elevatorLvls.push(plvl);
@@ -185,12 +183,27 @@ export function elevatorGuide() {
     }
   });
 
+  // Custom marker creation function (moved here for self-containment)
+  const createCustomMarkerWithCSS = (elevatorLng, elevatorLat, elevatorLvl, arrow , escalator) => {
+    const markerElement = document.createElement("div");
+    markerElement.className = "custom-elevator-marker";
+    
+    const button = document.createElement("button");
+    button.innerHTML = `<i class="ph-fill ${escalator}"></i> <i class="ph ${arrow}"></i>`;
+    button.onclick = () => switchFloorByNo(elevatorLvl);
+    
+    markerElement.appendChild(button);
+    return markerElement;
+  };
+
   // Show one popup at a time for elevator transitions
   if (state.routeEnabled && elevatorLngs.length > 0) {
     elevatorLvls.forEach((lvl, i) => {
       if (state.levelRoutePoi === parseInt(lvl)) {
         const up = parseInt(nextElevatorLvls[i], 10) > parseInt(lvl, 10);
         const arrow = up ? "fa-circle-up" : "fa-circle-down";
+        const elevatoricon = up ? "ph-arrow-circle-up" : "ph-arrow-circle-down";
+        const escalatorsIcon = up ? "ph-escalator-up" : "ph-escalator-down";
         let label;
         switch (state.language) {
           case "ZN":
@@ -202,20 +215,24 @@ export function elevatorGuide() {
           default:
             label = "Go to floor ";
         }
-        const popup = new mapboxgl.Popup({ closeOnClick: false })
+
+        // --- START Custom Marker Integration ---
+        const markerElementCSS = createCustomMarkerWithCSS(
+          elevatorLngs[i], 
+          elevatorLats[i], 
+          nextElevatorLvls[i], 
+          elevatoricon,
+          escalatorsIcon
+        );
+
+        const markerCSS = new mapboxgl.Marker(markerElementCSS)
           .setLngLat([parseFloat(elevatorLngs[i]), parseFloat(elevatorLats[i])])
-          .setHTML(
-            `<div style="text-align:center;margin-top:6px;">
-               <button
-                 onclick="switchFloorByNo(${nextElevatorLvls[i]})"
-                 style="border:2px solid white;background-color:#04615c;color:white;padding:10px 20px;font-size:1.3em;border-radius:5px;cursor:pointer;"
-               >
-                 ${label}${nextElevatorLvls[i]} <i class="fa-solid ${arrow}"></i>
-               </button>
-             </div>`
-          )
           .addTo(map);
-        state.popupsGlobal.push(popup);
+
+        state.popupsGlobal = state.popupsGlobal || [];
+        state.popupsGlobal.push(markerCSS);
+        // --- END Custom Marker Integration ---
+
       } else {
         // popupsGlobal.forEach((p) => p.remove());
         // popupsGlobal = [];

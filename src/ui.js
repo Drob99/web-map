@@ -473,7 +473,9 @@ document.addEventListener("DOMContentLoaded", function() {
     {
       nearbySearchInput.addEventListener("input", function (e) {
           const query = e.target.value.trim();
-          searchNearBy(query);
+          if (query.length > 2) {
+              searchNearBy(query);
+          }
       });
     }
 });
@@ -506,7 +508,8 @@ function searchNearBy(query) {
     const title = getPOITitleByLang(feature.properties, state.language);
     const poiTerminalLocation = state.terminalTranslations[state.language][feature.properties.location] || "Undefined";
     const poiLevel = state.floorsNames[state.language][feature.properties.level] || "Unknown Floor";
-
+    var scheduleData = feature.properties.working_hours
+    var { workingHoursString, isOpenNow } = getWorkingHoursStatus(scheduleData);
     const locationItem = document.createElement("div");
     locationItem.className = "location-item";
     locationItem.style.cursor = "pointer";
@@ -520,9 +523,14 @@ function searchNearBy(query) {
     locationDetails.innerHTML = `
       <div class="location-name">${title}</div>
       <div class="location-address">${poiTerminalLocation} - ${poiLevel}</div>
+      ${workingHoursString ? `
+      <div class="location-hours">
+          <span class="status ${isOpenNow ? 'open' : 'closed'}">
+              ${isOpenNow ? state.workHoursTranslations[state.language]['Open'] : state.workHoursTranslations[state.language]['Closed']}
+          </span>
+      </div>
+      ` : ''}
     `;
-
-    result
 
     locationItem.appendChild(locationIcon);
     locationItem.appendChild(locationDetails);

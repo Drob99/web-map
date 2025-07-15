@@ -289,10 +289,9 @@
                     directionsSearchBox.style.display = "flex";
                     departureContainer.style.display = "block";
                     destinationContainer.style.display = "block";
-                    console.log("ENDED NAVIGATION" ,this.currentLocation );
                     this.showLocationDetailsView(this.currentLocation);
                     mapc.clearRoute();
-                    document.getElementById("stepsButton").innerHTML = `Show Steps`;
+                    document.getElementById("stepsButton").innerHTML = cfg.state.uiTranslationsMenu[cfg.state.language]["show Steps"];
                 });
             }
 
@@ -542,10 +541,8 @@
         }
 
         showLocationDetailsView(location) {
-            console.log('Showing location details view for', location);
             this.currentView = 'location-details';
             this.currentLocation = location;
-            console.log("showLocationDetailsView :",this.currentLocation)
 
             // Auto-expand menu
             this.expandMenu();
@@ -670,7 +667,6 @@
 
         // Updated showCompleteDirectionsInterface function
         showCompleteDirectionsInterface(departureLocation) {
-            console.log('Showing complete directions interface for:', departureLocation , this.currentLocation);
 
             // Ensure we're in the directions view
             this.currentView = 'directions';
@@ -936,7 +932,7 @@
                 //         <path d="M6 6l12 12"></path>
                 //     </svg>
                 // `;
-                stepsButton.innerHTML = `Hide Steps`;
+                stepsButton.innerHTML = cfg.state.uiTranslationsMenu[cfg.state.language]["Hide Steps"];
                 stepsButton.style.background = '#4DA8DA !important'; // Red color for close
             }
 
@@ -992,7 +988,7 @@
                 //         <path d="M9 18l6-6-6-6"></path>
                 //     </svg>
                 // `;
-                stepsButton.innerHTML = `Show Steps`;
+                stepsButton.innerHTML = cfg.state.uiTranslationsMenu[cfg.state.language]["show Steps"];
                 stepsButton.style.background = '#4DA8DA !important'; // Blue color for steps
             }
         }
@@ -1283,7 +1279,7 @@
                     //         <path d="M9 18l6-6-6-6"></path>
                     //     </svg>
                     // `;
-                    stepsButton.innerHTML = `Show Steps`;
+                    stepsButton.innerHTML = cfg.state.uiTranslationsMenu[cfg.state.language]["show Steps"];
                     stepsButton.style.background = '#4DA8DA !important';
                 }
             }, 100);
@@ -2015,7 +2011,7 @@
                 amenities.push(this.categoryItem);
             }
 
-            console.log("amenities size : "+amenities.length);
+            
             var display = "block";
             if (amenities.length < 1) {
                 display = "none";
@@ -2043,7 +2039,7 @@
             </div>
 
             <div class="location-amenities" style="display: ${display};">
-                <div class="amenities-title">Categories</div>
+                <div class="amenities-title">${cfg.state.uiTranslationsMenu[language]["Categories"]}</div>
                 <div class="amenities-list">
                 ${amenities.map(amenity => `<span class="amenity-tag">${amenity}</span>`).join('')}
                 </div>
@@ -2051,7 +2047,7 @@
 
             <div class="location-actions">
                 <button class="action-button primary-button" onclick="cfg.state.airportMenu.showDirectionsView(cfg.state.airportMenu.currentLocation)">
-                Start Directions
+                ${cfg.state.uiTranslationsMenu[language]["Start Directions"]}
                 </button>
             </div>
             `;
