@@ -5,7 +5,7 @@
 // Note: jQuery and Select2 are loaded globally via index.html
 import { FLOOR_TITLES, state } from "./config.js";
 import { drawPathToPoi } from "./data/routes.js";
-import { clearRoute, routeEnabled , toggle2DTo3D , flyToParking} from "./mapController.js";
+import { clearRoute, routeEnabled , toggle2DTo3D , flyToParking, switchFloorByNo } from "./mapController.js";
 import { stringMatch } from "./utils.js";
 import { map } from "./mapInit.js";
 import { languageService } from "./i18n/languageService.js";
@@ -19,6 +19,7 @@ export function initUI() {
   initDropdown("#from_location");
   initDropdown("#to_location");
   bindSwapButton(".swap-btn");
+
   //initAccessabilty();
 }
 
@@ -296,6 +297,8 @@ function selectLanguage(selectedEl, langCode) {
     setTimeout(() => {
       languageMenu();
     }, 300);
+
+   
   }
 }
 
@@ -478,6 +481,31 @@ document.addEventListener("DOMContentLoaded", function() {
           }
       });
     }
+       function toggleMenuArrow() {
+      const categoriesSection = document.getElementById("categoriesSection");
+      const menuArrow = document.querySelector(".menu-arrow");
+
+      // Check if #categoriesSection is display none
+      if (window.getComputedStyle(categoriesSection).display === "none") {
+        // Hide .menu-arrow
+        menuArrow.style.display = "none";
+      } else {
+        // Show .menu-arrow
+        menuArrow.style.display = "flex";
+      }
+    }
+
+    // Run the function on page load
+    toggleMenuArrow();
+
+    // Add an event listener to monitor changes dynamically
+    const observer = new MutationObserver(toggleMenuArrow);
+
+    // Observe changes in the #categoriesSection's style attribute
+    observer.observe(document.getElementById("categoriesSection"), {
+      attributes: true,
+      attributeFilter: ["style"],
+    });
 });
 
 // Menu navigation is now handled by the menu-navigation module
@@ -763,7 +791,7 @@ function resetSettings() {
 	SpeechReset();
 	resetMapboxAccessibility();
 	resetAnimation();
-
+ 
 	document.querySelectorAll(".tool-card.active").forEach(card => {
 		card.classList.remove("active", "green");
 	});
@@ -1050,6 +1078,7 @@ function createArabicURL(baseUrl, arabicText) {
 
 
 function getAllUrlParams(url) {
+  //console.log("getAllUrlParams - "+url);
 	// get query string from url (optional) or window
 	var queryString = url ? url.split("?")[1] : window.location.search.slice(1);
 
@@ -1111,68 +1140,178 @@ function getAllUrlParams(url) {
 			}
 		}
 	}
+ // console.log(obj);
 
 	return obj;
 }
 
 var flag_open_link_with_paramaters = false;
 var flag_open_link_with_paramaters_lang = false;
-
 var open_link_name = "";
-function check_link_parameters() {
-	if (getAllUrlParams().lang != undefined) {
-		var lang = getAllUrlParams().lang.toUpperCase();
-		if (language != lang) {
-			changelang(lang);
-		}
-	}
-	
-	if (getAllUrlParams().location != undefined) {
-		flyToTerminalFromUrl(window.location);
-	}
-	if (getAllUrlParams().dest != undefined) {
-		var destination_coordinates = getAllUrlParams().dest;
-		//console.log(destination_coordinates);
-		var area = OpenLocationCode.decode(destination_coordinates);
-		//console.log(area);
+var currentFloor = 0;
 
-		var original_code = OpenLocationCode.encode(
-			area.latitudeCenter,
-			area.longitudeCenter,
-			area.codeLength
-		);
+async function check_link_parameters() {
+  //console.log("check_link_parameters()");
 
-		var decoded = OpenLocationCode.decode(original_code);
+  // Process language parameter first
+  if (getAllUrlParams().lang) {
+    const lang = getAllUrlParams().lang.toUpperCase();
+    console.log(`Attempting to set language: ${lang}`);
+    
+    if (languageService.setLanguage(lang)) {
+      console.log(`Language changed to: ${lang}`);
+      
+      // Store floor level context from URL
+      state.levelRoutePoi = getAllUrlParams().fl || 0;
+      
+      // Update interface translations
+      uiTranslator.updateUITranslations();
+      
+      // Update POI data
+      updatePOITranslations();
+      
+      // Update map layers with lowercase code
+      const langCode = lang.toLowerCase();
+      updateMapLayers(langCode);
+      loadLanguage(langCode);
+      
+      // Hide language panel
+      setTimeout(languageMenu, 300);
+    }
+  }
 
-		var name = getAllUrlParams().name.replace(/%20/g, " ");
-		open_link_name = name;
-		
-		if(firstGpsMove){
-			flag_open_link_with_paramaters = true;
-		}
-		flag_open_link_with_paramaters_lang = true;
-		setTimeout(() => {
-			//searchInputNearby.value = name;
-			document.getElementById("poi-menu").style.display = "block";
-			show_pois_menu(name);
-			map.flyTo({
-				center: [decoded.longitudeCenter, decoded.latitudeCenter],
-				zoom: 19.489296826958224,
-				duration: 3000,
-			});
-			switchtofloor(getAllUrlParams().fl)
-			//console.log("Flooooor : "+getAllUrlParams().fl);
-		}, 3000);
+  // Process destination parameter
+  if (getAllUrlParams().dest) {
+    try {
+      const destination_coordinates = getAllUrlParams().dest; 
+      // Decode location with validation
+      const area = OpenLocationCode.decode(destination_coordinates);
+      const original_code = OpenLocationCode.encode(
+        area.longitudeCenter,
+         area.latitudeCenter,
+        area.codeLength
+      );
+      const decoded = OpenLocationCode.decode(original_code);
+      
+      
+      // Get location name with fallback
+      const name = getAllUrlParams().name 
+        ? decodeURIComponent(getAllUrlParams().name.replace(/\+/g, ' '))
+        : "Unknown Location";
+      open_link_name = name;
+      
+      // Set processing flags
+      flag_open_link_with_paramaters = true;
+      flag_open_link_with_paramaters_lang = true;
+      
+      // Parse floor parameter
+      const targetFloor = parseInt(getAllUrlParams().fl) || 0;
+      
 
-		// setTimeout(() => {
-		// 	draw_path_to_poi(
-		// 		name,
-		// 		decoded.longitudeCenter,
-		// 		decoded.latitudeCenter,
-		// 		getAllUrlParams().fl,
-		// 		"",
-		// 		""
-		// 	);
-		// }, 10000);
-	}
+     const foundFeatureFromLink = filterSinglePOI(
+          decoded.longitudeCenter,
+          decoded.latitudeCenter,
+          targetFloor,
+          name
+      );
+
+      if (foundFeatureFromLink) {
+          state.airportMenu.showLocationDetailsView(foundFeatureFromLink);
+      } else {
+          console.warn("No matching POI found for:", name);
+          // Optional: fallback or user notification
+      }
+
+      switchFloorByNo(targetFloor);
+      setTimeout(() => {
+        // Sync floor level before moving
+        // if (state.levelRoutePoi !== targetFloor) {
+            
+        // }
+        
+        
+        // Fly to destination
+        map.flyTo({
+          center: [decoded.longitudeCenter, decoded.latitudeCenter],
+          zoom: 19.5,
+          duration: 3000
+        }, () => {
+          console.log(`Map reached destination. Drawing path to: ${name}`);
+        });
+      }, 500); // Short delay to allow DOM updates
+      
+    } catch (error) {
+      console.error("Destination processing failed:", error);
+    }
+  }
+  if(getAllUrlParams().dest == undefined && getAllUrlParams().name != undefined){
+    toggleNearbyMenu();
+    setTimeout(() => {
+      document.getElementById("nearbySearchInput").value = decodeURIComponent(getAllUrlParams().name || "");
+      searchNearBy(document.getElementById("nearbySearchInput").value);
+    }, 200);
+    
+  }
+}
+
+// This function is for the locations of the kiosk in the airport
+function flyToTerminalFromUrl(url) {
+    const locationData = getLocationFromUrl(url);
+    
+    if (locationData) {
+        flyToTerminal(locationData.terminalNumber, locationData.floorNumber, locationData.side);
+    }
+}
+
+// Check the link parameters 
+setTimeout(() => {
+  getAllUrlParams(window.location.search);
+  check_link_parameters();
+}, 5000);
+
+function filterSinglePOI(longitude, latitude, floor, poiName) {
+  console.log(" -- "+longitude+" -- "+latitude+" -- "+floor+" -- "+poiName);
+    // Haversine formula to calculate distance in meters between two coordinates
+    function getDistanceInMeters(lat1, lon1, lat2, lon2) {
+        const R = 6371000; // Earth radius in meters
+        const toRad = (value) => (value * Math.PI) / 180;
+
+        const dLat = toRad(lat2 - lat1);
+        const dLon = toRad(lon2 - lon1);
+
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+
+    for (const feature of cfg.state.allPoiGeojson.features) {
+        feature.properties = window.mapTranslator.translatePOIProperties(feature);
+        const { location, center, level } = feature.properties;
+
+        const matchesPoiName = getPOITitleByLang(feature.properties, cfg.state.language)
+            .toLowerCase()
+            .includes(poiName.toLowerCase());
+
+        const matchesTerminal = !cfg.state.selectedTerminal || location === cfg.state.selectedTerminal;
+
+        const lon = center[0];
+        const lat = center[1];
+        const distance = getDistanceInMeters(latitude, longitude, parseFloat(lat), parseFloat(lon));
+        const matchesCoordinates = distance <= 10;
+
+        const matchesFloor = parseInt(level) === parseInt(floor);
+
+        if (matchesPoiName && matchesCoordinates && matchesFloor) {
+            console.log("=====================");
+            console.log(feature);
+            console.log("=====================");
+            return feature;
+        }
+    }
+
+    return null; // No match found
 }

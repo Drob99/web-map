@@ -317,9 +317,14 @@ export class NavigationPlaybackControls {
         onComplete: () => this.hide(), // call toggle to hide on complete
         onFloorChange: (floor) => this.updateFloor(floor)
       });
-
+      const notification = document.getElementById("notificationRoute");
       if (!initialized) {
         alert('No route available for playback');
+          notification.classList.add('show');
+          
+          setTimeout(() => {
+            notification.classList.remove('show');
+          }, 2000);
         return false;
       }
 
