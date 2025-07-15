@@ -8,39 +8,39 @@
     if (window.AirportMenuComponent) {
         return;
     }
-    import('/src/config.js').then(cfg => window.cfg = cfg);
-    import('/src/data/routes.js').then(route => {
+    import('./config.js').then(cfg => window.cfg = cfg);
+    import('./data/routes.js').then(route => {
         window.route = route;
     }).catch(err => {
         console.error('Failed to load route:', err);
     });
 
-    import('/src/mapController.js').then(mapc => {
+    import('./mapController.js').then(mapc => {
         window.mapc = mapc;
     }).catch(err => {
         console.error('Failed to load route:', err);
     });
 
-    import('/src/navigation.js').then(navigation => {
+    import('./navigation.js').then(navigation => {
         window.navigation = navigation;
     }).catch(err => {
         console.error('Failed to load route:', err);
     });
 
-    import('/src/markers.js').then(markers => {
+    import('./markers.js').then(markers => {
         window.markers = markers;
     }).catch(err => {
         console.error('Failed to load markers:', err);
     });
 
-    import('/src/mapInit.js').then(mapInit => {
+    import('./mapInit.js').then(mapInit => {
         window.mapInit = mapInit;
     }).catch(err => {
         console.error('Failed to load markers:', err);
     });
 
 
-    import('/src/i18n/mapTranslator.js').then(mapTranslator => {
+    import('./i18n/mapTranslator.js').then(mapTranslator => {
         window.mapTranslator = mapTranslator.mapTranslator;
     }).catch(err => {
         console.error('Failed to load mapTranslator:', err);
@@ -2259,7 +2259,7 @@
 
     // Initialize the component when DOM is ready
     document.addEventListener('DOMContentLoaded', function () {
-        import('/src/config.js').then(cfg => window.cfg = cfg);
+        import('./config.js').then(cfg => window.cfg = cfg);
         cfg.state.airportMenu = new AirportMenuComponent();
     });
 
