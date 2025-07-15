@@ -597,7 +597,7 @@
         }
 
         setupDepartureSearch() {
-            
+
             const departureInput = document.getElementById('departureInput');
             const departureResults = document.getElementById('departureResults');
 
@@ -2011,7 +2011,7 @@
                 amenities.push(this.categoryItem);
             }
 
-            
+
             var display = "block";
             if (amenities.length < 1) {
                 display = "none";
@@ -2370,8 +2370,8 @@ function getWorkingHoursStatus(schedule) {
         // Handle direct string values
         if (typeof schedule === 'string') {
             return {
-                workingHoursString: schedule === "00/00" ? "Open 24 hours" : 
-                                  schedule === "--/--" ? "Closed" : "",
+                workingHoursString: schedule === "00/00" ? "Open 24 hours" :
+                    schedule === "--/--" ? "Closed" : "",
                 isOpenNow: schedule === "00/00"
             };
         }
@@ -2380,10 +2380,10 @@ function getWorkingHoursStatus(schedule) {
         if (!Array.isArray(schedule)) {
             return { workingHoursString: "", isOpenNow: false };
         }
-        
+
         const now = new Date();
         const currentDay = now.getDay(); // JS: 0=Sun,1=Mon,...,6=Sat
-        
+
         // Map to your custom array structure:
         // JS Sunday(0) → your Sunday(5)
         // JS Monday(1) → your Monday(0)
@@ -2393,53 +2393,53 @@ function getWorkingHoursStatus(schedule) {
         // JS Friday(5) → your Friday(4)
         // JS Saturday(6) → your Saturday(6)
         const dayIndex = currentDay === 0 ? 5 :  // Sunday → 5
-                         currentDay === 6 ? 6 :  // Saturday → 6
-                         currentDay - 1;         // Others map directly
-        
+            currentDay === 6 ? 6 :  // Saturday → 6
+                currentDay - 1;         // Others map directly
+
         // Check array bounds
         if (dayIndex < 0 || dayIndex >= schedule.length) {
             return { workingHoursString: "", isOpenNow: false };
         }
-        
+
         const todaySchedule = schedule[dayIndex];
-        
+
         // Handle null/undefined
         if (todaySchedule == null) {
             return { workingHoursString: "", isOpenNow: false };
         }
-        
+
         // Handle string formats
         if (typeof todaySchedule === 'string') {
             return {
                 workingHoursString: todaySchedule === "00/00" ? "Open 24 hours" :
-                                   todaySchedule === "--/--" ? "Closed" : "",
+                    todaySchedule === "--/--" ? "Closed" : "",
                 isOpenNow: todaySchedule === "00/00"
             };
         }
-        
+
         // Handle array formats
         if (Array.isArray(todaySchedule)) {
             // Check for ["00/00"] or ["--/--"]
             if (todaySchedule.length > 0 && typeof todaySchedule[0] === 'string') {
                 return {
                     workingHoursString: todaySchedule[0] === "00/00" ? "Open 24 hours" :
-                                       todaySchedule[0] === "--/--" ? "Closed" : "",
+                        todaySchedule[0] === "--/--" ? "Closed" : "",
                     isOpenNow: todaySchedule[0] === "00/00"
                 };
             }
-            
+
             // Process time shifts
             const currentMinutes = now.getHours() * 60 + now.getMinutes();
             const shifts = [];
             let isOpen = false;
-            
+
             for (const shift of todaySchedule) {
                 if (!Array.isArray(shift)) continue;
-                
+
                 const [start, end] = shift.map(String);
                 const startMin = timeToMinutes(start);
                 let endMin = timeToMinutes(end);
-                
+
                 // Skip invalid times
                 if (isNaN(startMin)) continue;
                 if (isNaN(endMin)) {
@@ -2449,24 +2449,24 @@ function getWorkingHoursStatus(schedule) {
                         continue;
                     }
                 }
-                
+
                 // Format shift
                 shifts.push(`${start} - ${end}`);
-                
+
                 // Check if current time is within this shift
                 if (currentMinutes >= startMin && currentMinutes < endMin) {
                     isOpen = true;
                 }
             }
-            
+
             return {
                 workingHoursString: shifts.length ? shifts.join(', ') : "Closed",
                 isOpenNow: isOpen
             };
         }
-        
+
         return { workingHoursString: "", isOpenNow: false };
-        
+
     } catch (error) {
         console.error("Error processing schedule:", error);
         return { workingHoursString: "", isOpenNow: false };

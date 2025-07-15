@@ -15,6 +15,7 @@ const state = {
     locationDetailsView: null,
     directionsView: null,
     navigationView: null,
+    nearbyContainer: null,
     searchInput: null,
     searchSectionCategories: null,
     subcategoriesBackBtn: null,
@@ -67,7 +68,7 @@ const state = {
     _legendToggleHandler: null,
 };
 
- function init() {
+function init() {
     state.menuContainer = document.getElementById('menuContainer');
     state.menuArrow = document.getElementById('menuArrow');
     state.categoriesSection = document.getElementById('categoriesSection');
@@ -90,6 +91,7 @@ const state = {
     state.startNavigationBtn = document.getElementById('startNavigationBtn');
     state.nextStepBtn = document.getElementById('nextStepBtn');
     state.endNavigationBtn = document.getElementById('endNavigationBtn');
+    state.nearbyContainer = document.getElementById('nearbyContainer');
 
     state.isDesktop = window.innerWidth > 768;
 
@@ -155,54 +157,54 @@ function isItEnglish(text) {
 }
 
 function normalizeArray(input) {
-  if (typeof input === 'string') {
-    try {
-      const parsed = JSON.parse(input);
-      if (Array.isArray(parsed)) {
-        return parsed;
-      }
-    } catch (e) {
-      console.warn('Invalid JSON array string:', input);
-      return [];
+    if (typeof input === 'string') {
+        try {
+            const parsed = JSON.parse(input);
+            if (Array.isArray(parsed)) {
+                return parsed;
+            }
+        } catch (e) {
+            console.warn('Invalid JSON array string:', input);
+            return [];
+        }
     }
-  }
-  return Array.isArray(input) ? input : [];
+    return Array.isArray(input) ? input : [];
 }
 
 function getEnglishOnly(arr) {
-  const items = normalizeArray(arr);
-  const englishRegex = /^[\u0000-\u007F]+$/;
-  return items.filter(item => englishRegex.test(item));
+    const items = normalizeArray(arr);
+    const englishRegex = /^[\u0000-\u007F]+$/;
+    return items.filter(item => englishRegex.test(item));
 }
 
 function getArabicOnly(arr) {
-  const items = normalizeArray(arr);
-  const arabicRegex = /^[\u0600-\u06FF\s]+$/;
-  return items.filter(item => arabicRegex.test(item));
+    const items = normalizeArray(arr);
+    const arabicRegex = /^[\u0600-\u06FF\s]+$/;
+    return items.filter(item => arabicRegex.test(item));
 }
 
 function getChineseOnly(arr) {
-  const items = normalizeArray(arr);
-  const chineseRegex = /^[\u3400-\u4DBF\u4E00-\u9FFF\s]+$/;
-  return items.filter(item => chineseRegex.test(item));
+    const items = normalizeArray(arr);
+    const chineseRegex = /^[\u3400-\u4DBF\u4E00-\u9FFF\s]+$/;
+    return items.filter(item => chineseRegex.test(item));
 }
 
 function parseCenter(center) {
-  if (typeof center === 'string') {
-    try {
-      center = JSON.parse(center);
-    } catch (e) {
-      console.error('Invalid center format:', center);
-      return [0, 0]; // fallback default
+    if (typeof center === 'string') {
+        try {
+            center = JSON.parse(center);
+        } catch (e) {
+            console.error('Invalid center format:', center);
+            return [0, 0]; // fallback default
+        }
     }
-  }
 
-  if (Array.isArray(center) && center.length === 2) {
-    return [parseFloat(center[0]), parseFloat(center[1])];
-  }
+    if (Array.isArray(center) && center.length === 2) {
+        return [parseFloat(center[0]), parseFloat(center[1])];
+    }
 
-  console.error('Invalid center format:', center);
-  return [0, 0]; // fallback default
+    console.error('Invalid center format:', center);
+    return [0, 0]; // fallback default
 }
 
 function getPOITitleByLang(poi, lang = 'EN') {
@@ -616,6 +618,7 @@ function showLocationsViewByID(categoryID) {
 }
 
 function showLocationDetailsView(location) {
+    console.log("xxxxxxxxxxx");
     console.log('Showing location details view for', location);
     state.currentView = 'location-details';
     state.currentLocation = location;
@@ -632,25 +635,7 @@ function showLocationDetailsView(location) {
     if (state.locationDetailsView) state.locationDetailsView.style.display = 'block';
     if (state.directionsView) state.directionsView.style.display = 'none';
     if (state.navigationView) state.navigationView.style.display = 'none';
-}
-
-function showLocationDetailsViewLinkSharedLocation(location) {
-    console.log('Showing location details view for', location);
-    state.currentView = 'location-details';
-    state.currentLocation = location;
-    console.log("showLocationDetailsView :", state.currentLocation);
-
-    expandMenu();
-
-    populateLocationDetails(location);
-
-    if (state.categoriesSection) state.categoriesSection.style.display = 'none';
-    if (state.searchSectionCategories) state.searchSectionCategories.style.display = 'none';
-    if (state.subcategoriesView) state.subcategoriesView.style.display = 'none';
-    if (state.locationsView) state.locationsView.style.display = 'none';
-    if (state.locationDetailsView) state.locationDetailsView.style.display = 'block';
-    if (state.directionsView) state.directionsView.style.display = 'none';
-    if (state.navigationView) state.navigationView.style.display = 'none';
+    if (state.nearbyContainer) state.nearbyContainer.style.display = 'none';
 }
 
 function showDirectionsView(location) {

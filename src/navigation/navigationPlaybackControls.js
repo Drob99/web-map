@@ -24,7 +24,7 @@ export class NavigationPlaybackControls {
     this.isInitialized = false;
     this.playbackPanel = null;
   }
-  
+
   /**
    * Initialize the playback controls
    * This method is idempotent - safe to call multiple times
@@ -36,11 +36,11 @@ export class NavigationPlaybackControls {
         console.log('NavigationPlaybackControls already initialized');
         return true;
       }
-      
+
       this.createHTML();
       this.attachEventListeners();
       this.isInitialized = true;
-      
+
       console.log('NavigationPlaybackControls initialized successfully');
       return true;
     } catch (error) {
@@ -48,7 +48,7 @@ export class NavigationPlaybackControls {
       return false;
     }
   }
-  
+
   /**
    * Ensure the component is initialized before use
    * Implements the Guard Clause pattern for defensive programming
@@ -61,7 +61,7 @@ export class NavigationPlaybackControls {
     }
     return true;
   }
-  
+
   /**
    * Create the HTML structure for playback controls
    * Follows the Builder pattern for complex object construction
@@ -71,14 +71,14 @@ export class NavigationPlaybackControls {
     if (this.container) {
       this.container.remove();
     }
-    
+
     this.container = document.createElement('div');
     this.container.id = 'playback-controls';
     this.container.className = 'playback-controls hidden';
-    
+
     // Using template literals for better readability and maintainability
     this.container.innerHTML = this._getControlsTemplate();
-    
+
     // Safely append to document body
     if (document.body) {
       document.getElementById("directionsView").appendChild(this.container);
@@ -86,7 +86,7 @@ export class NavigationPlaybackControls {
       throw new Error('Document body not available for controls injection');
     }
   }
-  
+
   /**
    * Get the HTML template for controls
    * Separated for better maintainability and testing
@@ -129,7 +129,7 @@ export class NavigationPlaybackControls {
             </div>
     `;
   }
-  
+
   /**
    * Attach event listeners to control elements
    * Uses delegation pattern for better performance and maintainability
@@ -138,20 +138,20 @@ export class NavigationPlaybackControls {
     if (!this.container) {
       throw new Error('Cannot attach event listeners: container not initialized');
     }
-    
+
     // Play/Pause buttons
     this._attachPlayPauseListeners();
-    
+
     // Control buttons (stop, close)
     this._attachControlListeners();
-    
+
     // Speed control
     this._attachSpeedListener();
-    
+
     // Progress bar interaction
     this._attachProgressListener();
   }
-  
+
   /**
    * Attach play/pause button listeners
    * Separated for better code organization
@@ -159,13 +159,13 @@ export class NavigationPlaybackControls {
   _attachPlayPauseListeners() {
     const playBtn = this.container.querySelector('.play-btn');
     const pauseBtn = this.container.querySelector('.pause-btn');
-    
+
     if (playBtn) {
       playBtn.addEventListener('click', () => {
         try {
           navigationPlayback.play();
           this.updatePlayPauseButtons(true);
-          
+
           // Also update the directions panel controls if they exist
           if (this.playbackPanel) {
             this.playbackPanel.querySelector('.play-btn').classList.add('hidden');
@@ -177,13 +177,13 @@ export class NavigationPlaybackControls {
         }
       });
     }
-    
+
     if (pauseBtn) {
       pauseBtn.addEventListener('click', () => {
         try {
           navigationPlayback.pause();
           this.updatePlayPauseButtons(false);
-          
+
           // Also update the directions panel controls if they exist
           if (this.playbackPanel) {
             this.playbackPanel.querySelector('.pause-btn').classList.add('hidden');
@@ -196,20 +196,20 @@ export class NavigationPlaybackControls {
       });
     }
   }
-  
+
   /**
    * Attach control button listeners (stop, close)
    */
   _attachControlListeners() {
     const stopBtn = this.container.querySelector('.stop-btn');
     const closeBtn = this.container.querySelector('.playback-close');
-    
+
     if (stopBtn) {
       stopBtn.addEventListener('click', () => {
         try {
           navigationPlayback.stop();
           this.hide();
-          
+
           // Also update the directions panel controls if they exist
           if (this.playbackPanel) {
             this.playbackPanel.querySelector('.pause-btn').classList.add('hidden');
@@ -223,7 +223,7 @@ export class NavigationPlaybackControls {
         }
       });
     }
-    
+
     if (closeBtn) {
       closeBtn.addEventListener('click', () => {
         try {
@@ -237,13 +237,13 @@ export class NavigationPlaybackControls {
       });
     }
   }
-  
+
   /**
    * Attach speed control listener
    */
   _attachSpeedListener() {
     const speedSelect = this.container.querySelector('.speed-select');
-    
+
     if (speedSelect) {
       speedSelect.addEventListener('change', (e) => {
         try {
@@ -252,7 +252,7 @@ export class NavigationPlaybackControls {
             throw new Error('Invalid speed value');
           }
           navigationPlayback.setSpeed(speed);
-          
+
           // Also update the directions panel controls if they exist
           if (this.playbackPanel) {
             const panelSpeedSelect = this.playbackPanel.querySelector('.speed-select');
@@ -267,13 +267,13 @@ export class NavigationPlaybackControls {
       });
     }
   }
-  
+
   /**
    * Attach progress bar click listener
    */
   _attachProgressListener() {
     const progressBar = this.container.querySelector('.playback-progress-bar');
-    
+
     if (progressBar) {
       progressBar.addEventListener('click', (e) => {
         try {
@@ -287,64 +287,64 @@ export class NavigationPlaybackControls {
       });
     }
   }
-  
+
   /**
    * Show the playback controls
    * Implements the Command pattern with error handling
    * @returns {boolean} true if successfully shown
    */
   show() {
-  try {
-    // Defensive programming: ensure initialization
-    if (!this._ensureInitialized()) {
-      throw new Error('Failed to initialize playback controls');
-    }
+    try {
+      // Defensive programming: ensure initialization
+      if (!this._ensureInitialized()) {
+        throw new Error('Failed to initialize playback controls');
+      }
 
-    // Validate that container exists after initialization
-    if (!this.container) {
-      throw new Error('Playback controls container is not available');
-    }
+      // Validate that container exists after initialization
+      if (!this.container) {
+        throw new Error('Playback controls container is not available');
+      }
 
-    if (this.isVisible) {
-      // If already visible, hide the controls
-      this.isVisible = false;
-      this.container.classList.add('hidden');
-      navigationPlayback.stop(); // Optional: stop playback if needed
-    } else {
-      // Initialize the navigation playback system
-      const initialized = navigationPlayback.initialize({
-        onProgress: (progress, stepIndex) => this.updateProgress(progress, stepIndex),
-        onComplete: () => this.hide(), // call toggle to hide on complete
-        onFloorChange: (floor) => this.updateFloor(floor)
-      });
-      const notification = document.getElementById("notificationRoute");
-      if (!initialized) {
-        alert('No route available for playback');
+      if (this.isVisible) {
+        // If already visible, hide the controls
+        this.isVisible = false;
+        this.container.classList.add('hidden');
+        navigationPlayback.stop(); // Optional: stop playback if needed
+      } else {
+        // Initialize the navigation playback system
+        const initialized = navigationPlayback.initialize({
+          onProgress: (progress, stepIndex) => this.updateProgress(progress, stepIndex),
+          onComplete: () => this.hide(), // call toggle to hide on complete
+          onFloorChange: (floor) => this.updateFloor(floor)
+        });
+        const notification = document.getElementById("notificationRoute");
+        if (!initialized) {
+          alert('No route available for playback');
           notification.classList.add('show');
-          
+
           setTimeout(() => {
             notification.classList.remove('show');
           }, 2000);
-        return false;
+          return false;
+        }
+
+        // Show the controls
+        this.isVisible = true;
+        this.container.classList.remove('hidden');
+        this.updateFloor(state.levelRoutePoi);
+        this.linkToNavigationSteps();
+        this.connectToEndRoute();
       }
 
-      // Show the controls
-      this.isVisible = true;
-      this.container.classList.remove('hidden');
-      this.updateFloor(state.levelRoutePoi);
-      this.linkToNavigationSteps();
-      this.connectToEndRoute();
+      return true;
+    } catch (error) {
+      console.error('Error toggling playback controls:', error);
+      this._showError('Failed to toggle playback controls: ' + error.message);
+      return false;
     }
-
-    return true;
-  } catch (error) {
-    console.error('Error toggling playback controls:', error);
-    this._showError('Failed to toggle playback controls: ' + error.message);
-    return false;
   }
-}
 
-  
+
   /**
    * Hide the playback controls
    * Implements cleanup to prevent memory leaks
@@ -355,7 +355,7 @@ export class NavigationPlaybackControls {
         console.warn('Cannot hide controls: container not initialized');
         return;
       }
-      
+
       this.isVisible = false;
       this.container.classList.add('hidden');
       this.updatePlayPauseButtons(false);
@@ -364,17 +364,17 @@ export class NavigationPlaybackControls {
       console.error('Error hiding playback controls:', error);
     }
   }
-  
+
   /**
    * Update play/pause button visibility
    * @param {boolean} isPlaying - Whether playback is currently active
    */
   updatePlayPauseButtons(isPlaying) {
     if (!this.container) return;
-    
+
     const playBtn = this.container.querySelector('.play-btn');
     const pauseBtn = this.container.querySelector('.pause-btn');
-    
+
     if (playBtn && pauseBtn) {
       if (isPlaying) {
         playBtn.classList.add('hidden');
@@ -385,7 +385,7 @@ export class NavigationPlaybackControls {
       }
     }
   }
-  
+
   /**
    * Update the progress bar and time display
    * @param {number} progress - Progress value between 0 and 1
@@ -393,37 +393,37 @@ export class NavigationPlaybackControls {
    */
   updateProgress(progress, stepIndex) {
     if (!this.container) return;
-    
+
     try {
       // Update progress bar
       const fillBar = this.container.querySelector('.playback-progress-fill');
       if (fillBar) {
         fillBar.style.width = `${Math.max(0, Math.min(100, progress * 100))}%`;
       }
-      
+
       // Update time display
       const duration = navigationPlayback.config.animationDuration / 1000;
       const elapsed = duration * progress;
-      
+
       const elapsedElement = this.container.querySelector('.playback-elapsed');
       const durationElement = this.container.querySelector('.playback-duration');
-      
+
       if (elapsedElement) {
         elapsedElement.textContent = this.formatTime(elapsed);
       }
       if (durationElement) {
         durationElement.textContent = this.formatTime(duration);
       }
-      
+
       // Update step highlighting
       this.updateStepHighlight(stepIndex);
-      
+
       // Also update the directions panel controls if they exist
       if (this.playbackPanel) {
         const panelFill = this.playbackPanel.querySelector('.playback-progress-fill');
         const panelElapsed = this.playbackPanel.querySelector('.playback-elapsed');
         const panelDuration = this.playbackPanel.querySelector('.playback-duration');
-        
+
         if (panelFill) {
           panelFill.style.width = `${Math.max(0, Math.min(100, progress * 100))}%`;
         }
@@ -438,21 +438,21 @@ export class NavigationPlaybackControls {
       console.error('Error updating progress:', error);
     }
   }
-  
+
   /**
    * Update the current floor display
    * @param {number} floor - Current floor number
    */
   updateFloor(floor) {
     if (!this.container) return;
-    
+
     try {
       const floorLabel = floor === 0 ? 'G' : floor.toString();
       const floorElement = this.container.querySelector('.current-floor');
       if (floorElement) {
         floorElement.textContent = floorLabel;
       }
-      
+
       // Also update the directions panel controls if they exist
       if (this.playbackPanel) {
         const panelFloor = this.playbackPanel.querySelector('.current-floor');
@@ -464,7 +464,7 @@ export class NavigationPlaybackControls {
       console.error('Error updating floor display:', error);
     }
   }
-  
+
   /**
    * Format time in MM:SS format
    * @param {number} seconds - Time in seconds
@@ -474,12 +474,12 @@ export class NavigationPlaybackControls {
     if (isNaN(seconds) || seconds < 0) {
       return '0:00';
     }
-    
+
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   }
-  
+
   /**
    * Set the directions panel playback controls reference
    * @param {HTMLElement} panel - The directions panel playback controls
@@ -487,43 +487,43 @@ export class NavigationPlaybackControls {
   setDirectionsPanelControls(panel) {
     this.playbackPanel = panel;
   }
-  
+
   /**
    * Link playback controls to navigation steps for interactive seeking
    */
   linkToNavigationSteps() {
     if (!this.isVisible) return;
-    
+
     try {
       // Handler for navigation steps (when visible)
       this._linkToNavigationStepsList();
-      
+
       // Handler for instruction steps (fallback)
       this._linkToInstructionSteps();
     } catch (error) {
       console.error('Error linking to navigation steps:', error);
     }
   }
-  
+
   /**
    * Link to navigation steps list
    */
   _linkToNavigationStepsList() {
     const navigationStepsList = document.getElementById('navigationStepsList');
     if (!navigationStepsList) return;
-    
+
     navigationStepsList.addEventListener('click', (e) => {
       if (!this.isVisible) return;
-      
+
       try {
         // Find clicked step
         const stepElement = e.target.closest('.clean-step-item');
         if (!stepElement) return;
-        
+
         // Find all steps
         const allSteps = Array.from(navigationStepsList.querySelectorAll('.clean-step-item'));
         const stepIndex = allSteps.indexOf(stepElement);
-        
+
         if (stepIndex >= 0) {
           const progress = stepIndex / Math.max(1, allSteps.length - 1);
           navigationPlayback.seekTo(progress);
@@ -533,26 +533,26 @@ export class NavigationPlaybackControls {
       }
     });
   }
-  
+
   /**
    * Link to instruction steps (fallback)
    */
   _linkToInstructionSteps() {
     const instructionsContainer = document.getElementById('instructions');
     if (!instructionsContainer) return;
-    
+
     instructionsContainer.addEventListener('click', (e) => {
       if (!this.isVisible) return;
-      
+
       try {
         // Find clicked instruction
         const instructionElement = e.target.closest('li.instruction');
         if (!instructionElement) return;
-        
+
         // Find all instructions
         const allInstructions = Array.from(instructionsContainer.querySelectorAll('li.instruction'));
         const instructionIndex = allInstructions.indexOf(instructionElement);
-        
+
         if (instructionIndex >= 0) {
           const progress = instructionIndex / Math.max(1, allInstructions.length - 1);
           navigationPlayback.seekTo(progress);
@@ -562,7 +562,7 @@ export class NavigationPlaybackControls {
       }
     });
   }
-  
+
   /**
    * Connect to end route functionality
    */
@@ -578,7 +578,7 @@ export class NavigationPlaybackControls {
           }
         });
       }
-      
+
       // Also listen for clear route events
       window.addEventListener('routeCleared', () => {
         if (this.isVisible) {
@@ -590,7 +590,7 @@ export class NavigationPlaybackControls {
       console.error('Error connecting to end route:', error);
     }
   }
-  
+
   /**
    * Update step highlighting based on current progress
    * @param {number} stepIndex - Current step index
@@ -599,16 +599,16 @@ export class NavigationPlaybackControls {
     try {
       const steps = document.querySelectorAll('#instructions > div');
       if (!steps.length) return;
-      
+
       const totalSteps = steps.length;
       const currentStep = Math.floor((stepIndex / navigationPlayback.routeCoordinates.length) * totalSteps);
-      
+
       if (currentStep !== this.currentStepIndex) {
         this.currentStepIndex = currentStep;
-        
+
         steps.forEach((step, index) => {
           step.classList.remove('current-step', 'completed-step');
-          
+
           if (index < currentStep) {
             step.classList.add('completed-step');
           } else if (index === currentStep) {
@@ -620,7 +620,7 @@ export class NavigationPlaybackControls {
       console.error('Error updating step highlight:', error);
     }
   }
-  
+
   /**
    * Remove highlighting from all steps
    */
@@ -634,7 +634,7 @@ export class NavigationPlaybackControls {
       console.error('Error unhighlighting steps:', error);
     }
   }
-  
+
   /**
    * Show error message to user
    * @param {string} message - Error message to display
@@ -644,7 +644,7 @@ export class NavigationPlaybackControls {
     // You could implement a toast notification or alert here
     // For now, we'll just log it to console
   }
-  
+
   /**
    * Cleanup method for destroying the component
    * Implements proper resource cleanup to prevent memory leaks
@@ -655,12 +655,12 @@ export class NavigationPlaybackControls {
         this.container.remove();
         this.container = null;
       }
-      
+
       this.isVisible = false;
       this.isInitialized = false;
       this.currentStepIndex = 0;
       this.playbackPanel = null;
-      
+
       console.log('NavigationPlaybackControls destroyed successfully');
     } catch (error) {
       console.error('Error destroying NavigationPlaybackControls:', error);
