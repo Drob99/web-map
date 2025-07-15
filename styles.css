@@ -4080,7 +4080,6 @@
      }
  }
 
-<<<<<<< HEAD
  .custom-elevator-marker {
      width: 80px;
      height: 40px;
@@ -4097,22 +4096,23 @@
  }
 
  .custom-elevator-marker button {
-     background: #ffffff;
-     border: none;
-     color: #04615c;
-     font-size: 1.2em;
-     cursor: pointer;
-     padding: 5px;
-     width: 70%;
-     font-size: 19px;
-     height: 100%;
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     gap: 5px;
-     border-radius: inherit;
-     box-shadow: 0 2px 11px #0003;
-     transition: transform 0.3s ease;
+    background: #ffffff;
+    border: none;
+    color: #04615c;
+    font-size: 1.2em;
+    cursor: pointer;
+    padding: 5px;
+    width: 100%;
+    border-radius: 30px !important;
+    font-size: 19px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    border-radius: inherit;
+    box-shadow: 0px 2px 9px 4px #0003;
+    transition: transform 0.3s ease;
  }
 
  /* .custom-elevator-marker:hover {
@@ -4137,127 +4137,3 @@
      width: 100px;
      height: 50px;
  }
-=======
-
-/* Base structure for RTL dropdown */
-[dir="rtl"] .dropdown {
-    display: flex !important;
-    flex-direction: row-reverse !important;
-    align-items: stretch !important; /* Ensure all items have same height */
-    width: auto !important; /* Let it size based on content */
-    min-width: 175px !important;
-  }
-  
-  /* Each child element in dropdown */
-  [dir="rtl"] .dropdown > * {
-    margin: 0 !important; /* Reset all margins */
-    border-radius: 0 !important; /* Remove individual border radius */
-    height: 55px !important; /* Uniform height */
-  }
-  
-  /* First child (will be last visually in RTL) */
-  [dir="rtl"] .dropdown > *:first-child {
-    border-radius: 0 12px 12px 0 !important;
-  }
-  
-  /* Last child (will be first visually in RTL) */
-  [dir="rtl"] .dropdown > *:last-child {
-    border-radius: 12px 0 0 12px !important;
-  }
-  
-  /* Content area specifically */
-  [dir="rtl"] .dropdown-content {
-    flex: 1 1 auto !important;
-    min-width: 100px !important;
-    padding: 8px 15px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-  }
-  
-  /* All button elements in dropdown */
-  [dir="rtl"] .dropdown button,
-  [dir="rtl"] .dropdown .btn {
-    flex: 0 0 auto !important;
-    width: 55px !important; /* Square buttons */
-    padding: 0 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    border: none !important;
-    border-left: 1px solid rgba(0,0,0,0.1) !important;
-  }
-  
-  /* Remove border from the last button (first visually in RTL) */
-  [dir="rtl"] .dropdown button:last-child,
-  [dir="rtl"] .dropdown .btn:last-child {
-    border-left: none !important;
-  }
-  
-  /* Specific arrow button styling */
-  [dir="rtl"] .dropdown-arrow {
-    background-color: #04615c !important;
-    color: white !important;
-  }
-  
-  /* Ensure text doesn't wrap */
-  [dir="rtl"] .dropdown-title,
-  [dir="rtl"] .dropdown-subtitle {
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-  }
-
-  /* Fix the location dot positioning */
-.location-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    margin-right: 12px;
-  }
-  
-  .location-dot.departure {
-    background-color: #28a745;
-  }
-  
-  .location-dot.destination {
-    background-color: #dc3545;
-  }
-  
-  /* RTL specific fixes for location dots */
-  [dir="rtl"] .location-dot {
-    margin-right: 0;
-    margin-left: 12px;
-  }
-  
-  /* Ensure proper spacing for navigation step content in RTL */
-  [dir="rtl"] .clean-step-content {
-    text-align: right;
-    flex: 1;
-  }
-  
-  /* Fix navigation step hover effects in RTL */
-  [dir="rtl"] .clean-step-item:hover {
-    padding-right: 25px;
-    padding-left: 0;
-  }
-  
-  /* Ensure the timeline line is properly positioned on mobile RTL */
-  @media (max-width: 480px) {
-    [dir="rtl"] #navigationStepsList::before {
-      right: 5px;
-    }
-    
-    [dir="rtl"] .clean-step-item {
-      padding-right: 15px;
-    }
-    
-    [dir="rtl"] .clean-step-item::before {
-      right: 15px;
-      width: 6px;
-      height: 6px;
-    }
-  }
-  
->>>>>>> 099e7a8c49e9107646a813806e21636244148cd4

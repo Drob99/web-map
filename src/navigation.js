@@ -157,19 +157,8 @@ export function generateNavigationInstructions(geojsonRoute, lang = "EN") {
     "u-turn": '<i class="ph ph-arrow-u-right-down"></i>',
   };
 
-<<<<<<< HEAD
   const floorIcons = { up: '<i class="ph ph-escalator-up"></i>', down: '<i class="ph ph-escalator-down"></i>' };
   const startEndIcons = { start: '<i class="fa-solid fa-person-walking"></i>', destination: '<i class="fa-solid fa-flag-checkered"></i>' };
-=======
-  const floorIcons = {
-    up: '<i class="ph ph-escalator-up"></i>',
-    down: '<i class="ph ph-escalator-down"></i>',
-  };
-  const startEndIcons = {
-    start: '<i class="ph ph-person-simple-run"></i>',
-    destination: '<i class="ph ph-flag-banner"></i>',
-  };
->>>>>>> 099e7a8c49e9107646a813806e21636244148cd4
 
   const calculateBearing = (start, end) => {
     const y =
