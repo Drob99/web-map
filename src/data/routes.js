@@ -318,7 +318,7 @@ export function drawPathToPoi(
       const routeSummary = document.getElementById("routeSummary");
       if (routeSummary) {
         routeSummary.parentNode.insertBefore(
-          // playButton,
+          playButton,
           routeSummary.nextSibling
         );
       }

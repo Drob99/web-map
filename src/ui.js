@@ -11,6 +11,7 @@ import { map } from "./mapInit.js";
 import { languageService } from "./i18n/languageService.js";
 import { uiTranslator } from "./i18n/uiTranslator.js";
 import { mapTranslator } from "./i18n/mapTranslator.js";
+import { rtlUtils } from "./i18n/rtlUtils.js";
 
 /**
  * Initialize UI: dropdowns and swap button.
@@ -252,7 +253,7 @@ if (languageListEl) {
 
 
 /**
- * Handle language selection with proper translation updates
+ * Handle language selection with proper translation and RTL updates
  * @param {HTMLElement} selectedEl - Selected list item
  * @param {string} langCode - Language code
  */
@@ -268,7 +269,13 @@ function selectLanguage(selectedEl, langCode) {
   });
 
   selectedEl.classList.add("active");
-  selectedEl.innerHTML += ' <i class="bi bi-check-lg"></i>';
+  
+  // Create check icon with RTL support
+  const checkIcon = document.createElement('i');
+  checkIcon.className = 'bi bi-check-lg';
+  checkIcon.style.marginLeft = rtlUtils.getDirectionalValue('10px', '0');
+  checkIcon.style.marginRight = rtlUtils.getDirectionalValue('0', '10px');
+  selectedEl.appendChild(checkIcon);
 
   // Visual feedback animation
   selectedEl.style.transform = "scale(1.05)";
@@ -290,12 +297,44 @@ function selectLanguage(selectedEl, langCode) {
 
     // 4. Update other map layers if needed
     updateMapLayers(langCode);
-    loadLanguage(langCode)
+    loadLanguage(langCode);
 
-    // 5. Hide language panel after successful change
+    // 5. Update map bearing for RTL languages
+    if (window.map) {
+      updateMapBearingForRTL(langCode);
+    }
+
+    // 6. Hide language panel after successful change
     setTimeout(() => {
       languageMenu();
     }, 300);
+  }
+}
+
+/**
+ * Update map bearing for RTL languages
+ * This helps with natural navigation direction
+ * @param {string} langCode - Language code
+ */
+function updateMapBearingForRTL(langCode) {
+  if (!window.map) return;
+  
+  const isRTL = langCode === 'AR';
+  const currentBearing = map.getBearing();
+  
+  // Only update if switching between RTL and LTR
+  if (isRTL && currentBearing === 0) {
+    // Slightly rotate map for RTL to feel more natural
+    map.easeTo({
+      bearing: -10,
+      duration: 1000
+    });
+  } else if (!isRTL && currentBearing !== 0) {
+    // Reset bearing for LTR
+    map.easeTo({
+      bearing: 0,
+      duration: 1000
+    });
   }
 }
 
@@ -306,41 +345,157 @@ function selectLanguage(selectedEl, langCode) {
  * @param {string} lang - The language code (e.g., 'en', 'ar', 'zh').
  */
 function loadLanguage(lang) {
-  // Normalize the language code to lowercase (e.g., 'EN' -> 'en')
+  // Normalize the language code to lowercase
   const langCode = lang.toLowerCase();
 
-  // Fetch the translation JSON file corresponding to the selected language
+  // Fetch the translation JSON file
   fetch(`src/i18n/locales/${langCode}.json`)
-    .then(res => res.json()) // Parse the JSON response
-    .then(translations => {
-      // Loop through all elements with a 'data-i18n' attribute
-      document.querySelectorAll("[data-i18n]").forEach(el => {
-        const key = el.getAttribute("data-i18n");         // Translation key
-        const attr = el.getAttribute("data-i18n-attr");   // Optional target attribute (e.g., placeholder, title)
+    .then((res) => res.json())
+    .then((translations) => {
+      // Update all elements with data-i18n attribute
+      document.querySelectorAll("[data-i18n]").forEach((el) => {
+        const key = el.getAttribute("data-i18n");
+        const attr = el.getAttribute("data-i18n-attr");
 
         if (translations[key]) {
           if (attr) {
-            // If a specific attribute is defined, set the translated value as that attribute
             el.setAttribute(attr, translations[key]);
           } else {
-            // Otherwise, replace the element's text content with the translated string
             el.textContent = translations[key];
           }
         }
       });
 
-      // Update the page's text direction: RTL for Arabic, LTR for others
-      document.documentElement.dir = (langCode === "ar") ? "rtl" : "ltr";
+      // Update the page's text direction
+      document.documentElement.dir = rtlUtils.getDirectionalValue("ltr", "rtl");
 
-      // Update the lang attribute on the <html> element for accessibility and SEO
+      // Update language attribute
       document.documentElement.lang = langCode;
+
+      // Update any RTL-specific attributes
+      updateRTLAttributes();
     })
-    .catch(err => {
-      // Handle any errors that occur while loading or parsing the translation file
-      console.error(`Error loading ${langCode}.json:`, err);
+    .catch((error) => {
+      console.error("Error loading language:", error);
     });
 }
 
+/**
+ * Update RTL-specific attributes on elements
+ */
+function updateRTLAttributes() {
+  // Update search input
+  const searchInput = document.querySelector('.search-input');
+  if (searchInput) {
+    searchInput.style.textAlign = rtlUtils.getTextAlignment('left');
+  }
+  
+  // Update all flex containers
+  const flexContainers = document.querySelectorAll('[data-flex-direction]');
+  flexContainers.forEach(container => {
+    const baseDirection = container.getAttribute('data-flex-direction');
+    container.style.flexDirection = rtlUtils.getFlexDirection(baseDirection);
+  });
+  
+  // Update navigation buttons
+  updateNavigationButtons();
+}
+
+/**
+ * Update navigation button icons for RTL
+ */
+function updateNavigationButtons() {
+  const isRTL = rtlUtils.isRTL();
+  
+  // Update language menu back button
+  const langBackBtn = document.querySelector('.language-panel .back-button i');
+  if (langBackBtn) {
+    langBackBtn.className = isRTL ? 'bi bi-chevron-right' : 'bi bi-chevron-left';
+  }
+  
+  // Update nearby menu back button
+  const nearbyBackBtn = document.querySelector('#nearbyContainer .back-button i');
+  if (nearbyBackBtn) {
+    nearbyBackBtn.className = isRTL ? 'bi bi-chevron-right' : 'bi bi-chevron-left';
+  }
+  
+  // Update directions back button
+  const directionsBackBtn = document.querySelector('.directions-header .back-button i');
+  if (directionsBackBtn) {
+    directionsBackBtn.className = isRTL ? 'ph ph-arrow-right' : 'ph ph-arrow-left';
+  }
+}
+
+/**
+ * Fix RTL spacing for dynamically created elements
+ */
+function fixRTLSpacing() {
+  if (!rtlUtils.isRTL()) return;
+  
+  // Fix all flex containers to ensure gaps are preserved
+  const flexContainers = document.querySelectorAll([
+    '.popular-location-item',
+    '.location-item', 
+    '.search-section',
+    '.dropdown-content'
+  ].join(','));
+  
+  flexContainers.forEach(container => {
+    const computedStyle = window.getComputedStyle(container);
+    
+    // If it's a flex container without explicit gap, add it
+    if (computedStyle.display === 'flex' && !computedStyle.gap) {
+      container.style.gap = '12px';
+    }
+    
+    // Ensure padding is maintained
+    if (container.classList.contains('dropdown-content')) {
+      container.style.padding = '10px 15px';
+    }
+  });
+  
+  // Fix icon margins
+  const icons = document.querySelectorAll('.popular-location-icon, .location-icon');
+  icons.forEach(icon => {
+    icon.style.marginLeft = '0';
+    icon.style.marginRight = '0';
+  });
+}
+
+/**
+ * Initialize RTL support on page load
+ */
+document.addEventListener('DOMContentLoaded', () => {
+  // Check if Arabic is the default language
+  const currentLang = languageService.getCurrentLanguage();
+  if (currentLang === 'AR') {
+    // Apply RTL immediately
+    uiTranslator.updateTextDirection();
+    updateRTLAttributes();
+  }
+  
+  // Listen for language changes
+  languageService.onLanguageChange((newLang) => {
+    updateRTLAttributes();
+    setTimeout(() => {
+      fixRTLSpacing();
+    }, 100);
+  });
+});
+
+// Also call when new content is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  const observer = new MutationObserver(() => {
+    if (rtlUtils.isRTL()) {
+      fixRTLSpacing();
+    }
+  });
+  
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+});
 
 /**
  * Complete POI translation update workflow
