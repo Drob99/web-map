@@ -35,6 +35,8 @@ function handleMapClick(e) {
   const props = feature.properties;
 
   if (!toMarker) {
+     document.getElementById("nearbyContainer").style.display = 'none';
+      document.getElementById("menuContainer").style.display = "block";
     state.airportMenu.expandMenu();
     state.airportMenu.showDirectionsView(feature);
     state.airportMenu.setCurrentLocation(feature);
