@@ -6,6 +6,7 @@ import { formatDistance } from "./utils.js";
 import { clearRoute } from "./mapController.js";
 import { map } from "./mapInit.js";
 import { state } from "./config.js";
+import { languageService } from "./i18n/languageService.js";
 
 let previousBearing = null;
 
@@ -19,11 +20,6 @@ export function flyToBuilding() {
 }
 
 /**
- * Generates navigation instructions from a GeoJSON route object.
- * @param {Object} geojsonRoute - GeoJSON route with features containing level info and coordinates.
- * @returns {Array<Object>} Array of instruction objects.
- */
-/**
  * Generates step-by-step navigation instructions from a GeoJSON route.
  * Supports multilingual output (English, Arabic, Chinese).
  *
@@ -31,8 +27,7 @@ export function flyToBuilding() {
  * @param {string} lang - Language code: "EN", "AR", or "ZN". Defaults to "EN".
  * @returns {Array} List of instruction objects with text, icon, level, and coordinates.
  */
-
-  export function generateNavigationInstructions(geojsonRoute, lang = "EN") {
+export function generateNavigationInstructions(geojsonRoute, lang = "EN") {
   if (!geojsonRoute?.features || !Array.isArray(geojsonRoute.features)) {
     console.error("Invalid GeoJSON route object");
     return [];
@@ -98,8 +93,8 @@ export function flyToBuilding() {
     turn_directions: {
       "slight right": { EN: "slight right", AR: "يمين قليلًا", ZN: "稍向右" },
       "slight left": { EN: "slight left", AR: "يسار قليلًا", ZN: "稍向左" },
-      "right": { EN: "right", AR: "يمين", ZN: "右转" },
-      "left": { EN: "left", AR: "يسار", ZN: "左转" },
+      right: { EN: "right", AR: "يمين", ZN: "右转" },
+      left: { EN: "left", AR: "يسار", ZN: "左转" },
       "sharp right": { EN: "sharp right", AR: "يمين حاد", ZN: "急右转" },
       "sharp left": { EN: "sharp left", AR: "يسار حاد", ZN: "急左转" },
       "u turn": { EN: "U-turn", AR: "انعطاف كامل", ZN: "掉头" },
@@ -107,32 +102,85 @@ export function flyToBuilding() {
   };
 
   const translate = (key) => translations[key]?.[lang] || key;
-  const getDirText = (dirCode) => translations.directions[dirCode]?.[lang] || dirCode;
+  const getDirText = (dirCode) =>
+    translations.directions[dirCode]?.[lang] || dirCode;
   const translateTurn = (key) =>
-  translations.turn_directions[key.replace("-", " ")]?.[lang] || key;
+    translations.turn_directions[key.replace("-", " ")]?.[lang] || key;
 
+  // Check if RTL
+  const isRTL = lang === "AR" || languageService.isRTL();
 
-
+  // RTL-aware direction icons
   const directionIcons = {
-    N: '<i class="ph ph-arrow-up"></i>', NE: '<i class="ph ph-arrow-up-right"></i>', E: '<i class="ph ph-arrow-right"></i>', SE: '<i class="ph ph-arrow-down-right"></i>',
-    S: '<i class="ph ph-arrow-down"></i>', SW: '<i class="ph ph-arrow-down-left"></i>', W: '<i class="ph ph-arrow-left"></i>', NW: '<i class="ph ph-arrow-up-left"></i>',
+    N: '<i class="ph ph-arrow-up"></i>',
+    NE: isRTL
+      ? '<i class="ph ph-arrow-up-left"></i>'
+      : '<i class="ph ph-arrow-up-right"></i>',
+    E: isRTL
+      ? '<i class="ph ph-arrow-left"></i>'
+      : '<i class="ph ph-arrow-right"></i>',
+    SE: isRTL
+      ? '<i class="ph ph-arrow-down-left"></i>'
+      : '<i class="ph ph-arrow-down-right"></i>',
+    S: '<i class="ph ph-arrow-down"></i>',
+    SW: isRTL
+      ? '<i class="ph ph-arrow-down-right"></i>'
+      : '<i class="ph ph-arrow-down-left"></i>',
+    W: isRTL
+      ? '<i class="ph ph-arrow-right"></i>'
+      : '<i class="ph ph-arrow-left"></i>',
+    NW: isRTL
+      ? '<i class="ph ph-arrow-up-right"></i>'
+      : '<i class="ph ph-arrow-up-left"></i>',
   };
 
+  // RTL-aware turn icons
   const turnIcons = {
-    left: '<i class="ph ph-arrow-bend-up-left"></i>', right: '<i class="ph ph-arrow-bend-up-right"></i>',
-    "slight-left": '<i class="ph ph-arrow-up-left"></i>', "slight-right": '<i class="ph ph-arrow-up-right"></i>',
-    "sharp-left": '<i class="ph ph-arrow-elbow-up-left"></i>', "sharp-right": '<i class="ph ph-arrow-elbow-up-right"></i>',
+    left: isRTL
+      ? '<i class="ph ph-arrow-bend-up-right"></i>'
+      : '<i class="ph ph-arrow-bend-up-left"></i>',
+    right: isRTL
+      ? '<i class="ph ph-arrow-bend-up-left"></i>'
+      : '<i class="ph ph-arrow-bend-up-right"></i>',
+    "slight-left": isRTL
+      ? '<i class="ph ph-arrow-up-right"></i>'
+      : '<i class="ph ph-arrow-up-left"></i>',
+    "slight-right": isRTL
+      ? '<i class="ph ph-arrow-up-left"></i>'
+      : '<i class="ph ph-arrow-up-right"></i>',
+    "sharp-left": isRTL
+      ? '<i class="ph ph-arrow-elbow-up-right"></i>'
+      : '<i class="ph ph-arrow-elbow-up-left"></i>',
+    "sharp-right": isRTL
+      ? '<i class="ph ph-arrow-elbow-up-left"></i>'
+      : '<i class="ph ph-arrow-elbow-up-right"></i>',
     "u-turn": '<i class="ph ph-arrow-u-right-down"></i>',
   };
 
+<<<<<<< HEAD
   const floorIcons = { up: '<i class="ph ph-escalator-up"></i>', down: '<i class="ph ph-escalator-down"></i>' };
   const startEndIcons = { start: '<i class="fa-solid fa-person-walking"></i>', destination: '<i class="fa-solid fa-flag-checkered"></i>' };
+=======
+  const floorIcons = {
+    up: '<i class="ph ph-escalator-up"></i>',
+    down: '<i class="ph ph-escalator-down"></i>',
+  };
+  const startEndIcons = {
+    start: '<i class="ph ph-person-simple-run"></i>',
+    destination: '<i class="ph ph-flag-banner"></i>',
+  };
+>>>>>>> 099e7a8c49e9107646a813806e21636244148cd4
 
   const calculateBearing = (start, end) => {
-    const y = Math.sin(((end[0] - start[0]) * Math.PI) / 180) * Math.cos((end[1] * Math.PI) / 180);
-    const x = Math.cos((start[1] * Math.PI) / 180) * Math.sin((end[1] * Math.PI) / 180) -
-              Math.sin((start[1] * Math.PI) / 180) * Math.cos((end[1] * Math.PI) / 180) *
-              Math.cos(((end[0] - start[0]) * Math.PI) / 180);
+    const y =
+      Math.sin(((end[0] - start[0]) * Math.PI) / 180) *
+      Math.cos((end[1] * Math.PI) / 180);
+    const x =
+      Math.cos((start[1] * Math.PI) / 180) *
+        Math.sin((end[1] * Math.PI) / 180) -
+      Math.sin((start[1] * Math.PI) / 180) *
+        Math.cos((end[1] * Math.PI) / 180) *
+        Math.cos(((end[0] - start[0]) * Math.PI) / 180);
     const brg = (Math.atan2(y, x) * 180) / Math.PI;
     return brg < 0 ? brg + 360 : brg;
   };
@@ -146,16 +194,52 @@ export function flyToBuilding() {
     let angle = currB - prevB;
     if (angle > 180) angle -= 360;
     if (angle < -180) angle += 360;
+
+    // For RTL, reverse the angle
+    if (isRTL) {
+      angle = -angle;
+    }
+
     const absA = Math.abs(angle);
     if (absA < 10) return { direction: "straight", angle: absA };
-    if (absA < 45) return { direction: angle > 0 ? "slight-right" : "slight-left", angle: absA };
-    if (absA < 135) return { direction: angle > 0 ? "right" : "left", angle: absA };
-    if (absA < 180) return { direction: angle > 0 ? "sharp-right" : "sharp-left", angle: absA };
+    if (absA < 45)
+      return {
+        direction: angle > 0 ? "slight-right" : "slight-left",
+        angle: absA,
+      };
+    if (absA < 135)
+      return { direction: angle > 0 ? "right" : "left", angle: absA };
+    if (absA < 180)
+      return {
+        direction: angle > 0 ? "sharp-right" : "sharp-left",
+        angle: absA,
+      };
     return { direction: "u-turn", angle: absA };
   };
 
-  const calculateDistance = (start, end) =>
-    turf.distance(turf.point(start), turf.point(end), { units: "meters" });
+  const calculateDistance = (start, end) => {
+    if (window.turf && turf.distance) {
+      return turf.distance(turf.point(start), turf.point(end), {
+        units: "meters",
+      });
+    }
+    // Fallback calculation
+    const R = 6371000; // Earth's radius in meters
+    const lat1 = (start[1] * Math.PI) / 180;
+    const lat2 = (end[1] * Math.PI) / 180;
+    const deltaLat = ((end[1] - start[1]) * Math.PI) / 180;
+    const deltaLon = ((end[0] - start[0]) * Math.PI) / 180;
+
+    const a =
+      Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+      Math.cos(lat1) *
+        Math.cos(lat2) *
+        Math.sin(deltaLon / 2) *
+        Math.sin(deltaLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c;
+  };
 
   const formatDistance = (d) => {
     if (d >= 1000) {
@@ -175,10 +259,10 @@ export function flyToBuilding() {
   );
 
   validFeatures.forEach((feature) => {
-    const lvl = feature.properties.level;
+    const lvl = feature.properties?.level || 0;
     const coords = feature.geometry.coordinates;
 
-    // Floor change
+    // Floor change detection
     if (currentLevel !== null && currentLevel !== lvl) {
       const dir = lvl > currentLevel ? "up" : "down";
       instructions.push({
@@ -221,7 +305,9 @@ export function flyToBuilding() {
         const turn = determineTurn(previousBearing, b);
         if (turn.direction !== "straight" && turn.angle > 30) {
           instructions.push({
-            text: `${translate("Turn")} ${translateTurn(turn.direction)} ${translate("onto")}`,
+            text: `${translate("Turn")} ${translateTurn(
+              turn.direction
+            )} ${translate("onto")}`,
             icon: turnIcons[turn.direction],
             level: lvl,
             coordinates: [prev],
@@ -238,13 +324,17 @@ export function flyToBuilding() {
 
         if (turn.direction !== "straight" && turn.angle > 30) {
           instructions.push({
-            text: `${translate("Continue")} ${formatDistance(calculateDistance(segStart, segEnd))}`,
+            text: `${translate("Continue")} ${formatDistance(
+              calculateDistance(segStart, segEnd)
+            )}`,
             icon: '<i class="ph ph-arrow-up"></i>',
             level: lvl,
             coordinates: [segStart, segEnd],
           });
           instructions.push({
-            text: `${translate("Turn")} ${translateTurn(turn.direction)} ${translate("onto")}`,
+            text: `${translate("Turn")} ${translateTurn(
+              turn.direction
+            )} ${translate("onto")}`,
             icon: turnIcons[turn.direction],
             level: lvl,
             coordinates: [prev],
@@ -288,7 +378,6 @@ export function flyToBuilding() {
   return instructions;
 }
 
-
 /**
  * Renders navigation instructions to the directions panel.
  * @param {Object} geojsonRoute - GeoJSON route object.
@@ -299,7 +388,10 @@ export function renderDirectionsPanel(
   containerId = "directions-panel"
 ) {
   try {
-    const instructions = generateNavigationInstructions(geojsonRoute , state.language);
+    const instructions = generateNavigationInstructions(
+      geojsonRoute,
+      state.language
+    );
     const totalDistance = instructions.reduce(
       (sum, ins) => sum + (ins.distance || 0),
       0
@@ -353,9 +445,8 @@ export function renderDirectionsPanel(
   }
 }
 
-
 export function formatDistanceImperial(meters, lang = "EN") {
-  if (!meters) return { value: '', unit: '' };
+  if (!meters) return { value: "", unit: "" };
 
   // Translation dictionary for units
   const unitTranslations = {
@@ -377,13 +468,13 @@ export function formatDistanceImperial(meters, lang = "EN") {
   if (feet < 1000) {
     return {
       value: Math.round(feet),
-      unit: unitTranslations.meters[lang] || 'm',
+      unit: unitTranslations.meters[lang] || "m",
     };
   } else {
     const km = feet / 1000;
     return {
       value: km.toFixed(2),
-      unit: unitTranslations.km[lang] || 'km',
+      unit: unitTranslations.km[lang] || "km",
     };
   }
 }
@@ -396,10 +487,12 @@ export function toggleInstructionCard() {
   const list = panel?.querySelector(".instructions");
   const isHidden = !list || list.style.display === "none";
   if (list) list.style.display = isHidden ? "block" : "none";
-  const btn = document.querySelector(".expandcollapse");
-  btn.innerHTML = isHidden
-    ? '<i class="fa fa-minus-square"></i> Hide Instructions'
-    : '<i class="fa fa-plus-square"></i> Show Instructions';
+  const btn = panel?.querySelector(".expandcollapse");
+  if (btn) {
+    btn.innerHTML = isHidden
+      ? '<i class="fa fa-minus-square"></i> Hide Instructions'
+      : '<i class="fa fa-plus-square"></i> Show Instructions';
+  }
 }
 
 window.toggleInstructionCard = toggleInstructionCard;
