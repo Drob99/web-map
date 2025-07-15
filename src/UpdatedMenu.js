@@ -634,6 +634,25 @@ function showLocationDetailsView(location) {
     if (state.navigationView) state.navigationView.style.display = 'none';
 }
 
+function showLocationDetailsViewLinkSharedLocation(location) {
+    console.log('Showing location details view for', location);
+    state.currentView = 'location-details';
+    state.currentLocation = location;
+    console.log("showLocationDetailsView :", state.currentLocation);
+
+    expandMenu();
+
+    populateLocationDetails(location);
+
+    if (state.categoriesSection) state.categoriesSection.style.display = 'none';
+    if (state.searchSectionCategories) state.searchSectionCategories.style.display = 'none';
+    if (state.subcategoriesView) state.subcategoriesView.style.display = 'none';
+    if (state.locationsView) state.locationsView.style.display = 'none';
+    if (state.locationDetailsView) state.locationDetailsView.style.display = 'block';
+    if (state.directionsView) state.directionsView.style.display = 'none';
+    if (state.navigationView) state.navigationView.style.display = 'none';
+}
+
 function showDirectionsView(location) {
     state.currentView = 'directions';
     state.currentLocation = location;

@@ -917,6 +917,10 @@
      transition: all 0.3s ease;
  }
 
+ #notificationRoute{
+    background: #F2003C !important;
+ }
+
  .notification.show {
      opacity: 1;
      visibility: visible;
