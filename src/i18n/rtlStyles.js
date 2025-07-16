@@ -162,7 +162,6 @@ class RTLStyleManager {
       
       /* Headers and Titles */
       [dir="rtl"] .header,
-      [dir="rtl"] .menu-header,
       [dir="rtl"] .section-title,
       [dir="rtl"] .view-title {
         text-align: right;
@@ -376,9 +375,9 @@ class RTLStyleManager {
       }
 
       /* Status Labels */
-      [dir="rtl"] .location-hours {
-        flex-direction: row-reverse;
-      }
+      // [dir="rtl"] .location-hours {
+      //   flex-direction: row-reverse;
+      // }
 
       /* ===== Accessibility Tools ===== */
       

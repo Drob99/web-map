@@ -452,7 +452,7 @@ function fixRTLSpacing() {
     
     // Ensure padding is maintained
     if (container.classList.contains('dropdown-content')) {
-      container.style.padding = '10px 15px';
+      // container.style.padding = '10px 15px';
     }
   });
   

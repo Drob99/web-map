@@ -345,8 +345,8 @@ export class NavigationPlayback {
     
     // Highlight current step
     stepInfo.element.classList.add('current-step');
-    stepInfo.element.style.background = 'rgba(0, 122, 255, 0.1)';
-    stepInfo.element.style.borderLeft = '4px solid #007AFF';
+    // stepInfo.element.style.background = 'rgba(0, 122, 255, 0.1)';
+    // stepInfo.element.style.borderLeft = '4px solid #007AFF';
     
     // Highlight current step icon
     const currentStepIcon = stepInfo.element.querySelector('.clean-step-icon');

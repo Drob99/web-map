@@ -7,7 +7,7 @@
  body {
      margin: 0;
      padding: 0;
-     font-family: 'Poppins', sans-serif;
+     font-family: 'Frutiger LT Arabic';
  }
 
  #map {
@@ -161,7 +161,7 @@
     outline: none;
     box-sizing: border-box;
     height: 40px;
-    font-family: "Poppins";
+    font-family: "Frutiger LT Arabic";
  }
 
  .clear-btn {
@@ -560,7 +560,7 @@
      border-radius: 12px;
      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
      overflow: hidden;
-     font-family: 'Poppins', sans-serif;
+     font-family: 'Frutiger LT Arabic';
      z-index: 1000;
      transition: max-height 0.4s ease, padding 0.4s ease, box-shadow 0.3s ease;
      max-height: 250px;
@@ -625,7 +625,7 @@
      outline: none;
      transition: border-color 0.2s ease;
      background-color: rgb(242, 242, 242);
-     font-family: "Poppins";
+     font-family: "Frutiger LT Arabic";
  }
 
  .search-input:focus {
@@ -759,7 +759,7 @@
      left: 0;
      margin-top: 10px;
      /* Slight spacing below the icon */
-     font-family: 'Poppins', sans-serif;
+     font-family: 'Frutiger LT Arabic';
      display: none;
      background-color: #fff;
      border-radius: 12px;
@@ -1092,9 +1092,9 @@
 
  .location-name {
      font-size: 14px;
-     font-weight: lighter;
+     font-weight: 700;
      color: #333;
-     margin-bottom: 2px;
+     margin-bottom: -5px;
  }
 
  .location-address {
@@ -1139,7 +1139,7 @@
      display: flex;
      flex-direction: column;
      justify-content: center;
-     text-align: left;
+     /* text-align: left; */
  }
 
  .location-title {
@@ -1211,6 +1211,7 @@
      font-weight: 600;
      cursor: pointer;
      transition: all 0.2s ease;
+     font-family: 'Frutiger LT Arabic';
  }
 
  .primary-button {
@@ -1369,7 +1370,7 @@
      outline: none;
      box-sizing: border-box;
      height: 40px;
-     font-family: "Poppins";
+     font-family: "Frutiger LT Arabic";
  }
 
  .departure-input:focus {
@@ -1486,9 +1487,10 @@
  }
 
  .time-label {
-     font-size: 12px;
-     color: #6c757d;
-     margin-bottom: 5px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #6c757d;
+    margin-bottom: 5px;
  }
 
  #stepsButton:hover {
@@ -1506,8 +1508,8 @@
  }
 
  .time-value {
-     font-size: 13px;
-     font-weight: 700;
+     font-size: 12px;
+     font-weight: 100;
      color: #2c3e50;
  }
 
@@ -1522,12 +1524,13 @@
      border: none;
      border-radius: 8px;
      font-weight: 500;
-     font-size: 14px;
+     font-size: 12px;
      color: #2c3e50;
      cursor: pointer;
      transition: all 0.2s ease;
-     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+     /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
      margin: 10px 3px;
+     font-family: 'Frutiger LT Arabic';
  }
 
  .steps-button:hover {
@@ -1820,7 +1823,7 @@
  .mapboxgl-ctrl-group button {
      background-color: white;
      border-radius: 7px !important;
-     font-family: 'Poppins';
+     font-family: 'Frutiger LT Arabic';
      font-weight: 700;
      width: 35px;
      height: 35px;
@@ -1845,7 +1848,7 @@
 
  #currentlocation {
      float: right;
-     font-family: 'Poppins', sans-serif;
+     font-family: 'Frutiger LT Arabic';
      position: relative;
      display: flex;
      flex-direction: column;
@@ -2002,7 +2005,7 @@
  }
 
  .clean-step-text {
-     font-size: 13px;
+     font-size: 12px;
      color: #333;
      line-height: 1.5;
      margin-bottom: 0px;
@@ -2324,7 +2327,7 @@
  /* Modern Floor Selector Styles */
  #menu {
      float: right;
-     font-family: 'Poppins', sans-serif;
+     font-family: 'Frutiger LT Arabic';
      position: relative;
      display: flex;
      flex-direction: column;
@@ -2432,7 +2435,7 @@
      float: right;
      margin: 0 10px 10px 0;
      /* float: right; */
-     font-family: 'Poppins', sans-serif;
+     font-family: 'Frutiger LT Arabic';
      /* position: relative; */
      display: flex;
      flex-direction: column;
@@ -2562,7 +2565,7 @@
      border-radius: 3px;
      box-shadow: 0 0 0 1.5px rgb(0 0 0 / 20%);
      overflow: hidden;
-     font-family: 'Poppins';
+     font-family: 'Frutiger LT Arabic';
      z-index: 100;
      display: none;
  }
@@ -2676,7 +2679,7 @@
  }
 
  .select2-results {
-     font-family: 'poppins';
+     font-family: 'Frutiger LT Arabic';
      font-size: 12px;
      display: block;
  }
@@ -2738,7 +2741,7 @@
      left: 10px;
      display: none;
      color: white;
-     font-family: 'Poppins';
+     font-family: 'Frutiger LT Arabic';
      overflow-y: auto;
      scrollbar-width: none;
      border: 1px solid #e0e0e0;
@@ -2892,7 +2895,7 @@
      color: #444;
      border-top: 1px solid lightgrey;
      height: 45px;
-     font-family: 'Poppins';
+     font-family: 'Frutiger LT Arabic';
      font-size: 1em;
      transition: transform 0.3s ease, background-color 0.3s ease;
  }
@@ -3168,7 +3171,7 @@
 
  .dropdown-title {
      font-weight: bold;
-     font-size: 16px;
+     font-size: 11.5px;
  }
 
  .dropdown-subtitle {
@@ -3564,7 +3567,7 @@
  }
 
  .popup-menu {
-     font-family: 'Poppins';
+     font-family: 'Frutiger LT Arabic';
      position: fixed;
      top: 50%;
      left: 50%;
@@ -3604,7 +3607,7 @@
      font-size: 18px;
      text-align: center;
      margin-bottom: 20px;
-     font-family: 'Poppins';
+     font-family: 'Frutiger LT Arabic';
  }
 
  .tabs {
@@ -3751,7 +3754,7 @@
  }
 
  [dir="rtl"] .menu-header {
-     font-family: 'Tahoma', sans-serif;
+     font-family: 'Frutiger LT Arabic';
  }
 
  /* Navigation Playback Styles */
@@ -3836,7 +3839,7 @@
  .playback-progress-fill {
      height: 100%;
      width: 35%;
-     background: linear-gradient(90deg, #04615c);
+     background: linear-gradient(90deg, #00b09b);
      border-radius: 10px;
      position: relative;
      transition: width 0.2s ease;
@@ -3887,7 +3890,7 @@
      justify-content: center;
      align-items: center;
      transition: all 0.3s ease;
-     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+     /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
      position: relative;
      overflow: hidden;
  }
@@ -3916,15 +3919,14 @@
 
  .play-btn:hover {
 
-     /* background: linear-gradient(135deg, #00b09b); */
-     background: #04615c;
+     background: linear-gradient(135deg, #00b09b);
+
      color: white;
  }
 
  .stop-btn:hover {
-     /* background: linear-gradient(135deg, #ff416c, #ff4b2b); */
+     background: linear-gradient(135deg, #ff4b2b);
      color: white;
-     background: #ff4b2b;
  }
 
  .hidden {
@@ -3940,7 +3942,7 @@
      border-radius: 50px;
      backdrop-filter: blur(5px);
      height: 32px;
-     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+     /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
      margin-left: 10px;
  }
 
@@ -3999,16 +4001,16 @@
  }
 
  .clean-step-item.current-step {
-     background: rgba(0, 122, 255, 0.1) !important;
-     border-left: 4px solid #007AFF !important;
-     padding-left: 16px !important;
+     /* background: rgba(0, 122, 255, 0.1) !important;
+     border-left: 4px solid #00b09b !important;
+     padding-left: 16px !important; */
  }
 
  .clean-step-item.current-step::before {
-     background-color: #007AFF !important;
+     background-color: #00b09b !important;
      width: 12px !important;
      height: 12px !important;
-     left: -2px !important;
+     left: 15px !important;
      animation: pulse 1.5s ease-in-out infinite;
  }
 
@@ -4017,16 +4019,19 @@
  }
 
  .clean-step-item.completed-step::before {
-     background-color: #28a745 !important;
+     background-color: #04615c !important;
+     color: white;
  }
 
  .clean-step-item.completed-step .clean-step-icon {
-     background-color: #28a745 !important;
+     background-color: #04615c !important;
+     color: white;
  }
 
  .clean-step-item.current-step .clean-step-icon {
-     background-color: #007AFF !important;
+     background-color: #00b09b !important;
      animation: iconPulse 1.5s ease-in-out infinite;
+     color: white;
  }
 
  /* Step highlighting for instruction elements (fallback) */
@@ -4036,9 +4041,10 @@
  }
 
  #instructions>li.instruction.current-step {
-     background: rgba(0, 122, 255, 0.1);
-     border-left: 4px solid #007AFF;
-     padding-left: 16px;
+     background: whithe !important;
+     border-left: 0px solid #00b09b !important;
+     padding-left: 16px; 
+     display: none !important;
  }
 
  #instructions>li.instruction.completed-step {
@@ -4102,7 +4108,7 @@
     font-size: 1.2em;
     cursor: pointer;
     padding: 5px;
-    width: 100%;
+    width: 75%;
     border-radius: 30px !important;
     font-size: 19px;
     height: 30px;
