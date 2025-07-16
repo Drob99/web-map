@@ -344,8 +344,7 @@ class RTLStyleManager {
       }
 
       /* Popular Location Items - Better RTL support */
-      [dir="rtl"] .popular-location-item,
-      [dir="rtl"] .location-item {
+      [dir="rtl"] .popular-location-item {
         flex-direction: row-reverse;
         text-align: right;
       }

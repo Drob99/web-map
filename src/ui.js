@@ -457,11 +457,11 @@ function fixRTLSpacing() {
   });
   
   // Fix icon margins
-  const icons = document.querySelectorAll('.popular-location-icon, .location-icon');
-  icons.forEach(icon => {
-    icon.style.marginLeft = '0';
-    icon.style.marginRight = '0';
-  });
+  // const icons = document.querySelectorAll('.popular-location-icon, .location-icon');
+  // icons.forEach(icon => {
+  //   icon.style.marginLeft = '0';
+  //   icon.style.marginRight = '0';
+  // });
 }
 
 /**
