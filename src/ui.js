@@ -1352,7 +1352,6 @@ async function check_link_parameters() {
       const name = getAllUrlParams().name
         ? decodeURIComponent(getAllUrlParams().name.replace(/\+/g, ' '))
         : "Unknown Location";
-      open_link_name = name;
 
       // Parse floor parameter
       const targetFloor = parseInt(getAllUrlParams().fl) || 0;
