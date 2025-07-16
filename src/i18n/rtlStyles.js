@@ -80,10 +80,185 @@ class RTLStyleManager {
         right: 50px;
       }
 
-      /* Dropdown Container - Move to left */
+      /* ===== CRITICAL FIX: Dropdown Container RTL Layout ===== */
+      
+      /* Dropdown Container - Move to left and reverse flex direction */
       [dir="rtl"] .dropdown-container {
         left: 20px;
         right: auto;
+        flex-direction: row-reverse; /* This reverses the order of dropdown and wheelchair icon */
+      }
+      
+      /* Fix accessibility button (wheelchair icon) margin in RTL */
+      [dir="rtl"] #accessibilityBtn {
+        margin-left: 0 !important; /* Remove left margin */
+        margin-right: 10px !important; /* Add right margin instead */
+      }
+      
+      /* Ensure dropdown list appears in correct position in RTL */
+      [dir="rtl"] .dropdown-list {
+        left: 0;
+        right: auto;
+      }
+
+      /* ===== End of Critical Fix ===== */
+
+      /* Lists */
+      [dir="rtl"] ul,
+      [dir="rtl"] ol {
+        padding-right: 25px;
+        padding-left: 0;
+      }
+
+      /* Language List Items */
+      [dir="rtl"] .language-item {
+        flex-direction: row-reverse;
+        text-align: right;
+        justify-content: space-between; /* Spread items across the full width */
+      }
+
+      [dir="rtl"] .language-item:hover {
+        transform: translateX(-4px);
+      }
+      
+      /* ===== CRITICAL FIX: Language Menu Flag Positioning ===== */
+      
+      /* Reset the language item to use proper RTL layout */
+      [dir="rtl"] .language-item {
+        display: flex;
+        flex-direction: row;
+        text-align: left;
+        justify-content: flex-start;
+        gap: 0; /* Remove gap to control spacing manually */
+      }
+      
+      /* Move ALL content to the right and reverse order */
+      [dir="rtl"] .language-item > * {
+        order: 2; /* Default order for all children */
+      }
+      
+      /* Flag should be on the far right */
+      [dir="rtl"] .language-item .flag-icon {
+        order: 3; /* Highest order = rightmost position */
+        margin: 0; /* Reset all margins */
+        margin-inline-start: auto; /* Push to the right edge */
+        margin-inline-end: 0; /* No margin on the right */
+      }
+      
+      /* Text (which is a text node) needs special handling */
+      [dir="rtl"] .language-item {
+        text-align: right; /* Align text to the right */
+        padding-right: 40px; /* Add space for the flag on the right */
+        position: relative; /* For absolute positioning of flag */
+      }
+      
+      /* Position flag absolutely on the right */
+      [dir="rtl"] .language-item .flag-icon {
+        position: absolute;
+        right: 16px; /* Same as the padding */
+        top: 50%;
+        transform: translateY(-50%);
+      }
+      
+      /* Add small spacing between flag and text for better visual appeal */
+      [dir="rtl"] .language-item {
+        padding-right: 50px; /* Increased from 40px to add more space */
+      }
+      
+      /* Check icon should be on the far left */
+      [dir="rtl"] .language-item .bi-check-lg {
+        order: 1; /* Lowest order = leftmost position */
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        margin: 0;
+      }
+      
+      /* Add padding for the check icon space */
+      [dir="rtl"] .language-item.active {
+        padding-left: 40px; /* Space for check icon */
+      }
+      
+      /* ===== End of Language Menu Fix ===== */
+
+      /* ===== Icons and Directional Elements ===== */
+      
+      /* Mirror back buttons and directional icons */
+      [dir="rtl"] .back-button svg,
+      [dir="rtl"] .back-button i,
+      [dir="rtl"] .ph-arrow-left,
+      [dir="rtl"] .ph-arrow-right,
+      [dir="rtl"] .bi-chevron-left,
+      [dir="rtl"] .bi-chevron-right {
+        transform: scaleX(-1);
+      }
+
+      /* Menu Arrow - Adjust rotation for RTL */
+      [dir="rtl"] .menu-arrow {
+        transform: rotate(0deg);
+      }
+
+      [dir="rtl"] .menu-arrow.expanded {
+        transform: rotate(180deg);
+      }
+
+      /* Dropdown Arrow */
+      [dir="rtl"] .dropdown-arrow i {
+        transform: scaleX(-1);
+      }
+
+      /* ===== Form Elements ===== */
+      
+      /* Input fields */
+      [dir="rtl"] input,
+      [dir="rtl"] select,
+      [dir="rtl"] textarea {
+        text-align: right;
+        direction: rtl;
+      }
+
+      /* Search Input with Icon */
+      [dir="rtl"] .search-input {
+        padding-right: 40px;
+        padding-left: 16px;
+      }
+
+      /* ===== Navigation and Routing ===== */
+      
+      /* Navigation Instructions */
+      [dir="rtl"] .instructions {
+        direction: rtl;
+      }
+
+      [dir="rtl"] .instructions::before {
+        left: auto;
+        right: 17px;
+      }
+
+      [dir="rtl"] .instruction {
+        flex-direction: row-reverse;
+        text-align: right;
+      }
+
+      [dir="rtl"] .instruction .letter,
+      [dir="rtl"] .instruction .icon {
+        margin-right: 0;
+        margin-left: 15px;
+      }
+
+      /* Location Labels in Navigation */
+      [dir="rtl"] .from,
+      [dir="rtl"] .to {
+        padding-left: 0;
+        padding-right: 13px;
+        text-align: right;
+      }
+
+      /* Navigation Steps Timeline - Move dotted line to right */
+      [dir="rtl"] #navigationStepsList::before {
+        left: auto;
+        right: 17px;
       }
 
       /* Dropdown - Maintain flex structure */
@@ -168,189 +343,68 @@ class RTLStyleManager {
         direction: rtl;
       }
 
-      /* Lists */
-      [dir="rtl"] ul,
-      [dir="rtl"] ol {
-        padding-right: 25px;
-        padding-left: 0;
-      }
-
-      /* Language List Items */
-      [dir="rtl"] .language-item {
-        flex-direction: row-reverse;
-        text-align: right;
-      }
-
-      [dir="rtl"] .language-item:hover {
-        transform: translateX(-4px);
-      }
-
-      /* ===== Icons and Directional Elements ===== */
-      
-      /* Mirror back buttons and directional icons */
-      [dir="rtl"] .back-button svg,
-      [dir="rtl"] .back-button i,
-      [dir="rtl"] .ph-arrow-left,
-      [dir="rtl"] .ph-arrow-right,
-      [dir="rtl"] .bi-chevron-left,
-      [dir="rtl"] .bi-chevron-right {
-        transform: scaleX(-1);
-      }
-
-      /* Menu Arrow - Adjust rotation for RTL */
-      [dir="rtl"] .menu-arrow {
-        transform: rotate(0deg);
-      }
-
-      [dir="rtl"] .menu-arrow.expanded {
-        transform: rotate(180deg);
-      }
-
-      /* Dropdown Arrow */
-      [dir="rtl"] .dropdown-arrow i {
-        transform: scaleX(-1);
-      }
-
-      /* ===== Form Elements ===== */
-      
-      /* Input fields */
-      [dir="rtl"] input,
-      [dir="rtl"] select,
-      [dir="rtl"] textarea {
-        text-align: right;
-        direction: rtl;
-      }
-
-      /* Search Input with Icon */
-      [dir="rtl"] .search-input {
-        padding-right: 40px;
-        padding-left: 16px;
-      }
-
-      /* ===== Navigation and Routing ===== */
-      
-      /* Navigation Instructions */
-      [dir="rtl"] .instructions {
-        direction: rtl;
-      }
-
-      [dir="rtl"] .instructions::before {
-        left: auto;
-        right: 17px;
-      }
-
-      [dir="rtl"] .instruction {
-        flex-direction: row-reverse;
-        text-align: right;
-      }
-
-      [dir="rtl"] .instruction .letter,
-      [dir="rtl"] .instruction .icon {
-        margin-right: 0;
-        margin-left: 15px;
-      }
-
-      /* Location Labels in Navigation */
-      [dir="rtl"] .from,
-      [dir="rtl"] .to {
-        padding-left: 0;
-        padding-right: 13px;
-        text-align: right;
-      }
-
-      /* Navigation Steps Timeline - Move dotted line to right */
-      [dir="rtl"] #navigationStepsList::before {
-        left: auto;
-        right: 5px;
-        border-left: none;
-        border-right: 4px dotted #b3b3b3;
-      }
-
-      /* Clean Step Items - Reverse layout */
-      [dir="rtl"] .clean-step-item {
-        padding-left: 0;
-        padding-right: 20px;
-        flex-direction: row-reverse;
-      }
-
-      /* Step Timeline Dots - Move to right */
-      [dir="rtl"] .clean-step-item::before {
-        left: auto;
-        right: 20px;
-      }
-
-      /* Clean Step Icon - Adjust margins */
-      [dir="rtl"] .clean-step-icon {
-        margin-right: 0;
-        margin-left: 12px;
-        margin-right: 16px;
-      }
-
-      /* Location Header - Reverse layout */
-      [dir="rtl"] .location-header {
-        flex-direction: row-reverse;
-      }
-
-      [dir="rtl"] .location-dot {
-        margin-left: 12px;
-        margin-right: 0;
-      }
-
-      /* ===== Spacing and Margins ===== */
-      
-      /* Preserve flex gaps in RTL */
+      /* Popular Location Items - Better RTL support */
       [dir="rtl"] .popular-location-item,
       [dir="rtl"] .location-item {
-        gap: 12px; /* Maintain gap between icon and text */
+        flex-direction: row-reverse;
+        text-align: right;
       }
 
-      /* Location icon spacing - preserve margins */
+      /* Fix icon margins in location items */
       [dir="rtl"] .popular-location-icon,
       [dir="rtl"] .location-icon {
-        margin-right: 0;
         margin-left: 12px;
-        flex-shrink: 0;
+        margin-right: 0;
       }
 
-      /* Use logical properties for margins */
-      [dir="rtl"] .favorite-btn {
-        left: 10px;
-        right: auto;
-      }
-
+      /* Location details alignment */
+      [dir="rtl"] .popular-location-name,
+      [dir="rtl"] .location-name,
+      [dir="rtl"] .popular-location-distance,
       [dir="rtl"] .location-distance {
-        margin-left: 0;
-        margin-right: auto;
+        text-align: right;
       }
 
-      /* POI Cards */
-      [dir="rtl"] .popular-location-item {
-        flex-direction: row-reverse;
+      /* Filter buttons */
+      [dir="rtl"] .filters {
+        direction: rtl;
       }
 
-      /* ===== Animations ===== */
-      
-      /* Adjust animation directions for RTL */
-      @keyframes slideInFromRight {
-        from {
-          transform: translateX(-100%);
-          opacity: 0;
-        }
-        to {
-          transform: translateX(0);
-          opacity: 1;
-        }
+      /* Zoom Controls - Maintain position */
+      [dir="rtl"] .mapboxgl-ctrl-zoom-in,
+      [dir="rtl"] .mapboxgl-ctrl-zoom-out {
+        /* Keep these as is - zoom controls should stay in place */
       }
 
-      [dir="rtl"] .language-panel.show {
-        animation: slideInFromRight 0.3s ease-out;
+      /* Map Attribution */
+      [dir="rtl"] .mapboxgl-ctrl-attrib {
+        direction: rtl;
+        text-align: right;
       }
 
-      /* ===== Tooltips and Popovers ===== */
-      
-      [dir="rtl"] .floor-tooltip {
-        left: 70px;
-        right: auto;
+      /* Location Search Results */
+      [dir="rtl"] .search-results {
+        text-align: right;
+      }
+
+      [dir="rtl"] .result-item {
+        padding-right: 12px;
+        padding-left: 8px;
+      }
+
+      /* Popup content */
+      [dir="rtl"] .mapboxgl-popup {
+        /* Popups may need special handling based on anchor position */
+      }
+
+      [dir="rtl"] .mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
+        border-right-color: transparent;
+        border-left-color: white;
+      }
+
+      [dir="rtl"] .mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
+        border-left-color: transparent;
+        border-right-color: white;
       }
 
       [dir="rtl"] .mapboxgl-popup-content {
