@@ -282,7 +282,7 @@ export function drawPathToPoi(
   }, 100);
 
   // Add play button to navigation panel after route is drawn
-  setTimeout(() => {
+ setTimeout(() => {
     const directionsPanel = document.querySelector(".directions-panel");
     if (directionsPanel && !document.getElementById("play-route-btn")) {
       const playButton = document.createElement("button");
@@ -318,7 +318,7 @@ export function drawPathToPoi(
       const routeSummary = document.getElementById("routeSummary");
       if (routeSummary) {
         routeSummary.parentNode.insertBefore(
-          playButton,
+          // playButton,
           routeSummary.nextSibling
         );
       }
