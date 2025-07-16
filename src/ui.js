@@ -452,16 +452,16 @@ function fixRTLSpacing() {
     
     // Ensure padding is maintained
     if (container.classList.contains('dropdown-content')) {
-      container.style.padding = '10px 15px';
+      // container.style.padding = '10px 15px';
     }
   });
   
   // Fix icon margins
-  const icons = document.querySelectorAll('.popular-location-icon, .location-icon');
-  icons.forEach(icon => {
-    icon.style.marginLeft = '0';
-    icon.style.marginRight = '0';
-  });
+  // const icons = document.querySelectorAll('.popular-location-icon, .location-icon');
+  // icons.forEach(icon => {
+  //   icon.style.marginLeft = '0';
+  //   icon.style.marginRight = '0';
+  // });
 }
 
 /**
@@ -883,7 +883,7 @@ function resetTextStyle() {
  */
 function simpleFont_toggle() {
   state.font = state.isSimpleFont
-    ? ['Arial Unicode MS Regular']
+    ? ['Frutiger LT Arabic 55 Roman']
     : ['Arial Unicode MS Regular']; // Same font in this case; change if needed
   map.setLayoutProperty('municipality-name', 'text-font', state.font);
   state.isSimpleFont = !state.isSimpleFont;
@@ -893,7 +893,7 @@ function simpleFont_toggle() {
  * Reset font to default.
  */
 function resetFont() {
-  map.setLayoutProperty('municipality-name', 'text-font', ['Arial Unicode MS Regular']);
+  map.setLayoutProperty('municipality-name', 'text-font', ['Frutiger LT Arabic 55 Roman']);
   state.isSimpleFont = false;
 }
 

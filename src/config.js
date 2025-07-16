@@ -115,7 +115,7 @@ export const state = {
   selectedTerminal : null,
   toPolygonId : null,
   lastHighlighted : null,
-  font : false? ['Arial Unicode MS Regular']: ['Arial Unicode MS Regular'],
+  font : false? ['Arial Unicode MS Regular']: ['Frutiger LT Arabic 55 Roman'],
   allPoiGeojson: {
     type: 'FeatureCollection',
     features: [

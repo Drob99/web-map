@@ -189,7 +189,7 @@ export function elevatorGuide() {
     markerElement.className = "custom-elevator-marker";
     
     const button = document.createElement("button");
-    button.innerHTML = `<i class="ph-fill ${escalator}"></i> <i class="ph ${arrow}"></i>`;
+    button.innerHTML = `<i class="fa-solid ${escalator}"></i> <i class="ph ${arrow}"></i>`;
     button.onclick = () => switchFloorByNo(elevatorLvl);
     
     markerElement.appendChild(button);
@@ -203,7 +203,7 @@ export function elevatorGuide() {
         const up = parseInt(nextElevatorLvls[i], 10) > parseInt(lvl, 10);
         const arrow = up ? "fa-circle-up" : "fa-circle-down";
         const elevatoricon = up ? "ph-arrow-circle-up" : "ph-arrow-circle-down";
-        const escalatorsIcon = up ? "ph-escalator-up" : "ph-escalator-down";
+        const escalatorsIcon = up ? "fa-elevator" : "fa-elevator";
         let label;
         switch (state.language) {
           case "ZN":
@@ -593,6 +593,11 @@ export function exitNavigationMode() {
  * Shows POIs by the current level, adding polygon layers to the map.
  */
 export function showPoisByLevel() {
+
+  state.font = state.isSimpleFont
+		? ['Arial Unicode MS Regular']
+		: ['Frutiger LT Arabic 55 Roman'];
+
   if (state.levelRoutePoi == null) state.levelRoutePoi = 1;
   state.polyGeojsonLevel = { type: "FeatureCollection", features: [] };
   state.polyGeojsonLevelOutsideBuilding = {
@@ -786,6 +791,7 @@ export function showPoisByLevel() {
       "text-offset": [0, 0.8],
       "symbol-placement": "point",
       "icon-allow-overlap": true,
+      "text-font": state.font,
     },
     paint: {
       "icon-opacity": [
@@ -807,7 +813,7 @@ export function showPoisByLevel() {
         0.8,
       ],
       "icon-halo-color": "rgba(255,255,255,1)",
-      "icon-halo-width": 5,
+      "icon-halo-width": 20,
       "text-color": "rgba(0,0,0,1)",
       "text-halo-color": "rgba(255,255,255,1)",
       "text-halo-width": 2,
