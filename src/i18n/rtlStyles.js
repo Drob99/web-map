@@ -114,11 +114,73 @@ class RTLStyleManager {
       [dir="rtl"] .language-item {
         flex-direction: row-reverse;
         text-align: right;
+        justify-content: space-between; /* Spread items across the full width */
       }
 
       [dir="rtl"] .language-item:hover {
         transform: translateX(-4px);
       }
+      
+      /* ===== CRITICAL FIX: Language Menu Flag Positioning ===== */
+      
+      /* Reset the language item to use proper RTL layout */
+      [dir="rtl"] .language-item {
+        display: flex;
+        flex-direction: row;
+        text-align: left;
+        justify-content: flex-start;
+        gap: 0; /* Remove gap to control spacing manually */
+      }
+      
+      /* Move ALL content to the right and reverse order */
+      [dir="rtl"] .language-item > * {
+        order: 2; /* Default order for all children */
+      }
+      
+      /* Flag should be on the far right */
+      [dir="rtl"] .language-item .flag-icon {
+        order: 3; /* Highest order = rightmost position */
+        margin: 0; /* Reset all margins */
+        margin-inline-start: auto; /* Push to the right edge */
+        margin-inline-end: 0; /* No margin on the right */
+      }
+      
+      /* Text (which is a text node) needs special handling */
+      [dir="rtl"] .language-item {
+        text-align: right; /* Align text to the right */
+        padding-right: 40px; /* Add space for the flag on the right */
+        position: relative; /* For absolute positioning of flag */
+      }
+      
+      /* Position flag absolutely on the right */
+      [dir="rtl"] .language-item .flag-icon {
+        position: absolute;
+        right: 16px; /* Same as the padding */
+        top: 50%;
+        transform: translateY(-50%);
+      }
+      
+      /* Add small spacing between flag and text for better visual appeal */
+      [dir="rtl"] .language-item {
+        padding-right: 50px; /* Increased from 40px to add more space */
+      }
+      
+      /* Check icon should be on the far left */
+      [dir="rtl"] .language-item .bi-check-lg {
+        order: 1; /* Lowest order = leftmost position */
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        margin: 0;
+      }
+      
+      /* Add padding for the check icon space */
+      [dir="rtl"] .language-item.active {
+        padding-left: 40px; /* Space for check icon */
+      }
+      
+      /* ===== End of Language Menu Fix ===== */
 
       /* ===== Icons and Directional Elements ===== */
       
