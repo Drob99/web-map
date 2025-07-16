@@ -813,7 +813,7 @@ export function showPoisByLevel() {
         0.8,
       ],
       "icon-halo-color": "rgba(255,255,255,1)",
-      "icon-halo-width": 5,
+      "icon-halo-width": 20,
       "text-color": "rgba(0,0,0,1)",
       "text-halo-color": "rgba(255,255,255,1)",
       "text-halo-width": 2,

@@ -1204,7 +1204,7 @@
 
  .action-button {
      flex: 1;
-     padding: 12px 16px;
+     padding: 5px 16px;
      border: none;
      border-radius: 8px;
      font-size: 14px;
@@ -4044,7 +4044,6 @@
      background: whithe !important;
      border-left: 0px solid #00b09b !important;
      padding-left: 16px; 
-     display: none !important;
  }
 
  #instructions>li.instruction.completed-step {

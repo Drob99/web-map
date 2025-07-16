@@ -883,7 +883,7 @@ function resetTextStyle() {
  */
 function simpleFont_toggle() {
   state.font = state.isSimpleFont
-    ? ['Arial Unicode MS Regular']
+    ? ['Frutiger LT Arabic 55 Roman']
     : ['Arial Unicode MS Regular']; // Same font in this case; change if needed
   map.setLayoutProperty('municipality-name', 'text-font', state.font);
   state.isSimpleFont = !state.isSimpleFont;
@@ -893,7 +893,7 @@ function simpleFont_toggle() {
  * Reset font to default.
  */
 function resetFont() {
-  map.setLayoutProperty('municipality-name', 'text-font', ['Arial Unicode MS Regular']);
+  map.setLayoutProperty('municipality-name', 'text-font', ['Frutiger LT Arabic 55 Roman']);
   state.isSimpleFont = false;
 }
 

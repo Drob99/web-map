@@ -163,15 +163,23 @@ export class NavigationPlayback {
     
     const el = document.createElement('div');
     el.style.cssText = `
-      width: 0;
-      height: 0;
-      border-left: 15px solid transparent;
-      border-right: 15px solid transparent;
-      border-bottom: 40px solid #007AFF;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+      width: 50px;
+      height: 50px;
       transform: translate(-50%, -100%);
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
     `;
-    
+
+    const img = document.createElement('img');
+    img.src = './src/images/navigation.png'; // ✅ Make sure this path is correct and accessible
+    img.style.cssText = `
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transform: rotate(0deg); /* You can dynamically rotate this if needed */
+    `;
+
+    el.appendChild(img);
+
     this.navigationArrow = new mapboxgl.Marker({
       element: el,
       rotationAlignment: 'map',
