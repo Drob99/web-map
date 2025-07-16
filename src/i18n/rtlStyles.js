@@ -80,93 +80,28 @@ class RTLStyleManager {
         right: 50px;
       }
 
-      /* Dropdown Container - Move to left */
+      /* ===== CRITICAL FIX: Dropdown Container RTL Layout ===== */
+      
+      /* Dropdown Container - Move to left and reverse flex direction */
       [dir="rtl"] .dropdown-container {
         left: 20px;
         right: auto;
+        flex-direction: row-reverse; /* This reverses the order of dropdown and wheelchair icon */
       }
-
-      /* Dropdown - Maintain flex structure */
-      [dir="rtl"] .dropdown {
-        display: flex;
-        flex-direction: row-reverse; /* Reverse the order */
-        align-items: center;
-        gap: 0; /* Reset gap as items are adjacent */
+      
+      /* Fix accessibility button (wheelchair icon) margin in RTL */
+      [dir="rtl"] #accessibilityBtn {
+        margin-left: 0 !important; /* Remove left margin */
+        margin-right: 10px !important; /* Add right margin instead */
       }
-
-      /* Dropdown content - Maintain padding */
-      [dir="rtl"] .dropdown-content {
-        flex-grow: 1;
-        padding: 5px;
-        text-align: center;
-      }
-
-      /* Dropdown arrow - Maintain size and position */
-      [dir="rtl"] .dropdown-arrow {
-        order: -1; /* Move to start in RTL */
-        height: 55px;
-        padding: 0 12px;
-      }
-
-      /* Accessibility button if present */
-      [dir="rtl"] .dropdown .accessibility-btn,
-      [dir="rtl"] .dropdown [class*="accessibility"] {
-        order: 0; /* Maintain middle position */
-        margin: 0;
-      }
-
-      /* Floor Selector - Move to left */
-      [dir="rtl"] .mapboxgl-ctrl-bottom-right {
-        left: 10px;
+      
+      /* Ensure dropdown list appears in correct position in RTL */
+      [dir="rtl"] .dropdown-list {
+        left: 0;
         right: auto;
       }
 
-      /* Nearby Container */
-      [dir="rtl"] #nearbyContainer {
-        left: auto !important;
-        right: 20px !important;
-      }
-
-      /* Directions Panel */
-      [dir="rtl"] .directions-panel {
-        left: auto;
-        right: 20px;
-      }
-
-      /* ===== Flexbox and Grid Layouts ===== */
-      
-      /* Search Section - Reverse flex direction but preserve gaps */
-      [dir="rtl"] .search-section {
-        direction: rtl;
-        display: flex;
-        flex-direction: row-reverse;
-        gap: 8px; /* Preserve gap between elements */
-      }
-
-      /* Preserve button margins in search section */
-      [dir="rtl"] .search-section > * {
-        margin: 0; /* Reset individual margins since we use gap */
-      }
-
-      /* Categories Grid - RTL flow */
-      [dir="rtl"] .categories-grid {
-        direction: rtl;
-      }
-
-      /* Menu Items - Ensure proper alignment */
-      [dir="rtl"] .menu-item {
-        text-align: center;
-      }
-
-      /* ===== Text and Content Alignment ===== */
-      
-      /* Headers and Titles */
-      [dir="rtl"] .header,
-      [dir="rtl"] .section-title,
-      [dir="rtl"] .view-title {
-        text-align: right;
-        direction: rtl;
-      }
+      /* ===== End of Critical Fix ===== */
 
       /* Lists */
       [dir="rtl"] ul,
@@ -261,96 +196,153 @@ class RTLStyleManager {
       /* Navigation Steps Timeline - Move dotted line to right */
       [dir="rtl"] #navigationStepsList::before {
         left: auto;
-        right: 5px;
-        border-left: none;
-        border-right: 4px dotted #b3b3b3;
+        right: 17px;
       }
 
-      /* Clean Step Items - Reverse layout */
-      [dir="rtl"] .clean-step-item {
-        padding-left: 0;
-        padding-right: 20px;
-        flex-direction: row-reverse;
+      /* Dropdown - Maintain flex structure */
+      [dir="rtl"] .dropdown {
+        display: flex;
+        flex-direction: row-reverse; /* Reverse the order */
+        align-items: center;
+        gap: 0; /* Reset gap as items are adjacent */
       }
 
-      /* Step Timeline Dots - Move to right */
-      [dir="rtl"] .clean-step-item::before {
-        left: auto;
-        right: 20px;
+      /* Dropdown content - Maintain padding */
+      [dir="rtl"] .dropdown-content {
+        flex-grow: 1;
+        padding: 5px;
+        text-align: center;
       }
 
-      /* Clean Step Icon - Adjust margins */
-      [dir="rtl"] .clean-step-icon {
-        margin-right: 0;
-        margin-left: 12px;
-        margin-right: 16px;
+      /* Dropdown arrow - Maintain size and position */
+      [dir="rtl"] .dropdown-arrow {
+        order: -1; /* Move to start in RTL */
+        height: 55px;
+        padding: 0 12px;
       }
 
-      /* Location Header - Reverse layout */
-      [dir="rtl"] .location-header {
-        flex-direction: row-reverse;
+      /* Accessibility button if present */
+      [dir="rtl"] .dropdown .accessibility-btn,
+      [dir="rtl"] .dropdown [class*="accessibility"] {
+        order: 0; /* Maintain middle position */
+        margin: 0;
       }
 
-      [dir="rtl"] .location-dot {
-        margin-left: 12px;
-        margin-right: 0;
-      }
-
-      /* ===== Spacing and Margins ===== */
-      
-      /* Preserve flex gaps in RTL */
-      [dir="rtl"] .popular-location-item,
-      [dir="rtl"] .location-item {
-        gap: 12px; /* Maintain gap between icon and text */
-      }
-
-      /* Location icon spacing - preserve margins */
-      [dir="rtl"] .popular-location-icon,
-      [dir="rtl"] .location-icon {
-        margin-right: 0;
-        margin-left: 12px;
-        flex-shrink: 0;
-      }
-
-      /* Use logical properties for margins */
-      [dir="rtl"] .favorite-btn {
+      /* Floor Selector - Move to left */
+      [dir="rtl"] .mapboxgl-ctrl-bottom-right {
         left: 10px;
         right: auto;
       }
 
-      [dir="rtl"] .location-distance {
-        margin-left: 0;
-        margin-right: auto;
+      /* Nearby Container */
+      [dir="rtl"] #nearbyContainer {
+        left: auto !important;
+        right: 20px !important;
       }
 
-      /* POI Cards */
-      [dir="rtl"] .popular-location-item {
+      /* Directions Panel */
+      [dir="rtl"] .directions-panel {
+        left: auto;
+        right: 20px;
+      }
+
+      /* ===== Flexbox and Grid Layouts ===== */
+      
+      /* Search Section - Reverse flex direction but preserve gaps */
+      [dir="rtl"] .search-section {
+        direction: rtl;
+        display: flex;
         flex-direction: row-reverse;
+        gap: 8px; /* Preserve gap between elements */
       }
 
-      /* ===== Animations ===== */
+      /* Preserve button margins in search section */
+      [dir="rtl"] .search-section > * {
+        margin: 0; /* Reset individual margins since we use gap */
+      }
+
+      /* Categories Grid - RTL flow */
+      [dir="rtl"] .categories-grid {
+        direction: rtl;
+      }
+
+      /* Menu Items - Ensure proper alignment */
+      [dir="rtl"] .menu-item {
+        text-align: center;
+      }
+
+      /* ===== Text and Content Alignment ===== */
       
-      /* Adjust animation directions for RTL */
-      @keyframes slideInFromRight {
-        from {
-          transform: translateX(-100%);
-          opacity: 0;
-        }
-        to {
-          transform: translateX(0);
-          opacity: 1;
-        }
+      /* Headers and Titles */
+      [dir="rtl"] .header,
+      [dir="rtl"] .section-title,
+      [dir="rtl"] .view-title {
+        text-align: right;
+        direction: rtl;
       }
 
-      [dir="rtl"] .language-panel.show {
-        animation: slideInFromRight 0.3s ease-out;
+      /* Popular Location Items - Better RTL support */
+      [dir="rtl"] .popular-location-item,
+      [dir="rtl"] .location-item {
+        flex-direction: row-reverse;
+        text-align: right;
       }
 
-      /* ===== Tooltips and Popovers ===== */
-      
-      [dir="rtl"] .floor-tooltip {
-        left: 70px;
-        right: auto;
+      /* Fix icon margins in location items */
+      [dir="rtl"] .popular-location-icon,
+      [dir="rtl"] .location-icon {
+        margin-left: 12px;
+        margin-right: 0;
+      }
+
+      /* Location details alignment */
+      [dir="rtl"] .popular-location-name,
+      [dir="rtl"] .location-name,
+      [dir="rtl"] .popular-location-distance,
+      [dir="rtl"] .location-distance {
+        text-align: right;
+      }
+
+      /* Filter buttons */
+      [dir="rtl"] .filters {
+        direction: rtl;
+      }
+
+      /* Zoom Controls - Maintain position */
+      [dir="rtl"] .mapboxgl-ctrl-zoom-in,
+      [dir="rtl"] .mapboxgl-ctrl-zoom-out {
+        /* Keep these as is - zoom controls should stay in place */
+      }
+
+      /* Map Attribution */
+      [dir="rtl"] .mapboxgl-ctrl-attrib {
+        direction: rtl;
+        text-align: right;
+      }
+
+      /* Location Search Results */
+      [dir="rtl"] .search-results {
+        text-align: right;
+      }
+
+      [dir="rtl"] .result-item {
+        padding-right: 12px;
+        padding-left: 8px;
+      }
+
+      /* Popup content */
+      [dir="rtl"] .mapboxgl-popup {
+        /* Popups may need special handling based on anchor position */
+      }
+
+      [dir="rtl"] .mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
+        border-right-color: transparent;
+        border-left-color: white;
+      }
+
+      [dir="rtl"] .mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
+        border-left-color: transparent;
+        border-right-color: white;
       }
 
       [dir="rtl"] .mapboxgl-popup-content {
